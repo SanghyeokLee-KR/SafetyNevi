@@ -1,0 +1,142 @@
+/* reports.css - 테이블 및 페이지네이션 스타일 */
+
+/* 테이블 컨테이너 (플랫 스타일) */
+.table-container.flat {
+    margin-top: 0;
+    box-shadow: none;
+    border: 1px solid #e2e8f0;
+}
+
+/* 섹션 스타일 */
+.dashboard-section {
+    margin-bottom: 40px;
+}
+
+.section-header {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 상태 뱃지 */
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* 접수 (빨강) */
+.status-badge.pending {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+/* 처리 중 (노랑) */
+.status-badge.processing {
+    background: #fef9c3;
+    color: #854d0e;
+    border: 1px solid #fde047;
+}
+
+/* 완료 (회색) */
+.status-badge.completed {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+/* 텍스트 스타일 */
+.report-reason {
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+}
+.report-reason:hover {
+    text-decoration: underline;
+    color: #2563eb;
+}
+
+.target-info {
+    font-size: 13px;
+    color: #64748b;
+}
+.target-type {
+    font-weight: 700;
+    color: #475569;
+    margin-right: 4px;
+}
+
+/* 버튼 스타일 */
+.btn-action-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-action-sm.process {
+    background-color: #ef4444; /* 빨강 */
+}
+.btn-action-sm.process:hover {
+    background-color: #dc2626;
+}
+
+.btn-action-sm.view {
+    background-color: #94a3b8; /* 회색 */
+}
+.btn-action-sm.view:hover {
+    background-color: #64748b;
+}
+
+/* 🌟 페이지네이션 스타일 (중앙 정렬) */
+.pagination-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 30px;
+    margin-bottom: 50px;
+}
+
+.page-btn, .page-num {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    background-color: #fff;
+    color: #64748b;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.page-btn:hover, .page-num:hover {
+    background-color: #f1f5f9;
+    color: #337cf4;
+    border-color: #cbd5e1;
+}
+
+.page-num.active {
+    background-color: #337cf4;
+    color: #fff;
+    border-color: #337cf4;
+    font-weight: 700;
+}
+
+.page-btn.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    background-color: #f8fafc;
+}

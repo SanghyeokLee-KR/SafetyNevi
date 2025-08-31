@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 - 문의 관리</title>
+
+    <link rel="stylesheet" th:href="@{/css/admin/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/components.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/inquiries.css}">
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+</head>
+<body>
+
+<aside class="admin-sidebar">
+    <div class="sidebar-header">
+        <span style="margin-left: 10px;">🛡️ SafetyNevi</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href="/admin" class="menu-item"><span class="icon">📊</span> <span>대시보드</span></a></li>
+        <li><a href="/admin/members" class="menu-item"><span class="icon">👥</span> <span>회원 관리</span></a></li>
+        <li><a href="/admin/boards" class="menu-item"><span class="icon">📝</span> <span>게시물 관리</span></a></li>
+        <li><a href="/admin/notice/create" class="menu-item"><span class="icon">📢</span> <span>공지 생성</span></a></li>
+        <li>
+            <a href="/admin/inquiries" class="menu-item active">
+                <span class="icon">💌</span> <span>문의 관리</span>
+            </a>
+        </li>
+        <li><a href="/admin/reports" class="menu-item"><span class="icon">🚩</span> <span>신고 관리</span></a></li>
+        <li><a href="/admin/disaster" class="menu-item"><span class="icon">🚨</span> <span>재난 관리</span></a></li>
+        <li style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+            <a href="/" class="menu-item"><span class="icon">🏠</span> <span>서비스 홈</span></a>
+        </li>
+    </ul>
+</aside>
+
+<main class="admin-content">
+    <div class="page-header">
+        <div>
+            <div class="page-title">1:1 문의 관리</div>
+            <div class="page-subtitle">회원들의 불편 사항 및 문의 내역을 확인하고 답변합니다.</div>
+        </div>
+    </div>
+
+    <div class="dashboard-section">
+        <div class="section-header">
+            📥 미답변 문의
+            <span th:text="|(${unansweredList.size()}건)|" style="font-size: 0.8em; color: #666;">(0건)</span>
+        </div>
+
+        <div class="table-container flat">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th style="width: 10%;">상태</th>
+                    <th style="width: 15%;">문의 유형</th>
+                    <th style="width: 40%;">제목</th>
+                    <th style="width: 15%;">작성자</th>
+                    <th style="width: 10%;">등록일</th>
+                    <th style="width: 10%;">관리</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr th:if="${#lists.isEmpty(unansweredList)}">
+                    <td colspan="6" style="text-align: center; padding: 20px;">처리 대기 중인 문의가 없습니다. 🎉</td>
+                </tr>
+
+                <tr th:each="item : ${unansweredList}">
+                    <td><span class="status-badge waiting">답변 대기</span></td>
+                    <td th:text="${item.category}">시스템 오류</td>
+
+                    <td class="inquiry-subject">
+                        <a th:href="@{/inquiry/detail/{id}(id=${item.id})}" th:text="${item.title}" style="text-decoration: none; color: inherit;">
+                            로그인이 자꾸 풀립니다
+                        </a>
+                    </td>
+
+                    <td th:text="${item.writerName + '(' + item.writerId + ')'}">user1</td>
+                    <td th:text="${#temporals.format(item.createdDate, 'yyyy-MM-dd')}">2024-11-29</td>
+                    <td>
+                        <a th:href="@{/inquiry/detail/{id}(id=${item.id})}">
+                            <button class="btn-action-sm reply">답변하기</button>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="dashboard-section">
+        <div class="section-header">✅ 답변 완료된 문의 (최근 5건)</div>
+        <div class="table-container flat">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th style="width: 10%;">상태</th>
+                    <th style="width: 15%;">문의 유형</th>
+                    <th style="width: 40%;">제목</th>
+                    <th style="width: 15%;">작성자</th>
+                    <th style="width: 10%;">답변일</th>
+                    <th style="width: 10%;">관리</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr th:if="${#lists.isEmpty(answeredList)}">
+                    <td colspan="6" style="text-align: center; padding: 20px;">답변 완료된 내역이 없습니다.</td>
+                </tr>
+
+                <tr th:each="item : ${answeredList}">
+                    <td><span class="status-badge completed">답변 완료</span></td>
+                    <td th:text="${item.category}">계정 문의</td>
+                    <td class="inquiry-subject read">
+                        <a th:href="@{/inquiry/detail/{id}(id=${item.id})}" th:text="${item.title}" style="text-decoration: none; color: inherit;">
+                            비밀번호 변경은 어디서 하나요?
+                        </a>
+                    </td>
+                    <td th:text="${item.writerName}">user2</td>
+                    <td th:text="${item.answerDate != null ? #temporals.format(item.answerDate, 'yyyy-MM-dd') : '-'}">2024-11-28</td>
+                    <td>
+                        <a th:href="@{/inquiry/detail/{id}(id=${item.id})}">
+                            <button class="btn-action-sm view">조회</button>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+</body>
+</html>

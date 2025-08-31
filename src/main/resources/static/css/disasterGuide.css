@@ -1,0 +1,277 @@
+/* 기본 설정 */
+html, body {
+    margin: 0;
+    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+    background-color: #f7f9fc; /* 👈 배경색 통일 */
+    color: #333;
+    line-height: 1.6;
+    -webkit-text-size-adjust: 100%;
+    min-height: 100vh;
+}
+
+/* 전체 페이지 컨테이너: 카드형 디자인 적용 */
+.kb-disaster-page-container {
+    max-width: 800px;
+    margin: 40px auto; /* 상하 여백 추가 */
+    padding: 40px 30px; /* 내부 패딩 조정 */
+    background-color: #ffffff;
+
+    /* 🌟 카드 스타일 통일 🌟 */
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+/* 헤더 (페이지 제목) */
+.kb-disaster-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #337cf4; /* 👈 파란색 강조선 */
+}
+
+.kb-disaster-main-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #333; /* 👈 제목 색상 통일 */
+    margin: 0;
+    padding: 0;
+}
+
+/* 서론 섹션 */
+.kb-disaster-intro-section {
+    background-color: #f0f5fd; /* 👈 연한 파란색 배경으로 변경 */
+    border: 1px solid #cceeff; /* 연한 파란색 테두리 */
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 40px; /* 간격 확대 */
+    font-size: 15px;
+    color: #333;
+    line-height: 1.7;
+}
+
+.kb-disaster-intro-text {
+    margin: 0;
+}
+
+/* 안내 문구 */
+.kb-guide-instruction {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+/* 재난 유형 목록 래퍼 */
+.kb-disaster-guide-list-wrap {
+    margin-top: 0;
+}
+
+/* 재난 유형 그리드 (3열 Flexbox) */
+.kb-disaster-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px; /* 항목 간의 간격 */
+    justify-content: flex-start; /* 왼쪽 정렬 */
+}
+
+/* 각 재난 유형 항목 */
+.kb-disaster-item {
+    /* 🌟 3열 배치: (100% / 3) - (간격 * 2 / 3) 🌟 */
+    flex: 1 1 calc(33.333% - 10px);
+    min-width: 140px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: #444;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease-in-out;
+    box-sizing: border-box;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.kb-disaster-item:hover {
+    border-color: #337cf4;
+    box-shadow: 0 5px 15px rgba(51, 124, 244, 0.2);
+    transform: translateY(-3px);
+}
+
+/* 3열 배치를 위한 빈 공간 플레이스홀더 (필요 없는 경우 숨김) */
+.kb-disaster-item-placeholder {
+    flex: 1 1 calc(33.333% - 10px);
+    visibility: hidden;
+}
+
+/* 항목 이름 */
+.kb-item-name {
+    flex-grow: 1;
+}
+
+/* 오른쪽 화살표 (>) */
+.kb-item-arrow::after {
+    content: '›';
+    font-size: 24px;
+    color: #337cf4;
+    margin-left: 10px;
+}
+
+/* 기타 재난 항목에만 별도 스타일 (선택 사항) */
+.kb-etc-item {
+    background-color: #fff0f0;
+}
+
+
+/* ==================================== */
+/* 🌟 모달 스타일 (상세 행동요령) 🌟 */
+/* ==================================== */
+
+.kb-modal-content {
+    background-color: white;
+    width: 90%;
+    max-width: 650px;
+    border-radius: 12px;
+    position: relative;
+    padding: 30px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+
+    /* 🌟 모달 높이 고정 및 내용 스크롤 설정 🌟 */
+    max-height: 80vh; /* 뷰포트 높이의 80%로 최대 높이 설정 */
+    overflow: hidden; /* 모달 자체의 스크롤은 금지 (내부 바디만 스크롤) */
+    display: flex;
+    flex-direction: column;
+}
+
+.kb-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+}
+
+.kb-modal-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #333;
+    margin: 0 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #337cf4;
+    flex-shrink: 0; /* 제목은 높이 고정 */
+}
+
+/* 🌟 유튜브 영상 반응형 컨테이너 🌟 */
+.kb-video-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 비율 유지 */
+    height: 0;
+    overflow: hidden;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0; /* 영상도 높이 고정 */
+}
+
+.kb-video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+
+.kb-modal-body {
+    /* 🌟 남은 공간을 모두 차지하고 스크롤 되도록 설정 🌟 */
+    flex-grow: 1; /* 남은 세로 공간을 모두 채움 */
+    overflow-y: auto; /* 내용이 길어지면 이 영역만 스크롤 */
+    padding-right: 15px;
+    margin-bottom: 20px; /* 푸터와의 간격 */
+}
+
+.kb-guide-step-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #337cf4;
+    margin: 20px 0 10px 0;
+}
+
+.kb-guide-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin-bottom: 20px;
+}
+
+.kb-guide-list li {
+    font-size: 15px;
+    color: #444;
+    padding: 5px 0 5px 15px;
+    position: relative;
+}
+
+.kb-guide-list li::before {
+    content: '▶';
+    color: #337cf4;
+    font-size: 12px;
+    position: absolute;
+    left: 0;
+    top: 7px;
+}
+
+.kb-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    flex-shrink: 0; /* 푸터는 높이 고정 */
+}
+
+.kb-btn-close {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.kb-btn-close:hover {
+    background-color: #e0e0e0;
+}
+
+/* 반응형: 모바일 환경에서는 1열로 변경 */
+@media (max-width: 600px) {
+    .kb-disaster-page-container {
+        padding: 20px 15px;
+        margin: 20px auto;
+    }
+    .kb-disaster-grid {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 10px;
+    }
+    .kb-disaster-item {
+        flex: 1 1 100%;
+        padding: 15px;
+        font-size: 16px;
+        min-width: auto;
+    }
+    .kb-disaster-item-placeholder {
+        display: none;
+    }
+    .kb-modal-content {
+        max-width: 95%;
+        padding: 20px;
+    }
+}

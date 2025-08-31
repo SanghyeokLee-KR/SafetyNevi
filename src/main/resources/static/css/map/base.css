@@ -1,0 +1,135 @@
+:root {
+    --bg-color: #ffffff; --text-color: #333333; --sub-text-color: #555555;
+    --border-color: #eeeeee; --sidebar-bg: #f7f7f7; --topbar-bg: #003668;
+    --topbar-text: #ffffff; --card-bg: #ffffff; --hover-bg: #f8f9fa; --input-bg: #f5f5f5;
+}
+body.dark-mode {
+    --bg-color: #1a1a1a; --text-color: #e0e0e0; --sub-text-color: #aaaaaa;
+    --border-color: #333333; --sidebar-bg: #222222; --topbar-bg: #0f172a;
+    --topbar-text: #e0e0e0; --card-bg: #2a2a2a; --hover-bg: #333333; --input-bg: #333333;
+}
+
+html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; font-family: 'Malgun Gothic', sans-serif; background-color: var(--bg-color); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
+.kb-wrap, #map { width: 100%; height: 100%; position: relative; }
+
+/* =========================================================
+   [Dark Mode Fix] 모든 하드코딩된 스타일 강제 덮어쓰기
+   ========================================================= */
+
+body.dark-mode .kb-sidebar-overlay,
+body.dark-mode .kb-content-scroll,
+body.dark-mode .kb-my-top-tab {
+    background-color: var(--sidebar-bg) !important;
+    color: var(--text-color) !important;
+}
+
+/* 1. 사이드바 내부 카드 및 리스트 아이템 */
+body.dark-mode .detail-card,
+body.dark-mode .kb-myplace-item,
+body.dark-mode .kb-my-place-item-v2,
+body.dark-mode .kb-route-input-wrap,
+body.dark-mode .kb-checkbox-item {
+    background-color: var(--card-bg) !important;
+    border-color: #444 !important;
+    color: var(--text-color) !important;
+}
+
+/* 2. 텍스트 색상 강제 변환 */
+body.dark-mode .kb-section-title,
+body.dark-mode .kb-place-name,
+body.dark-mode .kb-my-title,
+body.dark-mode .detail-item strong,
+body.dark-mode .detail-card h2,
+body.dark-mode .kb-main-address {
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .kb-place-address,
+body.dark-mode .kb-place-meta,
+body.dark-mode .detail-item span,
+body.dark-mode .kb-route-input {
+    color: #bbb !important;
+}
+
+/* 3. 모달 (글쓰기, 가족등록, 재난알림 등) */
+body.dark-mode .report-modal,
+body.dark-mode .board-overlay,
+body.dark-mode .kb-search-panel {
+    background-color: #2a2a2a !important;
+    border-color: #444 !important;
+    color: #eee !important;
+}
+
+/* 모달 내부 제목 및 텍스트 */
+body.dark-mode .report-modal h3,
+body.dark-mode .report-modal p,
+body.dark-mode .board-title,
+body.dark-mode .board-content,
+body.dark-mode .board-writer,
+body.dark-mode .comment-writer,
+body.dark-mode .comment-text {
+    color: #eee !important;
+}
+
+/* 4. 입력창 (Input, Textarea) */
+body.dark-mode input[type="text"],
+body.dark-mode input[type="tel"],
+body.dark-mode textarea,
+body.dark-mode select,
+body.dark-mode .kb-route-input,
+body.dark-mode .comment-input,
+body.dark-mode .reply-input {
+    background-color: #333 !important;
+    color: #fff !important;
+    border-color: #555 !important;
+}
+
+/* 5. 버튼 및 기타 액션 요소 */
+body.dark-mode .kb-place-action,
+body.dark-mode .btn-action,
+body.dark-mode .btn-delete-fav,
+body.dark-mode .kb-re-search-btn,
+body.dark-mode .kb-map-floating-btn,
+body.dark-mode .report-btn-cancel,
+body.dark-mode .board-actions,
+body.dark-mode .board-header,
+body.dark-mode .board-comments {
+    background-color: #333 !important;
+    color: #ddd !important;
+    border-color: #555 !important;
+}
+
+/* 호버 효과 조정 */
+body.dark-mode .kb-myplace-item:hover,
+body.dark-mode .btn-action:hover,
+body.dark-mode .kb-place-action:hover {
+    background-color: #444 !important;
+    border-color: #337cf4 !important;
+}
+
+/* 6. 아이콘 박스 배경 어둡게 */
+body.dark-mode .kb-place-icon-box.home { background-color: #1a3b5c; color: #64b5f6; }
+body.dark-mode .kb-place-icon-box.work { background-color: #3e2723; color: #ce93d8; }
+body.dark-mode .kb-place-icon-box.favorite { background-color: #3e3818; color: #ffd54f; }
+body.dark-mode .kb-place-icon-box.post-report { background-color: #3e1a1a; }
+body.dark-mode .kb-place-icon-box.post-talk { background-color: #1a3e30; }
+body.dark-mode .kb-place-icon-box.post-qna { background-color: #1a237e; }
+
+/* 7. 안전 점수 패널 */
+body.dark-mode .safety-score-panel {
+    background: rgba(30, 30, 30, 0.95) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important;
+}
+body.dark-mode .score-text strong { color: #fff !important; }
+body.dark-mode .score-text span { color: #bbb !important; }
+body.dark-mode .score-circle { border: 1px solid #555; }
+
+/* 8. 댓글 영역 배경 */
+body.dark-mode .board-comments {
+    background-color: #222 !important;
+    border-top: 1px solid #444 !important;
+}
+body.dark-mode .comment-list,
+body.dark-mode .board-body {
+    scrollbar-color: #555 #222;
+}

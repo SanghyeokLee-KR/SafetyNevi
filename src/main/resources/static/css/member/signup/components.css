@@ -1,0 +1,133 @@
+/* 입력 필드 */
+.kb-signup-form { width: 100%; }
+.kb-form-group { width: 100%; margin-bottom: 20px; position: relative; }
+.kb-form-label { display: block; font-size: 14px; font-weight: 600; color: #555; margin-bottom: 8px; margin-left: 4px; }
+
+.kb-form-input, .kb-select-input {
+    width: 100%; height: 50px; padding: 0 15px;
+    border: 1px solid var(--gray-border); border-radius: 10px;
+    font-size: 15px; color: #333; background-color: #fdfdfd;
+    box-sizing: border-box; transition: all 0.2s ease;
+}
+.kb-form-input:focus, .kb-select-input:focus {
+    outline: none; border-color: var(--primary-color); background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(51, 124, 244, 0.15);
+}
+/* 유효성 검사 아이콘 */
+.kb-form-input.valid {
+    border-color: var(--success-color);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2328a745' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 15px center; background-size: 20px;
+}
+.kb-form-input.invalid { border-color: var(--error-color); background-color: #fff5f5; }
+
+.kb-input-msg { font-size: 12px; margin-top: 5px; margin-left: 5px; display: none; }
+.kb-input-msg.error { display: block; color: var(--error-color); }
+.kb-input-msg.success { display: block; color: var(--success-color); }
+
+/* 버튼 */
+.kb-input-wrapper { display: flex; gap: 8px; width: 100%; }
+.kb-btn-inline {
+    height: 50px; padding: 0 20px; background-color: #f1f3f5; color: #333;
+    border: 1px solid var(--gray-border); border-radius: 10px;
+    font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+}
+.kb-btn-inline:hover { background-color: #e9ecef; border-color: #ced4da; }
+
+.kb-signup-button {
+    width: 100%; height: 56px; background-color: var(--primary-color); color: white;
+    border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer;
+    transition: all 0.3s; box-shadow: 0 10px 20px rgba(51, 124, 244, 0.3);
+}
+.kb-signup-button:hover { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 15px 25px rgba(51, 124, 244, 0.4); }
+.kb-signup-button:disabled { background-color: var(--disabled-bg); color: var(--disabled-text); cursor: not-allowed; box-shadow: none; transform: none; }
+
+/* 체크박스 */
+.kb-agreement-group { background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid #eee; }
+.kb-checkbox-label { display: flex; align-items: center; font-size: 14px; color: #666; cursor: pointer; margin-bottom: 12px; }
+.kb-checkbox-label:last-child { margin-bottom: 0; }
+.kb-checkbox-custom {
+    width: 20px; height: 20px; border: 2px solid #ddd; border-radius: 6px;
+    margin-right: 10px; position: relative; background-color: #fff; transition: all 0.2s;
+}
+.kb-checkbox-label input[type="checkbox"]:checked + .kb-checkbox-custom { background-color: var(--primary-color); border-color: var(--primary-color); }
+.kb-checkbox-label input[type="checkbox"]:checked + .kb-checkbox-custom::after {
+    content: ''; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px;
+    border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+.kb-checkbox-label input[type="checkbox"] { display: none; }
+.kb-required-text { color: var(--primary-color); font-weight: 700; margin-right: 5px; font-size: 13px; }
+
+/* 미니 맵 & 비번 미터기 */
+#mini-map {
+    width: 100%; height: 200px; border-radius: 10px; border: 1px solid var(--gray-border);
+    margin-top: 10px; display: none; box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+}
+.kb-detail-address { margin-top: 8px !important; }
+.kb-pw-meter-wrap { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+.kb-pw-meter-bg { width: 100%; height: 4px; background-color: #eee; border-radius: 2px; overflow: hidden; }
+.kb-pw-meter-fill { height: 100%; width: 0%; background-color: #ddd; transition: width 0.3s, background-color 0.3s; }
+.kb-pw-text { font-size: 12px; color: #888; text-align: right; }
+
+/* 단계 표시기 */
+.kb-step-indicator { display: flex; justify-content: center; margin-bottom: 20px; gap: 10px; }
+.kb-step-dot { width: 10px; height: 10px; background-color: #ddd; border-radius: 50%; transition: all 0.3s; }
+.kb-step-dot.active { background-color: var(--primary-color); transform: scale(1.2); }
+
+/* 애니메이션 */
+.kb-hidden { display: none !important; }
+.fade-in { animation: fadeIn 0.5s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* 🌟 버튼 그룹 (이전/다음 나란히 배치) 🌟 */
+.kb-btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+    width: 100%;
+}
+
+/* 이전 버튼 스타일 (회색) */
+.kb-btn-prev {
+    width: 35%; /* 이전 버튼은 조금 작게 */
+    height: 56px;
+    background-color: #f1f3f5;
+    color: #555;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.kb-btn-prev:hover {
+    background-color: #e9ecef;
+}
+
+/* 다음 버튼 스타일 (파란색) */
+.kb-btn-next {
+    width: 65%; /* 다음 버튼은 크게 */
+    height: 56px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(51, 124, 244, 0.3);
+    transition: all 0.2s;
+}
+.kb-btn-next:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+/* 🌟 전체 동의 체크박스 스타일 (구분선 추가) */
+.kb-agree-all {
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    font-weight: bold;
+    color: #333;
+}

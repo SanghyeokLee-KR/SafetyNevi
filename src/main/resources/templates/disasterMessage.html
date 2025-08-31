@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>실시간 재난문자 현황</title>
+    <link rel="stylesheet" href="/css/disasterMessage.css"/>
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+</head>
+<body>
+
+<div class="app-wrapper">
+    <header class="app-header">
+        <a href="/" class="header-link">
+            <img src="/img/logo/200px-안전네비_로고.png" alt="안전네비 로고" class="header-logo">
+            <h1 class="header-title">실시간 재난문자 현황</h1>
+        </a>
+    </header>
+
+    <main class="app-content">
+        <div class="filter-container">
+            <form th:action="@{/disasterMessage}" method="get">
+                <select name="area" onchange="this.form.submit()">
+                    <option value="전국">전국</option>
+                    <option th:each="prefix : ${areaPrefixes}"
+                            th:value="${prefix}"
+                            th:text="${prefix}"
+                            th:selected="${prefix == selectedArea}"></option>
+                </select>
+                <select name="disasterType" onchange="this.form.submit()">
+                    <option value="전체">전체</option>
+                    <option th:each="type : ${disasterTypes}"
+                            th:value="${type}"
+                            th:text="${type}"
+                            th:selected="${type == selectedType}"></option>
+                </select>
+            </form>
+        </div>
+
+        <div class="grid-container">
+            <div class="msg-card" th:each="msg : ${paging.content}">
+                <div class="card-top">
+                    <th:block th:switch="${msg.disasterType}">
+                        <span th:case="'호우'" class="badge badge-blue" th:text="${msg.disasterType}"></span>
+                        <span th:case="'홍수'" class="badge badge-blue" th:text="${msg.disasterType}"></span>
+                        <span th:case="'폭염'" class="badge badge-red" th:text="${msg.disasterType}"></span>
+                        <span th:case="'폭설'" class="badge badge-skyblue" th:text="${msg.disasterType}"></span>
+                        <span th:case="'지진'" class="badge badge-yellow" th:text="${msg.disasterType}"></span>
+                        <span th:case="'가뭄'" class="badge badge-yellow" th:text="${msg.disasterType}"></span>
+                        <span th:case="'태풍'" class="badge badge-green" th:text="${msg.disasterType}"></span>
+                        <span th:case="*" class="badge badge-gray" th:text="${msg.disasterType}"></span>
+                    </th:block>
+                    <div class="meta-info">
+                        <div class="area-name" th:text="${msg.area}">지역명</div>
+                        <div class="date-text" th:text="${msg.sentDate}">날짜</div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p th:text="${msg.content}">내용</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="pagination-box" th:if="${paging.totalPages > 0}">
+            <a th:href="@{/disasterMessage(page=0, area=${selectedArea}, disasterType=${selectedType})}"
+               th:classappend="${paging.first} ? 'disabled'">처음</a>
+            <a th:href="@{/disasterMessage(page=${paging.number-1}, area=${selectedArea}, disasterType=${selectedType})}"
+               th:classappend="${paging.first} ? 'disabled'">이전</a>
+            <a th:each="pageNum : ${#numbers.sequence(startPage, endPage)}"
+               th:href="@{/disasterMessage(page=${pageNum}, area=${selectedArea}, disasterType=${selectedType})}"
+               th:text="${pageNum + 1}"
+               th:classappend="${pageNum == paging.number} ? 'active'"></a>
+            <a th:href="@{/disasterMessage(page=${paging.number+1}, area=${selectedArea}, disasterType=${selectedType})}"
+               th:classappend="${paging.last} ? 'disabled'">다음</a>
+            <a th:href="@{/disasterMessage(page=${paging.totalPages-1}, area=${selectedArea}, disasterType=${selectedType})}"
+               th:classappend="${paging.last} ? 'disabled'">마지막</a>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <div class="footer-links">
+            <a href="#">이용안내</a>
+            <a href="#">문서보기 프로그램</a>
+            <a href="#">저작권정책</a>
+            <a href="#">개인정보처리방침</a>
+            <a href="#">기관소개</a>
+            <a href="#">정부24</a>
+        </div>
+        <div class="footer-info">
+            <p>주소 : 인천광역시 미추홀구 인하로 100 (인하공업전문대학)</p>
+            <p>안전네비 콜센터 032-6974-5885</p>
+            <p class="copyright">© Safety Nevi. All Rights Reserved.</p>
+        </div>
+    </footer>
+</div>
+<script>
+    if (window.location.search) {
+        const navigationEntry = performance.getEntriesByType("navigation")[0];
+        if (navigationEntry && navigationEntry.type === 'reload') {
+            window.location.href = '/disasterMessage';
+        }
+    }
+</script>
+</body>
+</html>

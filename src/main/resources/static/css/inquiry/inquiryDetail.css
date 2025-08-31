@@ -1,0 +1,286 @@
+/* 기본 설정 (프로젝트 스타일 통일) */
+html, body {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+    background-color: #f7f9fc;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* 중앙 컨테이너 */
+.kb-detail-container {
+    width: 100%;
+    max-width: 900px; /* 게시판/문의 페이지 너비 통일 */
+    padding: 40px 20px;
+    box-sizing: border-box;
+    margin: auto;
+}
+
+/* 카드 영역 */
+.kb-detail-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* --- 공통 헤더 스타일 --- */
+.kb-header {
+    border-bottom: 2px solid #337cf4; /* 메인 컬러 강조선 */
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.kb-title-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.kb-title-text {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.kb-page-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #333;
+    margin: 0;
+}
+
+/* --- 1. 문의 정보 헤더 --- */
+.kb-post-info-header {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+}
+
+.kb-post-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+}
+
+.kb-meta-info {
+    font-size: 14px;
+    color: #777;
+}
+
+.kb-info-item {
+    margin-right: 20px;
+}
+
+/* 상태 뱃지 스타일 */
+.kb-status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    margin-right: 15px;
+}
+
+.status-done { /* 답변 완료 */
+    background-color: #28a745;
+}
+.status-processing { /* 처리 중 */
+    background-color: #337cf4;
+}
+.status-new { /* 미확인 */
+    background-color: #ff5e57;
+}
+
+/* --- 2. 문의 내용 --- */
+.kb-post-content {
+    min-height: 150px;
+    margin-bottom: 40px;
+    padding: 0 10px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #444;
+}
+
+.kb-attachments {
+    margin-top: 30px;
+    padding: 15px;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    background-color: #fcfcfc;
+}
+
+.kb-attachments h4 {
+    font-size: 15px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.kb-file-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #337cf4;
+    text-decoration: none;
+}
+
+.kb-download-btn {
+    background-color: #f0f0f0;
+    color: #555;
+    border: 1px solid #ccc;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* --- 3. 관리자 답변 영역 --- */
+.kb-admin-response {
+    background-color: #e6f0ff; /* 연한 파란색 배경 */
+    border-left: 5px solid #337cf4; /* 파란색 강조선 */
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 0 8px 8px 0;
+}
+
+.kb-response-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 10px;
+    color: #333;
+    font-weight: 600;
+}
+
+.kb-response-body p {
+    font-size: 15px;
+    color: #444;
+    line-height: 1.6;
+}
+
+/* --- 4. 하단 액션 버튼 --- */
+.kb-action-footer {
+    padding-top: 30px;
+    text-align: center;
+}
+
+.kb-list-btn {
+    display: inline-block;
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 12px 25px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.kb-list-btn:hover {
+    background-color: #e0e0e0;
+}
+
+/* 반응형 */
+@media (max-width: 600px) {
+    .kb-detail-card {
+        padding: 20px;
+    }
+    .kb-post-title {
+        font-size: 18px;
+    }
+    .kb-meta-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .kb-info-item {
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+    .kb-response-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .kb-response-date {
+        margin-top: 5px;
+    }
+}
+
+/* 제미나이와 기미나이가 같이 수정한 css >0<b */
+/* 하단 버튼 영역 정렬 */
+.kb-action-footer {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between; /* 목록은 왼쪽, 수정/삭제는 오른쪽 배치 */
+    align-items: center;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+/* 버튼 그룹 (수정/삭제 붙여놓기) */
+.kb-btn-group {
+    display: flex;
+    gap: 10px;
+}
+
+/* 공통 버튼 스타일 */
+.kb-btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+}
+
+/* 목록 버튼 */
+.kb-list-btn {
+    padding: 10px 20px;
+    background-color: #f1f3f5;
+    color: #333;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+.kb-list-btn:hover { background-color: #e9ecef; }
+
+/* 수정 버튼 (파란색) */
+.kb-btn-edit {
+    background-color: #fff;
+    border: 1px solid #007bff;
+    color: #007bff;
+}
+.kb-btn-edit:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+/* 삭제 버튼 (빨간색) */
+.kb-btn-delete {
+    background-color: #fff;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+}
+.kb-btn-delete:hover {
+    background-color: #dc3545;
+    color: #fff;
+}

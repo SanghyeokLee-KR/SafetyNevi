@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>안전네비 - 회원가입</title>
+
+    <link rel="stylesheet" as="style" crossorigin
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+
+    <link rel="stylesheet" href="/css/member/signup/base.css">
+    <link rel="stylesheet" href="/css/member/signup/components.css">
+    <link rel="stylesheet" href="/css/member/signup/modal.css">
+
+    <!-- 🌟 파비콘 추가: /img/logo/favicon.png 및 /img/logo/favicon.ico 🌟 -->
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+</head>
+<body>
+
+<div class="kb-signup-container">
+    <div class="kb-signup-card">
+        <div class="kb-title-container">
+            <img src="/img/logo/200px-안전네비_로고.png" alt="안전네비 로고">
+            <h1 class="kb-title-text">안전네비</h1>
+        </div>
+
+        <div class="kb-step-indicator">
+            <div class="kb-step-dot active" id="dot-1"></div>
+            <div class="kb-step-dot" id="dot-2"></div>
+            <div class="kb-step-dot" id="dot-3"></div>
+        </div>
+
+        <h3 class="kb-signup-title" id="page-title">
+            서비스 이용 약관에 동의해주세요
+        </h3>
+
+        <form class="kb-signup-form" id="signup-form">
+
+            <div id="step-1" class="fade-in">
+                <div class="kb-agreement-group">
+                    <label class="kb-checkbox-label kb-agree-all">
+                        <input type="checkbox" id="agree_all">
+                        <span class="kb-checkbox-custom"></span>
+                        <span> 약관 전체 동의하기</span>
+                    </label>
+
+                    <label class="kb-checkbox-label">
+                        <input type="checkbox" id="agreement_required" class="agree-item">
+                        <span class="kb-checkbox-custom"></span>
+                        <span class="kb-required-text" id="open-modal-btn">[필수]</span>
+                        <span> 이용약관 및 개인정보 수집 동의</span>
+                    </label>
+                    <label class="kb-checkbox-label">
+                        <input type="checkbox" id="location_agreement" class="agree-item">
+                        <span class="kb-checkbox-custom"></span>
+                        <span class="kb-required-text" id="open-loc-modal-btn">[필수]</span>
+                        <span> 위치기반 서비스 이용약관 동의</span>
+                    </label>
+                </div>
+                <button type="button" class="kb-signup-button" id="btn-step1-next" disabled>
+                    약관에 모두 동의해주세요
+                </button>
+            </div>
+
+            <div id="step-2" class="kb-hidden">
+                <div class="kb-grid-row">
+                    <div class="kb-grid-col">
+                        <div class="kb-form-group">
+                            <label for="user_id" class="kb-form-label">* 아이디</label>
+                            <div class="kb-input-wrapper">
+                                <input type="text" id="user_id" name="userId" class="kb-form-input"
+                                       placeholder="영문/숫자 4~12자" required>
+                                <button type="button" id="check-id-btn" class="kb-btn-inline">중복</button>
+                            </div>
+                            <p class="kb-input-msg" id="id-msg"></p>
+                        </div>
+                    </div>
+                    <div class="kb-grid-col">
+                        <div class="kb-form-group">
+                            <label for="email" class="kb-form-label">* 이메일</label>
+                            <div class="kb-input-wrapper">
+                                <input type="email" id="email" name="email" class="kb-form-input"
+                                       placeholder="example@naver.com" required>
+                                <button type="button" id="check-email-btn" class="kb-btn-inline">중복</button>
+                            </div>
+                            <p class="kb-input-msg" id="email-msg"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kb-grid-row">
+                    <div class="kb-grid-col">
+                        <div class="kb-form-group">
+                            <label for="password" class="kb-form-label">* 비밀번호</label>
+                            <input type="password" id="password" name="password" class="kb-form-input"
+                                   placeholder="8자 이상" required>
+                            <div class="kb-pw-meter-wrap">
+                                <div class="kb-pw-meter-bg">
+                                    <div class="kb-pw-meter-fill" id="pw-meter-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="kb-grid-col">
+                        <div class="kb-form-group">
+                            <label for="password-confirm" class="kb-form-label">* 비밀번호 확인</label>
+                            <input type="password" id="password-confirm" class="kb-form-input" placeholder="다시 입력"
+                                   required>
+                            <p class="kb-input-msg" id="pw-match-msg"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kb-btn-row">
+                    <button type="button" class="kb-btn-prev" id="btn-step2-prev">이전</button>
+                    <button type="button" class="kb-btn-next" id="btn-step2-next">다음 단계로</button>
+                </div>
+            </div>
+
+            <div id="step-3" class="kb-hidden">
+                <div class="kb-grid-row">
+                    <div class="kb-grid-col">
+                        <div class="kb-form-group">
+                            <label for="name" class="kb-form-label">* 이름</label>
+                            <input type="text" id="name" name="name" class="kb-form-input" placeholder="실명 입력" required>
+                            <p class="kb-input-msg" id="name-msg"></p>
+                        </div>
+                    </div>
+                    <div class="kb-grid-col">
+                        <div class="kb-form-group">
+                            <label for="nickname" class="kb-form-label">* 닉네임</label>
+                            <div class="kb-input-wrapper">
+                                <input type="text" id="nickname" name="nickname" class="kb-form-input" placeholder="활동명"
+                                       required>
+                                <button type="button" id="check-nick-btn" class="kb-btn-inline">확인</button>
+                            </div>
+                            <p class="kb-input-msg" id="nick-msg"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kb-form-group">
+                    <label for="address" class="kb-form-label">* 주소</label>
+                    <div class="kb-input-wrapper">
+                        <input type="text" id="address" name="address" class="kb-form-input" placeholder="주소를 검색해주세요"
+                               readonly required>
+                        <button type="button" id="search-address-btn" class="kb-btn-inline">주소 검색</button>
+                    </div>
+                    <input type="text" id="detailAddress" name="detailAddress" class="kb-form-input kb-detail-address"
+                           placeholder="상세 주소를 입력하세요">
+                    <div id="mini-map"></div>
+                    <input type="hidden" id="lat" name="latitude">
+                    <input type="hidden" id="lon" name="longitude">
+                    <input type="hidden" id="areaName" name="areaName">
+                </div>
+
+                <div class="kb-form-group">
+                    <label for="emergency_contact" class="kb-form-label">비상 연락처 (선택)</label>
+                    <input type="tel" id="emergency_contact" name="emergencyPhone" class="kb-form-input"
+                           placeholder="- 없이 숫자만 입력">
+                    <p class="kb-input-msg" id="phone-msg"></p>
+                </div>
+
+                <div class="kb-grid-row">
+                    <div class="kb-grid-col">
+                        <div class="kb-form-group">
+                            <label for="pw_question" class="kb-form-label">* 확인 질문</label>
+                            <select id="pw_question" name="pwQuestion" class="kb-select-input" required>
+                                <option value="" disabled selected>선택</option>
+                                <option value="1">인생 좌우명?</option>
+                                <option value="2">보물 1호?</option>
+                                <option value="3">기억에 남는 선생님?</option>
+                                <option value="4">졸업한 초등학교?</option>
+                                <option value="5">다시 태어나면 되고싶은 것?</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="kb-grid-col">
+                        <div class="kb-form-group">
+                            <label for="pw_answer" class="kb-form-label">* 답변</label>
+                            <input type="text" id="pw_answer" name="pwAnswer" class="kb-form-input" placeholder="답변 입력"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kb-btn-row">
+                    <button type="button" class="kb-btn-prev" id="btn-step3-prev">이전</button>
+                    <button type="submit" class="kb-signup-button" style="width: 65%;">가입 완료</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="agreement-modal" class="kb-modal-overlay">
+    <div class="kb-modal-content">
+        <button class="kb-modal-close" id="close-modal-x">✖</button>
+        <h2 class="kb-modal-title">이용약관 및 개인정보처리방침</h2>
+        <div class="kb-modal-body" id="terms-content"></div>
+        <div class="kb-modal-footer">
+            <button class="kb-modal-btn kb-btn-secondary" id="close-modal-no">닫기</button>
+            <button class="kb-modal-btn kb-btn-primary" id="close-modal-yes">동의</button>
+        </div>
+    </div>
+</div>
+
+<div id="location-modal" class="kb-modal-overlay">
+    <div class="kb-modal-content">
+        <button class="kb-modal-close" id="close-loc-modal-x">✖</button>
+        <h2 class="kb-modal-title">위치기반 서비스 이용약관</h2>
+        <div class="kb-modal-body" id="location-content"></div>
+        <div class="kb-modal-footer">
+            <button class="kb-modal-btn kb-btn-secondary" id="close-loc-modal-no">닫기</button>
+            <button class="kb-modal-btn kb-btn-primary" id="close-loc-modal-yes">동의</button>
+        </div>
+    </div>
+</div>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script type="text/javascript"
+        th:src="@{'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoJsKey} + '&libraries=clusterer,services'}">
+</script>
+<script src="/js/member/signup/modal_content.js"></script>
+<script src="/js/member/signup/validation.js"></script>
+<script src="/js/member/signup/map.js"></script>
+<script src="/js/member/signup/modal.js"></script>
+<script src="/js/member/signup/step.js"></script>
+</body>
+</html>

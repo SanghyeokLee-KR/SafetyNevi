@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>안전네비</title>
+    <link rel="stylesheet" href="/css/index/index.css"/>
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <style>
+        /* 로그아웃 버튼 스타일 */
+        .kb-logout-btn {
+            border: none;
+            background: none;
+            color: #888;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 13px;
+            padding: 0;
+            margin-left: 10px;
+        }
+        .kb-logout-btn:hover { color: #ff4d4d; }
+
+        /* 카드 색상 포인트 */
+        .kb-card-notice .kb-card-icon { color: #7952b3; } /* 공지사항 보라색 */
+
+        /* 내 정보 링크 스타일 (마우스 올렸을 때) */
+        .my-info-link:hover { text-decoration: underline; opacity: 0.8; }
+    </style>
+
+    <!-- 🌟 파비콘 추가: /img/logo/favicon.png 및 /img/logo/favicon.ico 🌟 -->
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+</head>
+<body>
+
+<div class="kb-wrapper">
+    <div class="kb-content-wrap">
+
+        <a href="/" class="kb-title-link">
+            <div class="kb-title-container">
+                <img src="/img/logo/200px-안전네비_로고.png" alt="안전네비 로고" class="kb-logo-img">
+                <h1 class="kb-title-text">안전네비</h1>
+            </div>
+        </a>
+
+        <div sec:authorize="isAuthenticated()" style="text-align: center; margin-bottom: 30px; color: #666;">
+            <a href="/myInfo" class="my-info-link" style="text-decoration: none; color: inherit;" title="내 정보 관리">
+                <span style="font-weight: bold; color: #337cf4;">
+                    <span sec:authentication="name"></span>님
+                </span>
+            </a> 반갑습니다!
+
+            <form action="/logout" method="post" style="display: inline-block;">
+                <button type="submit" class="kb-logout-btn">로그아웃</button>
+            </form>
+        </div>
+
+        <div class="kb-nav-grid">
+
+            <a sec:authorize="isAnonymous()" href="/login" class="kb-nav-card">
+                <div class="kb-card-icon">🔒</div>
+                <span class="kb-card-text">로그인</span>
+            </a>
+            <a sec:authorize="isAnonymous()" href="/signup" class="kb-nav-card">
+                <div class="kb-card-icon">📝</div>
+                <span class="kb-card-text">회원가입</span>
+            </a>
+
+            <a sec:authorize="isAuthenticated()" href="/disasterMessage" class="kb-nav-card kb-card-message">
+                <div class="kb-card-icon">📢</div>
+                <span class="kb-card-text">재난문자</span>
+            </a>
+            <a sec:authorize="isAuthenticated()" href="/map" class="kb-nav-card kb-card-shelter">
+                <div class="kb-card-icon">🚧</div>
+                <span class="kb-card-text">인근 대피소</span>
+            </a>
+
+<!--            <a href="/inquiry/list" class="kb-nav-card kb-card-notice">-->
+                <a href="/notice" class="kb-nav-card kb-card-notice">
+                <div class="kb-card-icon">🔔</div>
+                <span class="kb-card-text">공지사항</span>
+            </a>
+
+            <a href="/disasterGuide" class="kb-nav-card kb-card-manual">
+                <div class="kb-card-icon">📖</div>
+                <span class="kb-card-text">재난 대피요령</span>
+            </a>
+        </div>
+    </div>
+
+    <footer class="kb-footer">
+        <div class="kb-footer-inner">
+            <div class="kb-footer-nav">
+                <a href="#">이용안내</a>
+                <a href="#">문서보기 프로그램</a>
+                <a href="#">저작권정책</a>
+                <a href="#">개인정보처리방침</a>
+                <a href="#">기관소개</a>
+                <a href="https://plus.gov.kr/">정부24</a>
+            </div>
+            <div class="kb-footer-info">
+                <p>주소 : 인천광역시 미추홀구 인하로 100 (인하공업전문대학)</p>
+                <p>안전네비 콜센터 032-6974-5885</p>
+                <p class="kb-copyright">© Safety Nevi. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // URL 파라미터 확인
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // error=denied가 있으면 경고창 띄우기
+        if (urlParams.get('error') === 'denied') {
+            alert("🚫 접근 권한이 없습니다.\n관리자만 접근 가능합니다.");
+
+            // URL에서 파라미터 지우기 (새로고침 시 알림 반복 방지)
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({path: newUrl}, '', newUrl);
+        }
+    });
+</script>
+
+</body>
+
+
+</html>

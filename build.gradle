@@ -1,0 +1,59 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.6'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.inha.pro'
+version = '0.0.1-SNAPSHOT'
+description = 'SafetyNevi'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    implementation 'com.oracle.database.jdbc:ojdbc11'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.jsoup:jsoup:1.17.2'
+
+    // 1. CSV 파일 처리를 위한 OpenCSV 라이브러리
+    implementation 'com.opencsv:opencsv:5.9'
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // 1. 비밀번호 암호화용 (Spring Security)
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // 2. 정규식 검사용 (Validation)
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Thymeleaf Spring Security 확장 (로그인 여부 판단용)
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

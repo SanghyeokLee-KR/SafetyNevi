@@ -1,0 +1,215 @@
+/* [overlay.css] 지도 위 모든 오버레이, 모달, 인포윈도우 스타일 통합 */
+
+/* =========================================
+   1. 기본 시설물 커스텀 오버레이
+   ========================================= */
+.kb-custom-overlay {
+    position: absolute; bottom: 45px; left: -50%; transform: translateX(-50%);
+    background: #fff; border-radius: 8px; padding: 10px 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2); width: 180px; text-align: center;
+    display: flex; flex-direction: column; border: 1px solid #eee;
+    pointer-events: auto; z-index: 9999;
+}
+.kb-custom-overlay::after {
+    content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+    border-width: 8px 8px 0; border-style: solid; border-color: #fff transparent transparent;
+}
+.overlay-title { font-weight: bold; font-size: 14px; color: #333; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.overlay-status { font-size: 12px; color: #28a745; margin-bottom: 8px; }
+.overlay-btn { background: #337cf4; color: white; border: none; border-radius: 4px; padding: 4px 10px; font-size: 12px; cursor: pointer; width: 100%; }
+
+/* 다크모드 */
+body.dark-mode .kb-custom-overlay { background: #333; border-color: #555; }
+body.dark-mode .kb-custom-overlay::after { border-color: #333 transparent transparent; }
+body.dark-mode .overlay-title { color: #fff; }
+
+
+/* =========================================
+   2. 재난 알림창 (상단)
+   ========================================= */
+.disaster-modal {
+    position: fixed; top: 0; left: 400px; width: calc(100% - 400px);
+    padding: 12px 15px; background: #d9534f; color: white;
+    font-size: 15px; font-weight: 600; text-align: center;
+    display: none; align-items: center; justify-content: center;
+    cursor: pointer; transition: left 0.3s, width 0.3s; z-index: 9999;
+}
+.disaster-modal.show { display: flex; }
+.kb-wrap.kb-sidebar-hidden .disaster-modal { left: 0 !important; width: 100% !important; }
+
+@media (max-width: 768px) {
+    .disaster-modal { left: 0; width: 100%; font-size: 14px; padding: 15px 10px; z-index: 20000; top: auto; bottom: 0; border-radius: 12px 12px 0 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.2); }
+}
+
+
+/* =========================================
+   3. 내 위치 레이더 애니메이션
+   ========================================= */
+.kb-radar-wrapper { position: relative; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; pointer-events: none; }
+.kb-radar-dot { width: 16px; height: 16px; background-color: #337cf4; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.3); z-index: 2; }
+.kb-radar-ring { position: absolute; width: 40px; height: 40px; background-color: rgba(51, 124, 244, 0.4); border-radius: 50%; opacity: 0; z-index: 1; animation: pulse 2s infinite ease-out; }
+.kb-radar-ring:nth-child(2) { animation-delay: 0.6s; }
+@keyframes pulse { 0% { transform: scale(0.1); opacity: 0.8; } 100% { transform: scale(2.5); opacity: 0; } }
+
+
+/* =========================================
+   4. 로드뷰 & 안전 점수 패널
+   ========================================= */
+#roadview-modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); z-index: 30000; display: none;
+    justify-content: center; align-items: center;
+}
+#roadview-container { width: 90%; height: 80%; background: #fff; border-radius: 8px; position: relative; overflow: hidden; }
+#roadview-close {
+    position: absolute; top: 10px; right: 10px; z-index: 2; background: #fff; border: 1px solid #ccc;
+    padding: 5px 10px; cursor: pointer; font-weight: bold; border-radius: 4px; color: #333;
+}
+
+.safety-score-panel {
+    position: absolute; top: 125px; left: 15px; background: rgba(255, 255, 255, 0.95);
+    padding: 8px 12px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 15; display: flex; align-items: center; gap: 10px; transition: top 0.3s;
+}
+.score-circle { width: 36px; height: 36px; border-radius: 50%; background: #ddd; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
+.score-text { font-size: 11px; color: #555; line-height: 1.3; }
+.score-text strong { display: block; font-size: 13px; color: #333; margin-bottom: 2px; }
+
+@media (max-width: 768px) {
+    .safety-score-panel { top: 125px; left: 10px; padding: 6px 10px; }
+}
+
+
+/* =========================================
+   5. 게시판(커뮤니티) 오버레이 스타일
+   ========================================= */
+.board-overlay {
+    position: absolute; bottom: 55px; left: -150px; width: 300px;
+    background: #fff; border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    font-family: 'Pretendard', sans-serif;
+    z-index: 20000 !important; /* 마커보다 위에 */
+    display: flex; flex-direction: column;
+    animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden; border: 1px solid #eee;
+}
+@keyframes popUp { from { transform: scale(0.8) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
+.board-overlay::after {
+    content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+    border-width: 10px 10px 0; border-style: solid; border-color: #fff transparent transparent;
+}
+
+.board-header {
+    padding: 12px 15px; background: #fff; border-bottom: 1px solid #f1f1f1;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.board-writer { font-size: 14px; font-weight: 700; color: #333; display: flex; align-items: center; gap: 8px; }
+.board-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #fff; }
+.board-badge.제보 { background: #ef4444; }
+.board-badge.질문 { background: #3b82f6; }
+.board-badge.잡담 { background: #10b981; }
+.board-date { font-size: 11px; color: #9ca3af; font-weight: 400; margin-left: 5px; }
+.board-close { cursor: pointer; color: #9ca3af; transition: 0.2s; font-size: 18px; }
+.board-close:hover { color: #333; }
+.board-report-btn:hover { transform: scale(1.2); } /* 🌟 [추가] 신고버튼 효과 */
+
+.board-body { padding: 15px; max-height: 250px; overflow-y: auto; }
+
+/* 썸네일 이미지: 잘리지 않고 비율 유지하며 전체 표시 */
+.board-image-thumbnail {
+    width: 100%;
+    height: 180px;          /* 높이 확보 */
+    object-fit: contain;    /* 이미지 비율 유지 */
+    background-color: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+.board-title { display: block; font-size: 15px; font-weight: 700; color: #1f2937; margin-bottom: 8px; }
+.board-content { font-size: 14px; color: #4b5563; line-height: 1.5; white-space: pre-wrap; }
+
+.board-actions {
+    padding: 10px 15px; border-top: 1px solid #f1f1f1; display: flex; gap: 15px;
+}
+.action-btn { cursor: pointer; font-size: 13px; color: #6b7280; display: flex; align-items: center; gap: 4px; transition: 0.2s; }
+.action-btn:hover { color: #333; }
+.action-btn.liked { color: #ef4444; font-weight: 700; animation: heartBeat 0.3s; }
+@keyframes heartBeat { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+
+.board-comments { background: #f9fafb; border-top: 1px solid #eee; padding: 10px 15px; }
+.comment-list { list-style: none; padding: 0; margin: 0 0 10px 0; max-height: 150px; overflow-y: auto; }
+
+.comment-item { margin-bottom: 10px; font-size: 13px; }
+.comment-header { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
+.comment-writer { font-weight: 700; color: #333; }
+.comment-time { font-size: 10px; color: #9ca3af; }
+.comment-text { color: #4b5563; line-height: 1.4; }
+.btn-reply { font-size: 10px; color: #9ca3af; cursor: pointer; margin-left: 5px; }
+.btn-reply:hover { color: #3b82f6; text-decoration: underline; }
+
+.reply-list { margin-top: 5px; padding-left: 10px; border-left: 2px solid #e5e7eb; list-style: none; }
+.btn-more-comments { width: 100%; border: none; background: none; color: #6b7280; font-size: 11px; cursor: pointer; padding: 5px; margin-bottom: 5px; }
+
+.comment-form, .reply-form { display: flex; gap: 6px; margin-top: 5px; }
+.comment-input, .reply-input { flex: 1; padding: 6px 10px; border-radius: 15px; border: 1px solid #d1d5db; font-size: 12px; outline: none; }
+.comment-submit, .reply-submit { background: none; border: none; color: #3b82f6; font-weight: 700; font-size: 12px; cursor: pointer; }
+
+
+/* =========================================
+   🌟 6. 공통 모달 스타일 (글쓰기, 확대보기 등)
+   ========================================= */
+
+/* 글쓰기 모달 (Report Modal) */
+.report-modal {
+    position: fixed; /* 화면 중앙 고정 */
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    z-index: 20000; /* 최상위 */
+    width: 320px;
+    display: none;
+    border: 1px solid #f0f0f0;
+    font-family: 'Pretendard', sans-serif;
+}
+
+.report-modal h3 {
+    margin: 0 0 15px 0; font-size: 18px; font-weight: 700; color: #333;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+
+.report-modal select,
+.report-modal input[type="text"],
+.report-modal textarea {
+    width: 100%; padding: 10px; margin-bottom: 10px;
+    border: 1px solid #ddd; border-radius: 8px;
+    font-size: 14px; box-sizing: border-box; outline: none;
+    font-family: inherit;
+}
+.report-modal select:focus, .report-modal input:focus, .report-modal textarea:focus { border-color: #337cf4; }
+.report-modal textarea { resize: none; height: 80px; }
+.report-modal input[type="file"] { font-size: 12px; color: #666; margin-top: 5px; }
+
+.report-btn-group { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; }
+.report-btn-cancel { background-color: #f1f3f5; color: #555; border: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+.report-btn-cancel:hover { background-color: #e9ecef; }
+.report-btn-save { background-color: #337cf4; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+.report-btn-save:hover { background-color: #2563eb; }
+
+/* 이미지 확대 모달 (Full View) */
+.image-view-modal {
+    position: fixed; z-index: 30000;
+    left: 0; top: 0; width: 100%; height: 100%;
+    overflow: auto; background-color: rgba(0,0,0,0.85);
+    display: none; justify-content: center; align-items: center;
+    animation: fadeIn 0.3s;
+}
+.image-view-content { max-width: 90%; max-height: 90%; border-radius: 5px; box-shadow: 0 0 20px rgba(255,255,255,0.1); }
+.image-view-close { position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 35px; font-weight: bold; transition: 0.3s; cursor: pointer; }
+.image-view-close:hover { color: #bbb; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

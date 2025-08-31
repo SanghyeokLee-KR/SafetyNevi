@@ -1,0 +1,247 @@
+/* 전체 레이아웃 및 폰트 설정 */
+html, body {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+    background-color: #f7f9fc; /* 배경색 통일 */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* 상단 정렬 (내용이 길어질 수 있으므로) */
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* 중앙 컨테이너 */
+.kb-notice-container {
+    width: 100%;
+    max-width: 900px; /* 게시판은 좀 더 넓게 */
+    padding: 40px 20px;
+    box-sizing: border-box;
+    margin: auto;
+}
+
+/* 카드 영역 */
+.kb-notice-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border: none;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 로고 및 타이틀 컨테이너 */
+.kb-title-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.kb-title-text {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+/* 페이지 헤더 스타일 */
+.kb-notice-header {
+    text-align: center;
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+.kb-page-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.kb-page-subtitle {
+    font-size: 14px;
+    color: #777;
+    margin: 0;
+}
+
+/* 게시판 테이블 래퍼 */
+.kb-board-wrap {
+    width: 100%;
+    overflow-x: auto; /* 모바일 대응 */
+    margin-bottom: 30px;
+}
+
+/* 게시판 테이블 */
+.kb-board-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* 컬럼 너비 고정 */
+}
+
+.kb-board-table th,
+.kb-board-table td {
+    padding: 15px 10px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    color: #555;
+}
+
+.kb-board-table th {
+    border-top: 2px solid #333;
+    border-bottom: 1px solid #ccc;
+    font-weight: 700;
+    background-color: #fbfbfb;
+    color: #333;
+}
+
+/* 컬럼 너비 설정 */
+.col-no { width: 8%; }
+.col-title { width: 50%; text-align: left !important; padding-left: 20px !important; }
+.col-author { width: 12%; }
+.col-date { width: 15%; }
+.col-views { width: 10%; }
+
+/* 제목 링크 스타일 */
+.col-title a {
+    text-decoration: none;
+    color: #333;
+    display: block; /* 클릭 영역 확대 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.col-title a:hover {
+    text-decoration: underline;
+    color: #337cf4;
+}
+
+/* 중요 공지 스타일 */
+.kb-post-important {
+    background-color: #f9faff;
+}
+
+.badge-notice {
+    display: inline-block;
+    padding: 2px 6px;
+    background-color: #ff5e57;
+    color: white;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* 페이지네이션 */
+.kb-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 30px;
+}
+
+.page-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #555;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.page-btn:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.page-btn.active {
+    background-color: #337cf4;
+    border-color: #337cf4;
+    color: white;
+    font-weight: bold;
+}
+
+/* 검색바 */
+.kb-search-bar {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.search-select {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #555;
+    outline: none;
+}
+
+.search-input {
+    flex-grow: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: #337cf4;
+}
+
+.search-btn {
+    padding: 8px 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-btn:hover {
+    background-color: #555;
+}
+
+/* 반응형 (모바일) */
+@media (max-width: 768px) {
+    .kb-notice-container {
+        padding: 20px 10px;
+        width: 95%;
+        min-width: auto;
+    }
+
+    .kb-notice-card {
+        padding: 30px 15px;
+    }
+
+    .col-author, .col-views, .col-date {
+        display: none; /* 모바일에서는 일부 컬럼 숨김 */
+    }
+
+    .col-title { width: auto; }
+    .col-no { width: 15%; }
+
+    .kb-board-table th, .kb-board-table td {
+        font-size: 13px;
+        padding: 12px 5px;
+    }
+}

@@ -1,0 +1,150 @@
+/* 변수 설정 (회원가입 페이지와 통일) */
+:root {
+    --primary-color: #337cf4;
+    --primary-hover: #2864c6;
+    --bg-color: #f0f4f8;
+    --text-color: #333333;
+    --gray-border: #e1e5e9;
+    --gray-text: #888888;
+    --error-color: #dc3545;
+    --success-color: #28a745;
+}
+
+/* 기본 설정 */
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+    background-color: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 중앙 컨테이너 */
+.kb-login-container {
+    width: 100%;
+    max-width: 480px; /* 회원가입보다 조금 좁게 설정하여 집중도 높임 */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* 카드 영역 */
+.kb-login-card {
+    background-color: #ffffff;
+    border-radius: 20px; /* 회원가입 카드와 동일한 둥글기 */
+    padding: 50px 40px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 로고 및 앱 이름 */
+.kb-title-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+.kb-title-container img { width: 60px; height: auto; }
+.kb-title-text { font-size: 24px; font-weight: 800; color: var(--text-color); margin: 0; }
+
+/* 인사말 타이틀 */
+.kb-login-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 40px;
+    margin-top: 0;
+}
+
+/* 폼 스타일 */
+.kb-login-form { width: 100%; text-align: left; }
+.kb-form-group { margin-bottom: 20px; }
+
+/* 라벨 */
+.kb-form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+    padding-left: 4px;
+}
+
+/* 입력 필드 (회원가입과 동일한 박스 스타일 적용) */
+.kb-form-input {
+    width: 100%;
+    height: 50px;
+    padding: 0 15px;
+    border: 1px solid var(--gray-border);
+    border-radius: 10px;
+    font-size: 15px;
+    color: #333;
+    background-color: #fdfdfd;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.kb-form-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(51, 124, 244, 0.15);
+}
+
+/* 로그인 버튼 */
+.kb-login-button {
+    width: 100%;
+    height: 56px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 10px 20px rgba(51, 124, 244, 0.3);
+}
+.kb-login-button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px rgba(51, 124, 244, 0.4);
+}
+
+/* 하단 링크 */
+.kb-utility-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+    gap: 15px;
+    font-size: 14px;
+    color: #888;
+}
+
+.kb-link { color: #888; text-decoration: none; transition: color 0.2s; }
+.kb-link:hover { color: var(--primary-color); font-weight: 600; }
+.kb-divider { color: #ddd; font-size: 12px; }
+.kb-signup-link { color: var(--primary-color); font-weight: 600; }
+
+/* 알림 메시지 (에러/로그아웃) */
+.kb-alert-msg {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    text-align: center;
+    font-weight: 600;
+}
+.kb-alert-msg.error { background-color: #fff5f5; color: var(--error-color); border: 1px solid #ffc9c9; }
+.kb-alert-msg.success { background-color: #f0fdf4; color: var(--success-color); border: 1px solid #bbf7d0; }

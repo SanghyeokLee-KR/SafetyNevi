@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 - 대시보드</title>
+    <link rel="stylesheet" href="/css/admin/layout.css">
+    <link rel="stylesheet" href="/css/admin/components.css">
+    <link rel="stylesheet" href="/css/admin/dashboard.css">
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <style>
+        /* 차트 카드 스타일 추가 */
+        .chart-card {
+            background-color: #ffffff; /* 흰색 배경 */
+            border-radius: 15px;       /* 둥근 모서리 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+            padding: 30px;             /* 내부 여백 */
+            margin-top: 30px;          /* 위쪽 요소와의 간격 */
+            margin-bottom: 30px;       /* 아래쪽 요소와의 간격 */
+        }
+
+        .chart-header {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 아이콘 등 장식용 (선택사항) */
+        .chart-header::before {
+            content: '📊';
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<aside class="admin-sidebar">
+    <div class="sidebar-header">
+        <span style="margin-left: 10px;">🛡️ SafetyNevi</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href="/admin" class="menu-item active"><span class="icon">📊</span> <span>대시보드</span></a></li>
+        <li><a href="/admin/members" class="menu-item"><span class="icon">👥</span> <span>회원 관리</span></a></li>
+        <li><a href="/admin/boards" class="menu-item"><span class="icon">📝</span> <span>게시물 관리</span></a></li>
+        <li><a href="/admin/notice/create" class="menu-item"><span class="icon">📢</span> <span>공지 생성</span></a></li>
+        <li>
+            <a href="/admin/inquiries" class="menu-item">
+                <span class="icon">💌</span> <span>문의 관리</span>
+            </a>
+        </li>
+        <li><a href="/admin/reports" class="menu-item"><span class="icon">🚩</span> <span>신고 관리</span></a></li>
+        <li><a href="/admin/disaster" class="menu-item"><span class="icon">🚨</span> <span>재난 관리</span></a></li>
+        <li style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+            <a href="/" class="menu-item"><span class="icon">🏠</span> <span>서비스 홈</span></a>
+        </li>
+    </ul>
+</aside>
+
+<main class="admin-content">
+    <div class="page-header">
+        <div>
+            <div class="page-title">대시보드</div>
+            <div class="page-subtitle">
+                오늘 날짜: <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy년 MM월 dd일')}"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="stat-card admin-card card-blue">
+            <div class="stat-header">
+                <span class="stat-title">전체 회원 수</span>
+                <div class="stat-icon-bg">👥</div>
+            </div>
+            <div class="stat-value" th:text="${memberCount}">0</div>
+        </div>
+        <div class="stat-card admin-card card-green">
+            <div class="stat-header">
+                <span class="stat-title">누적 게시글</span>
+                <div class="stat-icon-bg">📝</div>
+            </div>
+            <div class="stat-value" th:text="${boardCount}">0</div>
+        </div>
+        <div class="stat-card admin-card card-red">
+            <div class="stat-header">
+                <span class="stat-title">발효 중인 재난</span>
+                <div class="stat-icon-bg">🚨</div>
+            </div>
+            <div class="stat-value" th:text="${disasterCount}">0</div>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <div class="chart-header">지역별 가입자 분포</div>
+        <div class="chart-container">
+            <canvas id="regionChart"></canvas>
+        </div>
+    </div>
+
+    <div class="dashboard-section">
+        <div class="section-header">🚀 빠른 실행</div>
+        <div class="shortcut-grid">
+            <a href="/admin/disaster" class="shortcut-btn">
+                <span class="icon">🚨</span>
+                <span>재난 상황 생성</span>
+            </a>
+            <a href="/admin/members" class="shortcut-btn">
+                <span class="icon">👥</span>
+                <span>회원 관리 / 탈퇴</span>
+            </a>
+            <a href="/map" target="_blank" class="shortcut-btn">
+                <span class="icon">🗺️</span>
+                <span>지도 모니터링</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="dashboard-section">
+        <div class="section-header">💻 시스템 상태</div>
+        <div class="system-status-list">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <div class="status-text">서버: <strong>정상 가동 중</strong></div>
+            </div>
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <div class="status-text">DB: <strong>Oracle Connected</strong></div>
+            </div>
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <div class="status-text">API: <strong>연동 완료</strong></div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+</body>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/dashboardChart',
+            method: 'POST',
+            dataType: 'json',
+            success: function (response) {
+                // console.log('대시보드 데이터 :', response); // 디버깅용
+
+                // 1. 텍스트 데이터 업데이트 (상단 카드용 ID가 있다면 해제해서 사용)
+                // $('#memberCount').text(response.totalCount);
+                // $('#todayMemberCount').text(response.todayCount);
+
+                // 2. 차트 그리기 함수 호출
+                drawRegionChart(response.areaCounts);
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX 요청 실패:', status, error);
+            }
+        });
+    });
+
+    // 지역별 차트 그리기 함수
+    function drawRegionChart(areaData) {
+        const labels = Object.keys(areaData); // ["서울", "경기", ...]
+        const dataValues = Object.values(areaData); // [10, 5, ...]
+
+        const ctx = document.getElementById('regionChart').getContext('2d');
+
+        // ==========================================
+        // 🌟 [수정됨] 색상 팔레트 정의
+        // ==========================================
+        // 다양한 파스텔톤 색상을 미리 배열로 준비합니다.
+        // 지역 데이터 개수가 이 색상 개수보다 많으면 다시 첫 번째 색상부터 반복됩니다.
+        const colorPalette = [
+            'rgba(255, 99, 132, 0.7)',  // 빨강
+            'rgba(54, 162, 235, 0.7)',  // 파랑
+            'rgba(255, 206, 86, 0.7)',  // 노랑
+            'rgba(75, 192, 192, 0.7)',  // 청록
+            'rgba(153, 102, 255, 0.7)', // 보라
+            'rgba(255, 159, 64, 0.7)',  // 주황
+            'rgba(233, 30, 99, 0.7)',   // 핫핑크
+            'rgba(0, 188, 212, 0.7)',   // 하늘색
+            'rgba(205, 220, 57, 0.7)',  // 라임색
+            'rgba(96, 125, 139, 0.7)',  // 블루그레이
+            'rgba(121, 85, 72, 0.7)'    // 갈색
+        ];
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: ' 가입자 수',
+                    data: dataValues,
+                    // ==========================================
+                    // 🌟 [수정됨] backgroundColor에 배열을 할당
+                    // ==========================================
+                    backgroundColor: colorPalette,
+                    borderRadius: 5, // 막대 끝 둥글게
+                    barThickness: 'flex', // 막대 두께 자동 조절 (너무 얇지 않게)
+                    maxBarThickness: 50   // 최대 두께 제한
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false // 범례 숨김 (색이 다 다르므로 범례가 지저분해질 수 있음)
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 10,
+                        cornerRadius: 8,
+                        titleFont: { weight: 'bold' }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { font: { size: 12 }, color: '#555' }
+                    },
+                    y: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: {
+                            display: false, // Y축 숫자 숨김 (깔끔하게)
+                            beginAtZero: true,
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+</html>

@@ -1,0 +1,107 @@
+/* [sidebar.css] 사이드바 레이아웃, 탭, 리스트 스타일 */
+
+/* 사이드바 컨테이너 (오버레이) */
+.kb-sidebar-overlay {
+    position: absolute; top: 0; left: 0;
+    width: 100%; max-width: 400px; height: 100%;
+    background-color: #ffffff; /* 배경색 명시 */
+    display: flex; flex-direction: column;
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform: translateX(0);
+    z-index: 10002; /* 높은 z-index 유지 */
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+/* 사이드바 숨김 상태 */
+.kb-wrap.kb-sidebar-hidden .kb-sidebar-overlay {
+    transform: translateX(-100%);
+}
+
+/* 상단바 (로고, 검색버튼) */
+.kb-top-bar { background-color: #003668; padding: 0 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); z-index: 20; }
+.kb-header { display: flex; align-items: center; padding: 12px 0; }
+.kb-menu-icon { font-size: 24px; color: #fff; cursor: pointer; margin-right: 10px; }
+.kb-logo { font-size: 18px; font-weight: 700; color: #fff; flex-grow: 1; text-decoration: none; cursor: pointer; }
+
+/* 탭 메뉴 */
+.kb-tab-menu { display: flex; justify-content: space-between; padding-bottom: 5px; }
+.kb-tab-button { background: transparent; border: none; padding: 10px 0; font-size: 15px; cursor: pointer; color: #ccc; font-weight: bold; flex-grow: 1; text-align: center; border-bottom: 3px solid transparent; }
+.kb-tab-button.kb-active { color: #fff; border-bottom: 3px solid #337cf4; }
+
+/* 콘텐츠 스크롤 영역 */
+.kb-content-scroll { flex-grow: 1; overflow-y: auto; padding: 25px; background-color: #f7f9fc; display: flex; flex-direction: column; }
+
+/* MY 페이지 상단 서브 탭 */
+#kb-my-page { margin-top: -15px; }
+.kb-my-top-tab { display: flex; justify-content: space-around; border-bottom: 1px solid #eee; padding: 0 10px; margin: 0 -25px 20px; background: #fff; }
+.kb-my-sub-tab { background: none; border: none; padding: 15px 10px; font-size: 15px; cursor: pointer; color: #999; font-weight: 500; flex-grow: 1; text-align: center; border-bottom: 2px solid transparent; transition: all 0.2s; }
+.kb-my-sub-tab.kb-my-active { color: #337cf4; font-weight: bold; border-bottom: 2px solid #337cf4; }
+
+.kb-my-place-section { padding: 10px 0; display: flex; flex-direction: column; gap: 10px; }
+
+/* 섹션 타이틀 & 구분선 */
+.kb-section-title { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 15px; }
+.kb-divider { border: 0; height: 1px; background: #eee; margin: 15px -15px; }
+
+/* 상세 화면 카드 스타일 */
+.detail-card { background: #fff; border-radius: 8px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); color: #333; }
+.detail-item { margin-bottom: 8px; font-size: 14px; color: #555; display: flex; }
+.detail-item strong { width: 70px; color: #333; font-weight: 600; flex-shrink: 0; }
+.detail-actions { display: flex; gap: 10px; margin-top: 15px; margin-bottom: 15px; }
+.btn-action { flex: 1; padding: 8px 0; border: 1px solid #eee; background: #fff; color: #555; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; gap: 5px; }
+.btn-action:hover { background: #f8f9fa; }
+
+/* =========================================
+   🌟 [통합] 내 장소 & 게시글 리스트 스타일
+   ========================================= */
+.kb-myplace-list {
+    display: flex; flex-direction: column; gap: 10px; margin-top: 10px;
+}
+
+/* 리스트 아이템 (공통) */
+.kb-myplace-item, .kb-my-place-item-v2 {
+    display: flex; align-items: center; padding: 15px;
+    background-color: #fff; border: 1px solid #eee; border-radius: 12px;
+    transition: all 0.2s; cursor: pointer; position: relative;
+}
+.kb-myplace-item:hover, .kb-my-place-item-v2:hover {
+    border-color: #337cf4; background-color: #f0f7ff;
+    transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* 아이콘 박스 */
+.kb-place-icon-box, .kb-my-icon-circle {
+    width: 42px; height: 42px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-right: 15px; flex-shrink: 0; font-size: 20px;
+}
+/* 색상 테마 */
+.kb-place-icon-box.home, .kb-home-icon { background-color: #e3f2fd; color: #337cf4; }
+.kb-place-icon-box.work, .kb-work-icon { background-color: #f3e5f5; color: #9c27b0; }
+.kb-place-icon-box.favorite { background-color: #fff3cd; color: #ffc107; }
+.kb-place-icon-box.post-report { background-color: #fee2e2; color: #ef4444; } /* 제보 */
+.kb-place-icon-box.post-talk { background-color: #d1fae5; color: #10b981; }   /* 잡담 */
+.kb-place-icon-box.post-qna { background-color: #dbeafe; color: #3b82f6; }    /* 질문 */
+
+/* 텍스트 정보 */
+.kb-place-info, .kb-my-info-text { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+.kb-place-name, .kb-my-title { font-size: 15px; font-weight: 700; color: #333; margin-bottom: 4px; }
+.kb-place-address, .kb-my-desc { font-size: 12px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kb-place-meta { font-size: 11px; color: #999; margin-top: 2px; }
+
+/* 액션 버튼 (이동, 설정, 삭제) */
+.kb-place-action, .btn-delete-fav {
+    background: #fff; border: 1px solid #ddd; border-radius: 6px;
+    padding: 6px 12px; font-size: 12px; color: #666; cursor: pointer;
+    transition: 0.2s; white-space: nowrap;
+}
+.kb-place-action:hover, .btn-delete-fav:hover {
+    background-color: #f5f5f5; color: #333; border-color: #ccc;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .kb-sidebar-overlay { max-width: 100%; }
+    .kb-top-bar { padding: 0 10px; }
+    .kb-tab-button { padding: 12px 0; font-size: 14px; }
+}

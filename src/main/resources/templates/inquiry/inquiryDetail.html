@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의 상세 보기</title>
+    <link rel="stylesheet" href="/css/inquiry/inquiryDetail.css"/>
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+</head>
+<body>
+
+<div class="kb-detail-container">
+    <div class="kb-detail-card">
+
+        <header class="kb-header">
+            <div class="kb-title-container">
+                <img src="/img/logo/200px-안전네비_로고.png" alt="안전네비 로고" width="40">
+                <h1 class="kb-title-text">안전네비</h1>
+            </div>
+            <h2 class="kb-page-title">문의 상세 보기</h2>
+        </header>
+
+        <div class="kb-post-info-header">
+            <h3 class="kb-post-title" th:text="${inquiry.title}">제목이 들어갑니다</h3>
+
+            <div class="kb-meta-info">
+                <span class="kb-status-badge"
+                      th:classappend="${inquiry.status == 'COMPLETED'} ? 'status-done' :
+                                      (${inquiry.status == 'IN_PROGRESS'} ? 'status-processing' : 'status-new')"
+                      th:text="${inquiry.status == 'COMPLETED'} ? '답변 완료' :
+                               (${inquiry.status == 'IN_PROGRESS'} ? '처리 중' : '미확인')">
+                    상태
+                </span>
+
+                <span class="kb-info-item">작성자: <span th:text="${inquiry.writerName}">홍길동</span></span>
+                <span class="kb-info-item">작성일: <span th:text="${#temporals.format(inquiry.createdDate, 'yyyy.MM.dd HH:mm')}">2024.01.01</span></span>
+                <span class="kb-info-item">문의 번호: <span th:text="${inquiry.id}">1</span></span>
+            </div>
+        </div>
+
+        <div class="kb-post-content">
+            <p th:text="${inquiry.content}" style="white-space: pre-wrap;">
+                문의 내용이 들어갑니다.
+            </p>
+
+            <div class="kb-attachments" th:if="${inquiry.imageUrl != null and inquiry.imageUrl != ''}">
+                <h4>첨부 파일</h4>
+                <a th:href="${inquiry.imageUrl}" class="kb-file-link" download>
+                    <span th:text="${#strings.substringAfter(inquiry.imageUrl, '/upload/inquiry/')}">첨부파일.jpg</span>
+                    <button class="kb-download-btn">다운로드</button>
+                </a>
+
+                <div style="margin-top: 10px;"
+                     th:if="${#strings.endsWith(#strings.toLowerCase(inquiry.imageUrl), '.jpg') or
+                              #strings.endsWith(#strings.toLowerCase(inquiry.imageUrl), '.png') or
+                              #strings.endsWith(#strings.toLowerCase(inquiry.imageUrl), '.jpeg')}">
+                    <img th:src="${inquiry.imageUrl}" alt="첨부 이미지" style="max-width: 100%; border-radius: 8px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="kb-admin-response">
+
+            <div class="kb-response-header">
+                <span class="kb-response-author">운영자 답변</span>
+                <span class="kb-response-date"
+                      th:if="${inquiry.answerDate != null}"
+                      th:text="${#temporals.format(inquiry.answerDate, 'yyyy.MM.dd HH:mm')}">
+                    2025.11.28 10:30
+                </span>
+            </div>
+
+            <div class="kb-response-body">
+
+                <div th:if="${loginUserId == 'admin'}">
+                    <form th:action="@{/inquiry/answer/{id}(id=${inquiry.id})}" method="post">
+                        <textarea name="answerContent"
+                                  class="kb-form-input"
+                                  style="width: 100%; height: 150px; resize: vertical; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit;"
+                                  placeholder="관리자님, 답변 내용을 입력해주세요."
+                                  th:text="${inquiry.answerContent}" required></textarea>
+
+                        <div style="text-align: right; margin-top: 10px;">
+                            <button type="submit" class="kb-btn kb-btn-submit"
+                                    style="padding: 8px 20px; font-size: 14px; background-color: #2c3e50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                <span th:text="${inquiry.answerContent == null ? '답변 등록' : '답변 수정'}">답변 등록</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div th:if="${loginUserId != 'admin' and inquiry.answerContent != null}">
+                    <p th:text="${inquiry.answerContent}" style="white-space: pre-wrap;">
+                        답변 내용이 들어갑니다.
+                    </p>
+                </div>
+
+                <div th:if="${loginUserId != 'admin' and inquiry.answerContent == null}"
+                     style="padding: 20px; text-align: center; color: #888;">
+                    <p>현재 담당자가 내용을 확인하고 있습니다. 잠시만 기다려 주세요. 🙇‍♂️</p>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="kb-action-footer">
+
+            <a href="/inquiry/list" class="kb-list-btn">목록으로 돌아가기</a>
+
+            <div class="kb-btn-group" th:if="${loginUserId != null and loginUserId == inquiry.writerId}">
+
+                <a th:href="@{/inquiry/modify/{id}(id=${inquiry.id})}" class="kb-btn kb-btn-edit">수정</a>
+
+                <form th:action="@{/inquiry/delete/{id}(id=${inquiry.id})}" method="post" style="display:inline;"
+                      onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                    <button type="submit" class="kb-btn kb-btn-delete">삭제</button>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

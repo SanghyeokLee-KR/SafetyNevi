@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의 수정</title>
+    <link rel="stylesheet" href="/css/inquiry/inquiryWrite.css"/>
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+</head>
+<body>
+
+<div class="kb-write-container">
+
+    <header class="kb-header">
+        <h1 class="kb-main-title">문의 수정</h1>
+        <p class="kb-subtitle">수정할 내용을 입력해 주세요.</p>
+    </header>
+
+    <form class="kb-write-form" th:action="@{/inquiry/modify/{id}(id=${inquiry.id})}" method="post" enctype="multipart/form-data">
+
+        <div class="kb-form-group">
+            <label for="category" class="kb-form-label">* 카테고리</label>
+            <select id="category" name="category" class="kb-form-input" required>
+                <option value="이용장애" th:selected="${inquiry.category == '이용장애'}">이용장애</option>
+                <option value="계정문의" th:selected="${inquiry.category == '계정문의'}">계정문의</option>
+                <option value="기타" th:selected="${inquiry.category == '기타'}">기타</option>
+            </select>
+        </div>
+
+        <div class="kb-form-group">
+            <label for="post-title" class="kb-form-label">* 문의 제목</label>
+            <input type="text" id="post-title" name="title"
+                   th:value="${inquiry.title}"
+                   class="kb-form-input kb-title-input" required>
+        </div>
+
+        <div class="kb-form-group">
+            <label for="post-content" class="kb-form-label">* 문의 내용</label>
+            <textarea id="post-content" name="content"
+                      th:text="${inquiry.content}"
+                      class="kb-form-input kb-content-textarea" required></textarea>
+        </div>
+
+        <div class="kb-form-group" style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" id="secret" name="secret" value="true"
+                   th:checked="${inquiry.secret}"
+                   style="width: 20px; height: 20px;">
+            <label for="secret" class="kb-form-label" style="margin-bottom: 0;">비밀글로 작성</label>
+        </div>
+
+        <div class="kb-form-group kb-file-group">
+            <label for="post-image" class="kb-form-label">첨부 파일 변경</label>
+
+            <div th:if="${inquiry.imageUrl != null}" style="margin-bottom: 5px; font-size: 13px; color: #666;">
+                현재 등록된 파일이 있습니다. 새 파일을 선택하면 교체됩니다.
+            </div>
+
+            <div class="kb-file-input-wrap">
+                <input type="file" id="post-image" name="file" accept="image/*" style="display:none;">
+                <button type="button" class="kb-file-select-btn" onclick="document.getElementById('post-image').click()">
+                    + 파일 선택 (변경 시 클릭)
+                </button>
+                <span id="file-name-display" class="kb-file-display">선택된 파일 없음</span>
+            </div>
+        </div>
+
+        <div class="kb-action-buttons">
+            <a th:href="@{/inquiry/detail/{id}(id=${inquiry.id})}" class="kb-btn kb-btn-cancel">취소</a>
+            <button type="submit" class="kb-btn kb-btn-submit">수정 완료</button>
+        </div>
+    </form>
+
+</div>
+
+<script>
+    // 파일명 표시 스크립트 (Write와 동일)
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('post-image');
+        const fileDisplay = document.getElementById('file-name-display');
+        if (fileInput) {
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) fileDisplay.textContent = this.files[0].name;
+                else fileDisplay.textContent = '선택된 파일 없음';
+            });
+        }
+    });
+</script>
+</body>
+</html>

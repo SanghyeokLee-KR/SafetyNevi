@@ -1,0 +1,148 @@
+/* layout.css */
+:root {
+    --bg-color: #f7f9fc;
+    --sidebar-width: 240px;
+}
+
+html, body {
+    height: 100%; margin: 0;
+    font-family: 'Pretendard', sans-serif;
+    background-color: var(--bg-color);
+    color: #1f2937;
+}
+
+.kb-page-wrap {
+    display: flex;
+    width: 90%; max-width: 1100px; /* 너비 조금 더 넓힘 */
+    margin: 60px auto;
+    background-color: #fff;
+    min-height: 750px;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+/* 사이드바 */
+.kb-sidebar {
+    width: var(--sidebar-width);
+    background-color: #fff;
+    border-right: 1px solid #e5e7eb;
+    padding: 40px 0;
+    flex-shrink: 0;
+    display: flex; flex-direction: column;
+}
+.kb-logo-area { padding: 0 30px; margin-bottom: 40px; }
+.kb-nav-menu { display: flex; flex-direction: column; gap: 5px; padding: 0 15px; }
+
+/* 메인 콘텐츠 */
+.kb-main-content {
+    flex: 1;
+    padding: 60px;
+    overflow-y: auto;
+}
+
+/* 반응형 (모바일) */
+@media (max-width: 768px) {
+    .kb-page-wrap {
+        flex-direction: column; margin: 0; width: 100%; border-radius: 0;
+    }
+    .kb-sidebar {
+        width: 100%; padding: 20px; border-right: none; border-bottom: 1px solid #eee;
+    }
+    .kb-logo-area { display: none; }
+    .kb-nav-menu {
+        flex-direction: row; overflow-x: auto; gap: 10px;
+    }
+    .kb-main-content { padding: 30px 20px; }
+}
+
+/* layout.css */
+/* ... 기존 :root 및 html, body 스타일 유지 ... */
+
+/* ... 기존 .kb-page-wrap 스타일 유지 ... */
+
+/* 사이드바 */
+.kb-sidebar {
+    width: var(--sidebar-width);
+    background-color: #fff;
+    border-right: 1px solid #e5e7eb;
+    padding: 40px 0;
+    flex-shrink: 0;
+    display: flex; flex-direction: column;
+}
+/* ... 기존 .kb-logo-area, .kb-nav-menu 스타일 유지 ... */
+
+/* 메인 콘텐츠 */
+.kb-main-content {
+    flex: 1;
+    padding: 60px;
+    overflow-y: auto;
+}
+
+/* 🌟 [추가] 모바일 전용 헤더 (PC에서는 숨김) */
+.kb-mobile-header {
+    display: none;
+}
+
+/* 반응형 (모바일) */
+@media (max-width: 768px) {
+    /* 🌟 [수정] 모바일 래퍼 스타일 (기존 유지) */
+    .kb-page-wrap {
+        flex-direction: column; margin: 0; width: 100%; border-radius: 0;
+        /* 사이드바가 화면을 덮기 위해 position: relative 설정 */
+        position: relative;
+    }
+
+    /* 🌟 [추가] 모바일 전용 헤더 표시 */
+    .kb-mobile-header {
+        display: flex; /* 모바일에서 표시 */
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background-color: #fff;
+        border-bottom: 1px solid #eee;
+    }
+
+    /* 🌟 [수정] 사이드바 - 기본적으로 화면 밖으로 이동 (숨김) */
+    .kb-sidebar {
+        width: 80%; /* 모바일 화면의 80% 너비 */
+        max-width: var(--sidebar-width); /* PC 최대 너비는 유지 */
+        height: 100%;
+        padding: 0; /* 패딩 제거 */
+        position: fixed; /* 화면 고정 */
+        top: 0;
+        left: 0;
+        z-index: 100; /* 메인 콘텐츠 위로 올림 */
+        transform: translateX(-100%); /* 기본적으로 왼쪽으로 완전히 숨김 */
+        transition: transform 0.3s ease-out; /* 부드러운 전환 효과 */
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        border-right: none;
+    }
+
+    /* 🌟 [추가] 사이드바 열림 상태 */
+    .kb-sidebar.is-open {
+        transform: translateX(0); /* 햄버거 버튼 클릭 시 화면에 표시 */
+    }
+
+    /* 🌟 [수정] 로고 영역 (사이드바 내부) */
+    .kb-logo-area {
+        display: block; /* 모바일 사이드바가 오버레이로 표시될 때 보이도록 다시 표시 */
+        padding: 20px 30px; /* 로고 영역 패딩 보정 */
+        border-bottom: 1px solid #eee; /* 하단 구분선 추가 */
+        margin-bottom: 0; /* 기존 마진 제거 */
+    }
+
+    /* 🌟 [수정] 메뉴 영역 (사이드바 내부) */
+    .kb-nav-menu {
+        flex-direction: column; /* 메뉴 항목을 세로로 정렬 */
+        gap: 0; /* 메뉴 항목 간격 제거 */
+        padding: 10px 0; /* 메뉴 영역 패딩 보정 */
+        overflow-y: auto; /* 내용이 많을 경우 스크롤 가능하게 */
+        flex: 1; /* 남은 공간 차지 */
+    }
+
+    /* 🌟 [수정] 메인 콘텐츠 */
+    .kb-main-content {
+        padding: 30px 20px;
+    }
+}

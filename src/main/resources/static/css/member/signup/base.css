@@ -1,0 +1,68 @@
+:root {
+    --primary-color: #337cf4;
+    --primary-hover: #2864c6;
+    --bg-color: #f0f4f8;
+    --text-color: #333333;
+    --gray-border: #e1e5e9;
+    --gray-text: #888888;
+    --input-bg: #ffffff;
+    --disabled-bg: #d1d5db;
+    --disabled-text: #9ca3af;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --warn-color: #ffc107;
+}
+
+html, body {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+    background-color: var(--bg-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-color);
+    overflow-x: hidden;
+}
+
+.kb-signup-container {
+    width: 100%;
+    max-width: 600px;
+    padding: 60px 20px;
+    margin: auto;
+    box-sizing: border-box;
+}
+
+.kb-signup-card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 50px 40px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.kb-title-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.kb-title-container img { width: 60px; height: auto; margin-bottom: 5px; }
+.kb-title-text { font-size: 28px; font-weight: 800; color: var(--text-color); margin: 0; }
+.kb-signup-title {
+    font-size: 16px; font-weight: 500; color: var(--gray-text);
+    margin-bottom: 40px; text-align: center;
+}
+
+@media (max-width: 768px) {
+    .kb-signup-container { padding: 20px 15px; }
+    .kb-signup-card { padding: 30px 20px; }
+}

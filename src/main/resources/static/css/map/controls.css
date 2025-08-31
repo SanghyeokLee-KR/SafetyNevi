@@ -1,0 +1,20 @@
+.kb-map-controls { position: absolute; top: auto; bottom: 50px; right: 15px; z-index: 20; display: flex; flex-direction: column; gap: 8px; }
+.kb-control-btn { background: var(--card-bg); border: 1px solid #ccc; border-radius: 5px; padding: 8px 10px; font-size: 13px; font-weight: bold; color: var(--text-color); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 80px; text-align: center; }
+.kb-control-btn:hover { background: var(--hover-bg); }
+.kb-control-btn.active { background: #003668; color: #fff; border-color: #003668; }
+
+.kb-re-search-btn { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 100; background: #fff; color: #337cf4; border: 1px solid #ddd; border-radius: 20px; padding: 10px 20px; font-size: 14px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.15); cursor: pointer; display: none; }
+.kb-re-search-btn:hover { background-color: #f0f8ff; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+
+.kb-map-filters { position: absolute; top: 70px; left: 0; width: 100%; padding: 10px 15px; z-index: 20; display: flex; gap: 8px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; }
+.kb-map-filters::-webkit-scrollbar { display: none; }
+.kb-filter-btn { background: var(--card-bg); color: var(--text-color); border: 1px solid #ccc; border-radius: 20px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex-shrink: 0; }
+.kb-filter-btn:hover { background-color: var(--hover-bg); }
+.kb-filter-btn.active { background: #337cf4; color: white; border-color: #337cf4; }
+body.dark-mode .kb-filter-btn.active { background-color: #337cf4; border-color: #337cf4; color: white; }
+
+.kb-map-floating-btn { position: absolute; top: 12px; left: 15px; width: 40px; height: 40px; background: #fff; color: #333; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; z-index: 10001; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
+
+@media (max-width: 768px) {
+    .kb-map-controls { bottom: 130px; }
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대피소 상세 정보 모달</title>
+    <link rel="stylesheet" href="/css/shelterDetail.css"/>
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <style>
+        /* 모달 오버레이는 전체 화면에 고정되어야 하므로 인라인 스타일로 정의 */
+        .kb-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+    </style>
+
+    <!-- 🌟 파비콘 추가: /img/logo/favicon.png 및 /img/logo/favicon.ico 🌟 -->
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+</head>
+<body>
+
+<!-- 모달을 띄우기 위한 더미 버튼 (실제 앱에서는 지도의 마커 클릭 시 호출됨) -->
+<button onclick="document.getElementById('shelter-modal').style.display='flex';" style="padding: 10px; margin: 50px;">모달 열기</button>
+
+<!-- 🌟 대피소 상세 정보 모달 오버레이 🌟 -->
+<div id="shelter-modal" class="kb-modal-overlay" style="display: flex;">
+
+    <div class="kb-modal-content">
+
+        <!-- 닫기 버튼 -->
+        <button class="kb-close-btn" onclick="document.getElementById('shelter-modal').style.display='none';">X</button>
+
+        <!-- 1. 주요 정보 섹션 -->
+        <div class="kb-info-section">
+            <h1 class="kb-title">경남2차아파트 지하주차장 1층 민방위대피소</h1>
+            <p class="kb-address">인천 부평구 안남로222번길 30</p>
+            <p class="kb-address-detail">(우) 21377 (지번) 산곡동 274</p>
+        </div>
+
+        <!-- 2. 상세 속성 섹션 -->
+        <div class="kb-attributes-section">
+            <div class="kb-attribute-row kb-type-row">
+                <span class="kb-attribute-label">민방위대피소</span>
+                <span class="kb-attribute-provider">제공 행정안전부</span>
+            </div>
+
+            <div class="kb-attribute-row">
+                <span class="kb-attribute-name">수용인원</span>
+                <span class="kb-attribute-value">4826명</span>
+            </div>
+            <div class="kb-attribute-row">
+                <span class="kb-attribute-name">대피장소</span>
+                <span class="kb-attribute-value">지하</span>
+            </div>
+        </div>
+
+        <!-- 🌟 3. 이미지 갤러리 대신 게시판 미리보기 섹션 (새로 추가) 🌟 -->
+        <div class="kb-mini-board-wrap">
+            <h3 class="kb-mini-board-title">커뮤니티 게시글 (3건)</h3>
+            <div class="kb-mini-post-list">
+                <!-- 게시글 아이템 1 -->
+                <a href="/board/1" class="kb-mini-post-item">
+                    <span class="kb-mini-post-title">대피소 시설 사용 후기</span>
+                    <span class="kb-mini-post-date">2025.11.01</span>
+                </a>
+                <!-- 게시글 아이템 2 -->
+                <a href="/board/2" class="kb-mini-post-item">
+                    <span class="kb-mini-post-title">비상식량 보관 장소 문의합니다.</span>
+                    <span class="kb-mini-post-date">2025.10.29</span>
+                </a>
+                <!-- 게시글 아이템 3 -->
+                <a href="/board/3" class="kb-mini-post-item">
+                    <span class="kb-mini-post-title">여름철 습기 관리가 필요해 보입니다.</span>
+                    <span class="kb-mini-post-date">2025.10.15</span>
+                </a>
+            </div>
+            <a href="/board/list" class="kb-more-posts">게시판 전체 보기 ></a>
+        </div>
+
+        <!-- 4. 하단 액션 버튼 -->
+        <div class="kb-action-bar">
+            <!-- 저장 및 공유 버튼 그룹 -->
+            <div class="kb-icon-buttons">
+                <button class="kb-icon-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                </button>
+                <button class="kb-icon-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+                </button>
+            </div>
+
+            <!-- 길찾기 버튼 -->
+            <button class="kb-route-button">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+                길찾기
+            </button>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

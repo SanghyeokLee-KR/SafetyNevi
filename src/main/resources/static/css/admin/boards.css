@@ -1,0 +1,90 @@
+/* --- 검색 영역 스타일 --- */
+.page-header .input-group {
+    width: 300px;
+    display: flex;
+    gap: 8px; /* 입력창과 검색 버튼 사이 간격 */
+}
+
+.page-header .input-group .form-input {
+    flex: 1; /* 남은 공간 꽉 채우기 */
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.page-header .input-group .btn-search {
+    background-color: #334155;
+    color: white;
+    border: none;
+    padding: 0 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap; /* 버튼 텍스트 줄바꿈 방지 */
+}
+
+.page-header .input-group .btn-search:hover {
+    background-color: #1e293b;
+}
+
+/* --- 카테고리 뱃지 스타일 --- */
+/* 공통 뱃지 스타일 */
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* 자유 게시판 (파란색) */
+.status-badge.free {
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #dbeafe;
+}
+
+/* 정보 게시판 (초록색) */
+.status-badge.info {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #dcfce7;
+}
+
+/* --- 테이블 및 버튼 스타일 --- */
+.board-title {
+    font-weight: 600;
+    color: #334155;
+}
+
+.btn-danger-soft {
+    background-color: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-danger-soft:hover {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border-color: #fca5a5;
+}
+
+/* 데이터 없음 메시지 */
+.no-data-msg {
+    text-align: center;
+    padding: 60px 0;
+    color: #94a3b8;
+    font-size: 14px;
+}

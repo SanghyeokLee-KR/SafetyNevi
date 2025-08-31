@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 - 공지사항 관리</title>
+
+    <link rel="stylesheet" th:href="@{/css/admin/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/components.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/notice-create.css}">
+
+    <link rel="icon" type="image/png" th:href="@{/img/logo/favicon.png}">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+</head>
+<body>
+
+<aside class="admin-sidebar">
+    <div class="sidebar-header">
+        <span style="margin-left: 10px;">🛡️ SafetyNevi</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href="/admin" class="menu-item"><span class="icon">📊</span> <span>대시보드</span></a></li>
+        <li><a href="/admin/members" class="menu-item"><span class="icon">👥</span> <span>회원 관리</span></a></li>
+        <li><a href="/admin/boards" class="menu-item"><span class="icon">📝</span> <span>게시물 관리</span></a></li>
+        <li>
+            <a href="/admin/notice/create" class="menu-item active">
+                <span class="icon">📢</span> <span>공지 관리</span>
+            </a>
+        </li>
+        <li><a href="/admin/inquiries" class="menu-item"><span class="icon">💌</span> <span>문의 관리</span></a></li>
+        <li><a href="/admin/reports" class="menu-item"><span class="icon">🚩</span> <span>신고 관리</span></a></li>
+        <li><a href="/admin/disaster" class="menu-item"><span class="icon">🚨</span> <span>재난 관리</span></a></li>
+        <li style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+            <a href="/" class="menu-item"><span class="icon">🏠</span> <span>서비스 홈</span></a>
+        </li>
+    </ul>
+</aside>
+
+<main class="admin-content">
+    <div class="page-header">
+        <div>
+            <div class="page-title">공지사항 관리</div>
+            <div class="page-subtitle">전체 회원에게 보여질 공지사항을 등록하고 관리합니다.</div>
+        </div>
+
+        <button type="button" class="btn-main-action" onclick="openModal()">
+            <span class="icon">✍️</span>
+            <span>공지 작성</span>
+        </button>
+    </div>
+
+    <div class="table-container">
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th style="width: 60px;">No.</th>
+                <th style="width: 100px;">유형</th>
+                <th>제목</th>
+                <th style="width: 100px;">작성자</th>
+                <th style="width: 120px;">작성일</th>
+                <th style="width: 80px;">조회</th>
+                <th style="width: 80px;">관리</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr th:if="${notices.isEmpty()}">
+                <td colspan="7" style="text-align: center; padding: 30px;">등록된 공지사항이 없습니다.</td>
+            </tr>
+
+            <tr th:each="notice : ${notices.content}"
+                th:classappend="${notice.type == 'EMERGENCY'} ? 'tr-emergency'">
+
+                <td th:text="${notice.id}">105</td>
+
+                <td>
+                    <span th:if="${notice.type == 'EMERGENCY'}" class="role-badge emergency">🚨 긴급</span>
+                    <span th:if="${notice.type == 'IMPORTANT'}" class="role-badge important">⭐️ 중요</span>
+                    <span th:if="${notice.type == 'GENERAL'}" class="role-badge general">일반</span>
+                </td>
+
+                <td th:classappend="${notice.type == 'EMERGENCY'} ? 'text-emergency' : (${notice.type == 'IMPORTANT'} ? 'text-important')">
+                    <a th:href="@{/noticeDetail(id=${notice.id})}" target="_blank"
+                       style="text-decoration: none; color: inherit;"
+                       th:text="${notice.title}">제목</a>
+                </td>
+
+                <td th:text="${notice.writerName}">관리자</td>
+                <td th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd')}">2024-11-30</td>
+                <td th:text="${notice.viewCount}">1,240</td>
+
+                <td>
+                    <form th:action="@{/admin/notice/delete/{id}(id=${notice.id})}" method="post"
+                          onsubmit="return confirm('정말 이 공지사항을 삭제하시겠습니까?');">
+                        <button type="submit" class="btn-danger-soft">삭제</button>
+                    </form>
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</main>
+
+<div id="noticeModal" class="modal-overlay">
+    <div class="modal-window">
+        <form action="/admin/notice/NoticeWrite" method="post" enctype="multipart/form-data">
+            <div class="modal-header">
+                <span>📝 신규 공지 등록</span>
+                <button type="button" class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label class="form-label">제목</label>
+                <input type="text" name="title" class="form-input" placeholder="공지 제목을 입력하세요" required>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label class="form-label">중요도 설정</label>
+                <select name="type" class="form-select">
+                    <option value="GENERAL">일반 공지</option>
+                    <option value="IMPORTANT">⭐️ 중요 (상단 고정)</option>
+                    <option value="EMERGENCY">🚨 긴급 (메인 팝업)</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label class="form-label">내용</label>
+                <textarea name="content" class="form-input" rows="8" placeholder="공지 내용을 입력하세요"></textarea>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label class="form-label">첨부파일 (선택)</label>
+                <input type="file" name="file" class="form-input">
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-danger-soft btn-cancel" onclick="closeModal()">취소</button>
+                <button type="submit" class="btn-search btn-submit">등록하기</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal() {
+        const modal = document.getElementById('noticeModal');
+        modal.style.display = 'flex';
+    }
+    function closeModal() {
+        document.getElementById('noticeModal').style.display = 'none';
+    }
+    window.onclick = function(event) {
+        const modal = document.getElementById('noticeModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+</script>
+
+</body>
+</html>

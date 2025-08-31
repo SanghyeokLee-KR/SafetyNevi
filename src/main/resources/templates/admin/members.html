@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>관리자 - 회원 관리</title>
+  <link rel="stylesheet" href="/css/admin/layout.css">
+  <link rel="stylesheet" href="/css/admin/components.css">
+
+    <!-- 🌟 파비콘 추가: /img/logo/favicon.png 및 /img/logo/favicon.ico 🌟 -->
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+</head>
+<body>
+
+<aside class="admin-sidebar">
+    <div class="sidebar-header">
+        <span style="margin-left: 10px;">🛡️ SafetyNevi</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li>
+            <a href="/admin" class="menu-item" th:classappend="${requestURI == '/admin'} ? 'active'">
+                <span class="icon">📊</span> <span>대시보드</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/members" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/members')} ? 'active'">
+                <span class="icon">👥</span> <span>회원 관리</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/boards" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/boards')} ? 'active'">
+                <span class="icon">📝</span> <span>게시물 관리</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/notice/create" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/notice')} ? 'active'">
+                <span class="icon">📢</span> <span>공지 생성</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/inquiries" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/inquiries')} ? 'active'">
+                <span class="icon">💌</span> <span>문의 관리</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/reports" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/reports')} ? 'active'">
+                <span class="icon">🚩</span> <span>신고 관리</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/disaster" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/disaster')} ? 'active'">
+                <span class="icon">🚨</span> <span>재난 관리</span>
+            </a>
+        </li>
+        <li style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+            <a href="/" class="menu-item">
+                <span class="icon">🏠</span> <span>서비스 홈</span>
+            </a>
+        </li>
+    </ul>
+</aside>
+
+<main class="admin-content">
+  <div class="page-header">
+    <div>
+      <div class="page-title">회원 관리</div>
+      <div class="page-subtitle">
+        총 회원수: <strong style="color: #337cf4;" th:text="${#lists.size(members)}">0</strong>명
+      </div>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="admin-table">
+      <thead>
+      <tr>
+        <th>아이디</th>
+        <th>이름 / 닉네임</th>
+        <th>연락처</th>
+        <th>가입일</th>
+        <th>권한</th>
+        <th>관리</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="m : ${members}">
+        <td th:text="${m.userId}" style="font-weight: bold;">user01</td>
+        <td>
+          <div th:text="${m.name}" style="font-weight: 600;">홍길동</div>
+          <div th:text="${m.nickname}" style="font-size: 12px; color: #64748b;">닉네임</div>
+        </td>
+        <td th:text="${m.emergencyPhone}">010-1234-5678</td>
+        <td th:text="${#temporals.format(m.joinDate, 'yyyy-MM-dd')}">2024-01-01</td>
+        <td>
+                    <span class="role-badge"
+                          th:classappend="${m.userId == 'admin' ? 'admin' : 'user'}">
+                        <span th:if="${m.userId == 'admin'}">👑 Admin</span>
+                        <span th:if="${m.userId != 'admin'}">👤 User</span>
+                    </span>
+        </td>
+        <td>
+          <button th:if="${m.userId != 'admin'}"
+                  class="btn-danger-soft"
+                  th:data-id="${m.userId}"
+                  onclick="deleteMember(this.getAttribute('data-id'))">
+            <span>🚫 강제 탈퇴</span>
+          </button>
+        </td>
+      </tr>
+
+      <tr th:if="${#lists.isEmpty(members)}">
+        <td colspan="6" style="text-align:center; padding: 40px; color: #94a3b8;">
+          가입된 회원이 없습니다.
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<script src="/js/admin/members.js"></script>
+
+</body>
+</html>

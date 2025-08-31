@@ -1,0 +1,208 @@
+/* 초기화 */
+* { box-sizing: border-box; }
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+    background-color: #f7f9fc;
+    color: #333;
+}
+
+/* 전체 래퍼 (Footer 하단 고정용) */
+.app-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* 헤더 */
+.app-header {
+    background-color: #f7f9fc;
+    padding: 20px 0;
+    text-align: center;
+}
+.header-link {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.header-logo { width: 40px; height: auto; }
+.header-title { font-size: 22px; font-weight: 800; color: #333; margin: 0; }
+
+/* 메인 컨텐츠 영역 */
+.app-content {
+    flex: 1; /* 남은 공간 차지 */
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 15px 40px 15px; /* 모바일 좌우 여백 */
+}
+
+/* 필터 */
+.filter-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}
+.filter-container select {
+    padding: 6px 10px;
+    margin-left: 5px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #fff;
+    font-size: 13px;
+}
+
+/* [문제 해결 핵심 1] 그리드 설정 */
+/* 수정할 부분 */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+
+    /* [변경] min-content 제거 -> 내용이 달라도 높이를 꽉 채우게 변경 */
+    /* grid-auto-rows: min-content;  <-- 이거 지우세요! */
+
+    /* [추가] 카드들이 같은 행에서 높이를 서로 맞춤 (늘어남) */
+    align-items: stretch;
+    align-content: start;
+}
+
+/* [문제 해결 핵심 3] 카드 스타일 및 가로 넘침 방지 */
+/* 수정할 부분 */
+.msg-card {
+    /* [추가] 높이를 100%로 설정하여 같은 행의 가장 긴 카드와 높이를 맞춤 */
+    height: 100%;
+
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-top {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #f9f9f9;
+    padding-bottom: 8px;
+}
+
+/* 뱃지 */
+.badge {
+    color: white;
+    padding: 4px 6px; /* 뱃지 크기 줄임 */
+    border-radius: 4px;
+    font-size: 11px; /* 글자 크기 줄임 */
+    font-weight: bold;
+    white-space: nowrap;
+    margin-right: 8px;
+    flex-shrink: 0; /* 뱃지가 찌그러지지 않게 */
+}
+.badge-blue { background-color: #007bff; }
+.badge-red { background-color: #dc3545; }
+.badge-skyblue { background-color: #87CEEB; color: #333; }
+.badge-yellow { background-color: #FFD700; color: #333; }
+.badge-green { background-color: #28a745; }
+.badge-gray { background-color: #6c757d; }
+
+/* 지역 및 날짜 정보 */
+.meta-info {
+    flex: 1;
+    min-width: 0; /* 텍스트 줄임(...) 작동을 위해 필수 */
+}
+
+.area-name {
+    font-weight: 700;
+    font-size: 14px; /* 글자 크기 최적화 */
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 긴 지역명 ... 처리 */
+    margin-bottom: 2px;
+}
+
+.date-text {
+    font-size: 11px;
+    color: #aaa;
+}
+
+/* 본문 내용 */
+/* 수정할 부분 */
+.card-body p {
+    /* [추가] 4줄 넘어가면 ... 처리 (숫자 4를 3이나 5로 바꿔도 됨) */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    /* 기존 스타일 유지 */
+    font-size: 13px;
+    color: #555;
+    line-height: 1.4;
+    margin: 0;
+    word-break: break-all;
+}
+
+/* 모바일 전용 미세 조정 */
+@media (max-width: 400px) {
+    .msg-card { padding: 12px; } /* 아주 작은 화면에선 패딩 더 줄임 */
+    .area-name { font-size: 13px; }
+    .card-body p { font-size: 12px; }
+}
+
+/* 페이지네이션 */
+.pagination-box {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    gap: 3px;
+    flex-wrap: wrap; /* 모바일에서 줄바꿈 허용 */
+}
+.pagination-box a {
+    color: #555;
+    padding: 6px 10px;
+    text-decoration: none;
+    border: 1px solid #eee;
+    background-color: #fff;
+    border-radius: 4px;
+    font-size: 12px;
+}
+.pagination-box a.active {
+    background-color: #333;
+    color: #fff;
+    border-color: #333;
+}
+.pagination-box .disabled {
+    color: #ddd;
+    pointer-events: none;
+}
+
+/* 푸터 */
+.app-footer {
+    background-color: #333;
+    color: #ccc;
+    padding: 30px 20px;
+    text-align: center;
+    font-size: 11px;
+}
+.footer-links {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #444;
+}
+.footer-links a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 6px;
+    display: inline-block;
+}
+.footer-info p { margin: 4px 0; }
+.copyright { margin-top: 10px; color: #777; }

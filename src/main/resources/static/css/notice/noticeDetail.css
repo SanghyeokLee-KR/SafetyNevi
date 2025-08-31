@@ -1,0 +1,210 @@
+/* 기본 설정 (프로젝트 스타일 통일) */
+html, body {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+    background-color: #f7f9fc;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* 중앙 컨테이너 */
+.kb-detail-container {
+    width: 100%;
+    max-width: 900px; /* 게시판/문의 페이지 너비 통일 */
+    padding: 40px 20px;
+    box-sizing: border-box;
+    margin: auto;
+}
+
+/* 카드 영역 */
+.kb-detail-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* --- 공통 헤더 스타일 --- */
+.kb-header {
+    border-bottom: 2px solid #337cf4; /* 메인 컬러 강조선 */
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.kb-title-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.kb-title-text {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.kb-page-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #333;
+    margin: 0;
+}
+
+/* --- 1. 공지 정보 헤더 --- */
+.kb-post-info-header {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+}
+
+.kb-post-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+}
+
+.kb-meta-info {
+    font-size: 14px;
+    color: #777;
+}
+
+.kb-info-item {
+    margin-right: 20px;
+}
+
+/* 상태 뱃지 스타일 (공지 전용) */
+.kb-status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    margin-right: 15px;
+}
+
+.status-notice { /* 공지 전용 뱃지 색상 */
+    background-color: #337cf4;
+}
+
+/* --- 2. 공지 내용 --- */
+.kb-post-content {
+    min-height: 150px;
+    margin-bottom: 40px;
+    padding: 0 10px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #444;
+}
+
+.kb-post-content ul { /* 목록 스타일 */
+    list-style-type: disc;
+    margin: 10px 0 20px 20px;
+    padding: 0;
+}
+
+.kb-post-content li {
+    margin-bottom: 5px;
+}
+
+.kb-section-heading {
+    font-size: 17px;
+    font-weight: 700;
+    color: #333;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+/* 첨부 파일 영역 */
+.kb-attachments {
+    margin-top: 30px;
+    padding: 15px;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    background-color: #fcfcfc;
+}
+
+.kb-attachments h4 {
+    font-size: 15px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.kb-file-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #337cf4;
+    text-decoration: none;
+}
+
+.kb-download-btn {
+    background-color: #f0f0f0;
+    color: #555;
+    border: 1px solid #ccc;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+/* --- 3. 하단 액션 버튼 --- */
+.kb-action-footer {
+    padding-top: 30px;
+    text-align: center;
+}
+
+.kb-list-btn {
+    display: inline-block;
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 12px 25px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.kb-list-btn:hover {
+    background-color: #e0e0e0;
+}
+
+/* 반응형 */
+@media (max-width: 600px) {
+    .kb-detail-card {
+        padding: 20px;
+    }
+    .kb-post-title {
+        font-size: 18px;
+    }
+    .kb-meta-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .kb-info-item {
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+    .kb-attachments {
+        font-size: 13px;
+    }
+}

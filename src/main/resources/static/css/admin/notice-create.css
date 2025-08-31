@@ -1,0 +1,147 @@
+/* --- 메인 액션 버튼 (공지 작성) --- */
+.btn-main-action {
+    background: var(--primary-color); /* #337cf4 */
+    color: #fff;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 10px rgba(51, 124, 244, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-main-action:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(51, 124, 244, 0.4);
+}
+
+.btn-main-action span.icon {
+    font-size: 18px;
+}
+
+/* --- 테이블 행/텍스트 스타일 --- */
+/* 긴급 공지 행 배경 */
+.tr-emergency {
+    background-color: #fef2f2;
+}
+
+/* 긴급 공지 제목 텍스트 */
+.text-emergency {
+    font-weight: 700;
+    color: #dc2626;
+}
+
+/* 중요 공지 제목 텍스트 */
+.text-important {
+    font-weight: 600;
+}
+
+/* --- 뱃지 (Badge) 스타일 --- */
+.role-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* 긴급 뱃지 */
+.role-badge.emergency {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+/* 중요 뱃지 */
+.role-badge.important {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #ffedd5;
+}
+
+/* 일반 뱃지 */
+.role-badge.general {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+/* --- 모달 (Modal) 스타일 --- */
+.modal-overlay {
+    display: none;
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(2px);
+}
+
+.modal-window {
+    background: #fff;
+    width: 600px;
+    max-width: 90%;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    position: relative;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 30px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #64748b;
+}
+
+.close-btn:hover {
+    color: #1e293b;
+}
+
+/* 모달 내부 폼 요소 커스텀 */
+.modal-window textarea.form-input {
+    resize: vertical;
+}
+
+.modal-window input[type="file"].form-input {
+    padding: 8px;
+}
+
+.btn-cancel {
+    font-size: 14px;
+    padding: 12px 20px;
+}
+
+.btn-submit {
+    background-color: var(--primary-color);
+}

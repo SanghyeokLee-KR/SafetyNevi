@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의하기</title>
+    <link rel="stylesheet" href="/css/inquiry/inquiry.css"/>
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+</head>
+<body>
+
+<div class="kb-inquiry-container">
+    <div class="kb-inquiry-card">
+
+        <header class="kb-inquiry-header">
+            <div class="kb-title-container">
+                <img src="/img/logo/200px-안전네비_로고.png" alt="안전네비 로고" width="40">
+                <a href="/"><h1 class="kb-title-text">안전네비</h1></a>
+            </div>
+            <h2 class="kb-page-title">1:1 문의</h2>
+            <p class="kb-page-subtitle">서비스 이용 중 불편한 점이나 제안 사항을 남겨주세요.</p>
+        </header>
+
+        <div class="kb-top-action-wrap">
+            <a href="/inquiry/write" class="kb-write-btn">문의하기</a>
+        </div>
+
+        <div class="kb-board-wrap">
+            <table class="kb-board-table">
+                <thead>
+                <tr>
+                    <th class="col-no">번호</th>
+                    <th class="col-title">제목</th>
+                    <th class="col-author">작성자</th>
+                    <th class="col-date">작성일</th>
+                    <th class="col-status">처리 여부</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr th:if="${paging.isEmpty()}">
+                    <td colspan="5" style="text-align: center; padding: 20px;">
+                        등록된 문의 내역이 없습니다.
+                    </td>
+                </tr>
+
+                <tr class="kb-post-item" th:unless="${paging.isEmpty()}" th:each="inquiry : ${paging.content}">
+
+                    <td class="col-no" th:text="${inquiry.id}"></td>
+
+                    <td class="col-title">
+
+                        <span th:if="${inquiry.isSecret == 1 and inquiry.writerId != loginUserId}"
+                              style="color: #999; cursor: not-allowed; display: flex; align-items: center; gap: 5px;">
+                            🔒 비밀 문의글입니다.
+                        </span>
+
+                        <a th:unless="${inquiry.isSecret == 1 and inquiry.writerId != loginUserId}"
+                           th:href="@{/inquiry/detail/{id}(id=${inquiry.id})}"
+                           class="kb-post-link">
+                            <span th:if="${inquiry.isSecret == 1}">🔒</span>
+                            <span th:text="${inquiry.title}">제목</span>
+                        </a>
+
+                    </td>
+
+                    <td class="col-author" th:text="${inquiry.writerName}">작성자</td>
+
+                    <td class="col-date" th:text="${#temporals.format(inquiry.createdDate, 'yyyy.MM.dd')}">2024.01.01</td>
+
+                    <td class="col-status">
+                        <span class="badge"
+                              th:classappend="${inquiry.status == 'COMPLETED'} ? 'status-done' :
+                                              (${inquiry.status == 'IN_PROGRESS'} ? 'status-processing' : 'status-new')"
+                              th:text="${inquiry.status == 'COMPLETED'} ? '답변 완료' :
+                                       (${inquiry.status == 'IN_PROGRESS'} ? '처리 중' : '미확인')">
+                            상태
+                        </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="kb-pagination" th:if="${paging != null and paging.totalPages > 0}">
+
+            <a th:href="@{/inquiry/list(page=${paging.number - 1}, limit=${selectedLimit})}"
+               class="page-btn prev"
+               th:if="${!paging.first}">&lt;</a>
+
+            <a th:each="pageNum : ${#numbers.sequence(startPage, endPage)}"
+               th:href="@{/inquiry/list(page=${pageNum - 1}, limit=${selectedLimit})}"
+               th:text="${pageNum}"
+               class="page-btn"
+               th:classappend="${pageNum == (paging.number + 1)} ? 'active'">1</a>
+
+            <a th:href="@{/inquiry/list(page=${paging.number + 1}, limit=${selectedLimit})}"
+               class="page-btn next"
+               th:if="${!paging.last}">&gt;</a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

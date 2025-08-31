@@ -1,0 +1,63 @@
+/* /css/admin/layout.css */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+:root {
+    --sidebar-width: 260px;
+    --header-height: 60px;
+    --primary-color: #337cf4;
+    --primary-dark: #2563eb;
+    --bg-color: #f1f5f9;
+    --sidebar-bg: #1e293b;
+    --sidebar-text: #94a3b8;
+    --text-dark: #1e293b;
+    --text-gray: #64748b;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --transition: all 0.3s ease;
+}
+
+body {
+    margin: 0; padding: 0;
+    font-family: 'Pretendard', sans-serif;
+    background-color: var(--bg-color);
+    display: flex; min-height: 100vh;
+    color: var(--text-dark);
+}
+
+/* 사이드바 */
+.admin-sidebar {
+    width: var(--sidebar-width); background-color: var(--sidebar-bg); color: #fff;
+    display: flex; flex-direction: column; position: fixed; height: 100%; z-index: 100;
+}
+.sidebar-header {
+    height: var(--header-height); display: flex; align-items: center; padding: 0 24px;
+    font-size: 20px; font-weight: 800; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.sidebar-menu { list-style: none; padding: 20px 10px; margin: 0; flex-grow: 1; }
+.menu-item {
+    display: flex; align-items: center; padding: 14px 20px;
+    color: var(--sidebar-text); text-decoration: none; font-size: 15px; font-weight: 500;
+    border-radius: 8px; margin-bottom: 5px; transition: var(--transition);
+}
+.menu-item:hover { background-color: rgba(255,255,255,0.05); color: #fff; transform: translateX(5px); }
+.menu-item.active {
+    background-color: var(--primary-color); color: #fff; font-weight: 600;
+    box-shadow: 0 4px 12px rgba(51, 124, 244, 0.3);
+}
+.menu-item .icon { margin-right: 12px; width: 20px; text-align: center; font-size: 18px; }
+
+/* 메인 컨텐츠 */
+.admin-content {
+    flex: 1; margin-left: var(--sidebar-width); padding: 30px 40px;
+    width: calc(100% - var(--sidebar-width)); box-sizing: border-box;
+}
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.page-title { font-size: 26px; font-weight: 800; color: var(--text-dark); }
+.page-subtitle { color: var(--text-gray); font-size: 14px; }
+
+@media (max-width: 1024px) {
+    .admin-sidebar { width: 70px; overflow: hidden; }
+    .admin-sidebar:hover { width: var(--sidebar-width); }
+    .sidebar-header span, .menu-item span:nth-child(2) { display: none; }
+    .admin-sidebar:hover .sidebar-header span, .admin-sidebar:hover .menu-item span:nth-child(2) { display: inline; }
+    .admin-content { margin-left: 70px; width: calc(100% - 70px); }
+}

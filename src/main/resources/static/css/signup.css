@@ -1,0 +1,198 @@
+/* ================================================= */
+/* 🌟 기본 설정 및 변수 🌟 */
+/* ================================================= */
+:root {
+    --primary-color: #337cf4;       /* 메인 블루 */
+    --primary-hover: #2864c6;       /* 호버 블루 */
+    --bg-color: #f0f4f8;            /* 배경색 */
+    --text-color: #333333;          /* 기본 텍스트 */
+    --gray-border: #e1e5e9;         /* 테두리 색상 */
+    --gray-text: #888888;           /* 보조 텍스트 */
+    --input-bg: #ffffff;            /* 입력창 배경 */
+    --disabled-bg: #d1d5db;         /* 비활성 버튼 배경 */
+    --disabled-text: #9ca3af;       /* 비활성 버튼 텍스트 */
+    --success-color: #28a745;       /* 성공 (초록) */
+    --error-color: #dc3545;         /* 실패 (빨강) */
+    --warn-color: #ffc107;          /* 경고 (노랑) */
+}
+
+html, body {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+    background-color: var(--bg-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-color);
+    overflow-x: hidden;
+}
+
+/* ================================================= */
+/* 🌟 컨테이너 및 카드 🌟 */
+/* ================================================= */
+.kb-signup-container {
+    width: 100%;
+    max-width: 600px;
+    padding: 60px 20px;
+    margin: auto;
+    box-sizing: border-box;
+}
+
+.kb-signup-card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 50px 40px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ================================================= */
+/* 🌟 타이틀 및 단계 표시(Dots) 🌟 */
+/* ================================================= */
+.kb-title-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.kb-title-container img { width: 60px; height: auto; margin-bottom: 5px; }
+.kb-title-text { font-size: 28px; font-weight: 800; color: var(--text-color); margin: 0; }
+
+.kb-step-indicator {
+    display: flex; justify-content: center; margin-bottom: 20px; gap: 10px;
+}
+.kb-step-dot {
+    width: 10px; height: 10px; background-color: #ddd; border-radius: 50%; transition: all 0.3s;
+}
+.kb-step-dot.active {
+    background-color: var(--primary-color); transform: scale(1.2);
+}
+
+.kb-signup-title {
+    font-size: 16px; font-weight: 500; color: var(--gray-text);
+    margin-bottom: 40px; text-align: center;
+}
+
+/* ================================================= */
+/* 🌟 폼 및 입력 필드 🌟 */
+/* ================================================= */
+.kb-signup-form { width: 100%; }
+.kb-form-group { width: 100%; margin-bottom: 20px; position: relative; }
+.kb-form-label { display: block; font-size: 14px; font-weight: 600; color: #555; margin-bottom: 8px; margin-left: 4px; }
+
+.kb-form-input, .kb-select-input {
+    width: 100%; height: 50px; padding: 0 15px;
+    border: 1px solid var(--gray-border); border-radius: 10px;
+    font-size: 15px; color: #333; background-color: #fdfdfd;
+    box-sizing: border-box; transition: all 0.2s ease;
+}
+.kb-form-input:focus, .kb-select-input:focus {
+    outline: none; border-color: var(--primary-color); background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(51, 124, 244, 0.15);
+}
+/* 유효성 검사 시각화 */
+.kb-form-input.valid {
+    border-color: var(--success-color);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2328a745' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 15px center; background-size: 20px;
+}
+.kb-form-input.invalid { border-color: var(--error-color); background-color: #fff5f5; }
+
+.kb-input-msg { font-size: 12px; margin-top: 5px; margin-left: 5px; display: none; }
+.kb-input-msg.error { display: block; color: var(--error-color); }
+.kb-input-msg.success { display: block; color: var(--success-color); }
+
+.kb-select-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat; background-position: right 15px center; background-size: 16px;
+}
+
+/* ================================================= */
+/* 🌟 버튼이 포함된 입력 그룹 🌟 */
+/* ================================================= */
+.kb-input-wrapper { display: flex; gap: 8px; width: 100%; }
+.kb-btn-inline {
+    height: 50px; padding: 0 20px; background-color: #f1f3f5; color: #333;
+    border: 1px solid var(--gray-border); border-radius: 10px;
+    font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+}
+.kb-btn-inline:hover { background-color: #e9ecef; border-color: #ced4da; }
+.kb-detail-address { margin-top: 8px !important; }
+
+/* ================================================= */
+/* 🌟 미니 맵 & 비밀번호 미터기 🌟 */
+/* ================================================= */
+#mini-map {
+    width: 100%; height: 200px; border-radius: 10px; border: 1px solid var(--gray-border);
+    margin-top: 10px; display: none; box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+}
+.kb-pw-meter-wrap { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+.kb-pw-meter-bg { width: 100%; height: 4px; background-color: #eee; border-radius: 2px; overflow: hidden; }
+.kb-pw-meter-fill { height: 100%; width: 0%; background-color: #ddd; transition: width 0.3s, background-color 0.3s; }
+.kb-pw-text { font-size: 12px; color: #888; text-align: right; }
+
+/* ================================================= */
+/* 🌟 체크박스 & 버튼 & 모달 🌟 */
+/* ================================================= */
+.kb-agreement-group {
+    background-color: #f8f9fa; padding: 20px; border-radius: 10px;
+    margin-bottom: 30px; border: 1px solid #eee;
+}
+.kb-checkbox-label { display: flex; align-items: center; font-size: 14px; color: #666; cursor: pointer; margin-bottom: 12px; }
+.kb-checkbox-label:last-child { margin-bottom: 0; }
+.kb-checkbox-custom {
+    width: 20px; height: 20px; border: 2px solid #ddd; border-radius: 6px;
+    margin-right: 10px; position: relative; background-color: #fff; transition: all 0.2s;
+}
+.kb-checkbox-label input[type="checkbox"]:checked + .kb-checkbox-custom {
+    background-color: var(--primary-color); border-color: var(--primary-color);
+}
+.kb-checkbox-label input[type="checkbox"]:checked + .kb-checkbox-custom::after {
+    content: ''; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px;
+    border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+.kb-checkbox-label input[type="checkbox"] { display: none; }
+.kb-required-text { color: var(--primary-color); font-weight: 700; margin-right: 5px; font-size: 13px; }
+
+.kb-signup-button {
+    width: 100%; height: 56px; background-color: var(--primary-color); color: white;
+    border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer;
+    transition: all 0.3s; box-shadow: 0 10px 20px rgba(51, 124, 244, 0.3);
+}
+.kb-signup-button:hover { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 15px 25px rgba(51, 124, 244, 0.4); }
+.kb-signup-button:disabled { background-color: var(--disabled-bg); color: var(--disabled-text); cursor: not-allowed; box-shadow: none; transform: none; }
+
+/* 애니메이션 및 모달 */
+.kb-hidden { display: none !important; }
+.fade-in { animation: fadeIn 0.5s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.kb-modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(3px);
+    display: none; justify-content: center; align-items: center; z-index: 1000;
+}
+.kb-modal-content {
+    background-color: white; padding: 30px; border-radius: 16px;
+    width: 90%; max-width: 600px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    position: relative; display: flex; flex-direction: column;
+}
+.kb-modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; cursor: pointer; padding: 5px; color: #999; }
+.kb-modal-title { font-size: 20px; font-weight: 700; color: #333; margin-bottom: 20px; border-bottom: 2px solid #f1f3f5; padding-bottom: 15px; }
+.kb-modal-body { max-height: 300px; overflow-y: auto; font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 20px; background-color: #f9f9f9; padding: 15px; border-radius: 8px; }
+.kb-modal-footer { display: flex; justify-content: flex-end; gap: 10px; }
+.kb-modal-btn { padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; border: none; }
+.kb-btn-secondary { background-color: #f1f3f5; color: #555; }
+.kb-btn-primary { background-color: var(--primary-color); color: white; }
+
+@media (max-width: 768px) { .kb-signup-container { padding: 20px 15px; } .kb-signup-card { padding: 30px 20px; } }

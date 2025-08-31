@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 상세</title>
+    <link rel="stylesheet" href="/css/notice/noticeDetail.css"/>
+
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+</head>
+<body>
+
+<div class="kb-detail-container">
+    <div class="kb-detail-card">
+
+        <header class="kb-header">
+            <div class="kb-title-container">
+                <img src="/img/logo/200px-안전네비_로고.png" alt="안전네비 로고" width="40">
+                <h1 class="kb-title-text">안전네비</h1>
+            </div>
+            <h2 class="kb-page-title">공지사항 상세</h2>
+        </header>
+
+        <div class="kb-post-info-header">
+            <h3 class="kb-post-title" th:text="${notice.title}">제목이 들어갑니다</h3>
+
+            <div class="kb-meta-info">
+
+                <span class="kb-status-badge status-notice"
+                      th:if="${notice.type == 'EMERGENCY'}"
+                      style="background-color: #dc3545; color: white;">긴급</span>
+
+                <span class="kb-status-badge status-notice"
+                      th:if="${notice.type == 'IMPORTANT'}"
+                      style="background-color: #ff9800; color: white;">중요</span>
+
+                <span class="kb-status-badge status-notice"
+                      th:if="${notice.type == 'GENERAL'}"
+                      style="background-color: #6c757d; color: white;">공지</span>
+
+                <span class="kb-info-item">작성자: <span th:text="${notice.writerName}">관리자</span></span>
+                <span class="kb-info-item">작성일: <span th:text="${#temporals.format(notice.createdDate, 'yyyy.MM.dd HH:mm')}">2025.11.20</span></span>
+                <span class="kb-info-item">조회수: <span th:text="${notice.viewCount}">0</span></span>
+            </div>
+        </div>
+
+        <div class="kb-post-content">
+            <div th:text="${notice.content}" style="white-space: pre-wrap; line-height: 1.6;">
+                내용이 들어갑니다.
+            </div>
+
+            <div class="kb-attachments" th:if="${notice.attachmentUrl != null and notice.attachmentUrl != ''}">
+                <h4>첨부 파일</h4>
+                <a th:href="${notice.attachmentUrl}" class="kb-file-link" download>
+                    <span th:text="${#strings.substringAfter(notice.attachmentUrl, '/upload/notice/')}">첨부파일.jpg</span>
+
+                    <button class="kb-download-btn">다운로드</button>
+                </a>
+
+                <div style="margin-top: 15px;"
+                     th:if="${#strings.endsWith(#strings.toLowerCase(notice.attachmentUrl), '.jpg') or
+                              #strings.endsWith(#strings.toLowerCase(notice.attachmentUrl), '.png') or
+                              #strings.endsWith(#strings.toLowerCase(notice.attachmentUrl), '.jpeg') or
+                              #strings.endsWith(#strings.toLowerCase(notice.attachmentUrl), '.gif')}">
+                    <img th:src="${notice.attachmentUrl}" alt="첨부 이미지" style="max-width: 100%; border-radius: 8px; border: 1px solid #eee;">
+                </div>
+            </div>
+        </div>
+
+        <div class="kb-action-footer">
+            <a href="/notice" class="kb-list-btn">목록으로 돌아가기</a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

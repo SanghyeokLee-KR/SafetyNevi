@@ -1,0 +1,50 @@
+/* 기본 푸터 스타일 */
+footer {
+    background-color: #303441; /* 이미지의 어두운 배경색 */
+    color: #cccccc; /* 기본 텍스트 색상 */
+    font-size: 14px;
+    padding: 30px 0;
+    width: 100%;
+    /*margin-top: auto; !* 컨텐츠가 적을 때 푸터를 하단으로 밀어냄 *!*/
+    margin-top: 100px;
+}
+
+/* 푸터 내용의 폭을 제한하고 중앙 정렬 */
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 푸터 상단 내비게이션 */
+.footer-nav {
+    display: flex;
+    flex-wrap: wrap; /* 화면이 작아지면 줄바꿈 */
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #4a4e5a; /* 구분선 */
+    margin-bottom: 20px;
+}
+
+.footer-nav a {
+    color: #cccccc;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-nav a:hover {
+    color: #ffffff; /* 마우스 올렸을 때 색상 */
+}
+
+/* 주소 및 연락처 정보 */
+.footer-info p {
+    margin: 10px 0;
+    line-height: 1.6;
+    color: #aeb2c2; /* 정보 텍스트 색상을 약간 더 밝게 */
+}
+
+/* 저작권 텍스트 */
+.footer-info .copyright {
+    margin-top: 20px;
+    color: #8c90a0; /* 저작권 텍스트는 약간 더 어둡게 */
+}

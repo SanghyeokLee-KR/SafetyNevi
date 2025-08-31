@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>안전네비 - 내 정보</title>
+    <link rel="stylesheet" as="style" crossorigin
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+    <link rel="stylesheet" href="/css/member/myInfo/layout.css"/>
+    <link rel="stylesheet" href="/css/member/myInfo/components.css"/>
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+</head>
+<body>
+
+<div class="kb-page-wrap">
+    <div class="kb-mobile-header">
+        <h2 class="kb-sidebar-title" onclick="location.href='/'" style="cursor: pointer;">안전네비</h2>
+        <button class="kb-hamburger-btn" id="menu-toggle">
+            <span class="kb-icon-bar"></span>
+            <span class="kb-icon-bar"></span>
+            <span class="kb-icon-bar"></span>
+        </button>
+    </div>
+
+    <aside class="kb-sidebar">
+        <div class="kb-logo-area" onclick="location.href='/'" style="cursor: pointer;">
+            <h2 class="kb-sidebar-title">안전네비</h2>
+            <span class="kb-sidebar-subtitle">MY PAGE</span>
+        </div>
+        <nav class="kb-nav-menu">
+            <a href="#" class="kb-menu-item kb-active" data-target="my-info">내 정보</a>
+            <a href="#" class="kb-menu-item" data-target="login-log">로그인 기록</a>
+            <a href="#" class="kb-menu-item" data-target="inquiry-list">문의 내역</a>
+            <a href="#" class="kb-menu-item" data-target="password-change">비밀번호 변경</a>
+            <a href="#" class="kb-menu-item" data-target="my-posts">내가 쓴 게시글</a>
+            <a href="#" class="kb-menu-item kb-menu-danger" data-target="withdrawal">회원 탈퇴</a>
+        </nav>
+    </aside>
+
+
+    <main class="kb-main-content">
+
+        <!-- ===========================
+              1. 내 정보 수정
+        ============================ -->
+        <div id="my-info-section" class="kb-content-section">
+            <header class="kb-section-header">
+                <h1 class="kb-main-title">내 정보 수정</h1>
+                <p class="kb-subtitle">등록된 회원 정보를 확인하고 수정할 수 있습니다.</p>
+            </header>
+            <form class="kb-info-form" id="info-update-form">
+                <div class="kb-form-row">
+                    <label class="kb-label">아이디</label>
+                    <input type="text" th:value="${member.userId}" class="kb-input-readonly" readonly>
+                </div>
+                <div class="kb-form-row">
+                    <label class="kb-label">닉네임</label>
+                    <input type="text" id="nickname" name="nickname" th:value="${member.nickname}" class="kb-input-edit">
+                    <p class="kb-val-msg" id="nick-msg"></p>
+                </div>
+                <div class="kb-form-row">
+                    <label class="kb-label">전화번호</label>
+                    <input type="tel" id="phone" name="emergencyPhone" th:value="${member.emergencyPhone}"
+                           class="kb-input-edit" placeholder="01012345678">
+                    <p class="kb-val-msg" id="phone-msg"></p>
+                </div>
+                <div class="kb-divider" style="height:1px; background:#e5e7eb; margin:30px 0;"></div>
+
+                <h3 class="kb-sub-title">주소 관리</h3>
+                <div class="kb-address-wrap">
+                    <div class="kb-zip-box">
+                        <input type="text" id="address" name="address"
+                               th:value="${member.address}" class="kb-input-readonly" readonly>
+                        <button type="button" class="kb-btn-sub" id="search-addr-btn">검색</button>
+                    </div>
+                    <input type="text" id="detailAddress" name="detailAddress"
+                           th:value="${member.detailAddress}" class="kb-input-edit">
+                </div>
+                <div class="kb-btn-area">
+                    <button type="submit" class="kb-btn-primary">정보 수정 저장</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ===========================
+              2. 로그인 기록
+        ============================ -->
+        <div id="login-log-section" class="kb-content-section" style="display: none;">
+            <header class="kb-section-header"><h1 class="kb-main-title">로그인 기록</h1></header>
+
+            <div class="kb-table-wrap">
+                <div class="kb-table-header">
+                    <div class="col-type">유형</div>
+                    <div class="col-title">접속 정보</div>
+                    <div class="col-ip">IP</div>
+                    <div class="col-date">일시</div>
+                </div>
+                <div class="kb-table-body">
+                    <div class="kb-table-row" th:each="log : ${loginLogs}">
+                        <div class="col-type">
+                            <span class="kb-badge login" th:if="${log.accessType == 'LOGIN'}">로그인</span>
+                            <span class="kb-badge logout" th:if="${log.accessType == 'LOGOUT'}">로그아웃</span>
+                        </div>
+                        <div class="col-title" th:text="${log.userAgent}" style="font-size:12px;"></div>
+                        <div class="col-ip" th:text="${log.ipAddress}"></div>
+                        <div class="col-date" th:text="${#temporals.format(log.logDate, 'yy-MM-dd HH:mm')}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===========================
+              3. 문의 내역
+        ============================ -->
+        <div id="inquiry-list-section" class="kb-content-section" style="display: none;">
+            <header class="kb-section-header">
+                <h1 class="kb-main-title">문의 내역</h1>
+                <p class="kb-subtitle">서비스 이용 중 궁금한 점을 문의해주세요.</p>
+            </header>
+
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+                <button type="button" class="kb-btn-small" onclick="openInquiryModal()">✍️ 문의하기</button>
+            </div>
+
+            <div class="kb-table-wrap">
+                <div class="kb-table-header">
+                    <div class="col-type">상태</div>
+                    <div class="col-title">제목</div>
+                    <div class="col-date">작성일</div>
+                </div>
+
+                <div class="kb-table-body">
+
+                    <!-- 문의가 없을 때 -->
+                    <div class="kb-table-row"
+                         th:if="${#lists.isEmpty(myInquiries)}"
+                         style="justify-content: center; color: #999; padding: 30px;">
+                        문의 내역이 없습니다.
+                    </div>
+
+                    <!-- 문의 리스트 -->
+                    <div class="kb-table-row" th:each="inq : ${myInquiries}">
+
+                        <div class="col-type">
+                    <span class="kb-badge"
+                          th:classappend="${inq.status == 'COMPLETED'} ? 'login' : 'logout'"
+                          th:text="${inq.status == 'COMPLETED' ? '답변완료' : '대기중'}">
+                    </span>
+                        </div>
+
+                        <div class="col-title">
+                            <a th:href="@{/inquiry/detail/{id}(id=${inq.id})}"
+                               target="_blank"
+                               th:text="${inq.title}"
+                               style="color:#333; text-decoration:none;">
+                            </a>
+                        </div>
+
+                        <div class="col-date"
+                             th:text="${#temporals.format(inq.createdDate, 'yyyy-MM-dd')}">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ===========================
+              4. 비밀번호 변경
+        ============================ -->
+        <div id="password-change-section" class="kb-content-section" style="display: none;">
+            <header class="kb-section-header">
+                <h1 class="kb-main-title">비밀번호 변경</h1>
+                <p class="kb-subtitle">안전을 위해 <strong>보안 질문</strong> 확인 후 변경됩니다.</p>
+            </header>
+
+            <form class="kb-info-form" id="pw-change-form">
+                <div class="kb-form-row">
+                    <label class="kb-label">확인 질문</label>
+                    <input type="text" th:value="${questionText}" class="kb-input-readonly"
+                           readonly style="background-color: #eff6ff; color: #337cf4; font-weight: bold;">
+                </div>
+
+                <div class="kb-form-row">
+                    <label class="kb-label">답변 입력</label>
+                    <input type="text" id="security-answer" class="kb-input-edit" placeholder="답변을 입력하세요">
+                </div>
+
+                <div class="kb-divider" style="height:1px; background:#e5e7eb; margin:30px 0;"></div>
+
+                <div class="kb-form-row">
+                    <label class="kb-label">현재 비밀번호</label>
+                    <input type="password" id="current-pw" class="kb-input-edit">
+                </div>
+                <div class="kb-form-row">
+                    <label class="kb-label">새 비밀번호</label>
+                    <input type="password" id="new-pw" class="kb-input-edit" placeholder="8자 이상 (영문/숫자/특수문자)">
+                    <p class="kb-val-msg" id="pw-msg"></p>
+                </div>
+                <div class="kb-form-row">
+                    <label class="kb-label">새 비밀번호 확인</label>
+                    <input type="password" id="confirm-pw" class="kb-input-edit">
+                    <p class="kb-val-msg" id="pw-match-msg"></p>
+                </div>
+
+                <div class="kb-btn-area">
+                    <button type="submit" class="kb-btn-primary">비밀번호 변경</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ===========================
+              5. 내가 쓴 게시글
+        ============================ -->
+        <div id="my-posts-section" class="kb-content-section" style="display: none;">
+            <header class="kb-section-header">
+                <h1 class="kb-main-title">내가 쓴 게시글</h1>
+                <p class="kb-subtitle">작성한 게시글을 확인하고 관리할 수 있습니다.</p>
+            </header>
+
+            <div class="kb-table-wrap">
+                <div class="kb-table-header">
+                    <div class="col-title">제목</div>
+                    <div class="col-date">작성일</div>
+                    <div class="col-action">관리</div>
+                </div>
+
+                <div class="kb-table-body">
+                    <div class="kb-table-row"
+                         th:if="${#lists.isEmpty(myBoards)}"
+                         style="justify-content: center; color: #999; padding: 30px;">
+                        작성된 게시글이 없습니다.
+                    </div>
+
+                    <div class="kb-table-row" th:each="board : ${myBoards}">
+                        <div class="col-title" style="cursor: pointer; text-align: left;"
+                             th:onclick="'viewPost(' + ${board.id} + ')'">
+                            <span th:text="${board.title}" style="font-weight:bold; color:#333;"></span>
+                            <span style="font-size:12px; color:#999; margin-left:5px;">
+                                (💬 <span th:text="${#lists.size(board.comments)}"></span>)
+                            </span>
+                        </div>
+
+                        <div class="col-date" th:text="${board.date}"></div>
+
+                        <div class="col-action">
+                            <button class="kb-btn-mini delete"
+                                    th:onclick="'deleteBoard(' + ${board.id} + ')'">삭제</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===========================
+              6. 회원 탈퇴
+        ============================ -->
+        <div id="withdrawal-section" class="kb-content-section" style="display: none;">
+            <header class="kb-section-header">
+                <h1 class="kb-main-title" style="color: #ef4444;">회원 탈퇴</h1>
+                <p class="kb-subtitle">탈퇴 시 계정 정보는 즉시 삭제되며 복구할 수 없습니다.</p>
+            </header>
+
+            <div class="kb-alert-box">
+                <p class="kb-alert-title">⚠ 탈퇴 전 꼭 확인해주세요</p>
+                <div class="kb-alert-desc" style="margin-bottom: 15px;">
+                    <p>1. 작성하신 게시글, 댓글, 좋아요 내역은 모두 삭제됩니다.</p>
+                    <p>2. 내 장소(집, 회사) 및 즐겨찾기 목록도 함께 삭제됩니다.</p>
+                    <p>3. 탈퇴 후에는 계정을 복구할 수 없습니다.</p>
+                </div>
+
+                <label class="kb-check-label">
+                    <input type="checkbox" id="withdrawal-agree">
+                    <span>위 내용을 모두 확인했으며, 탈퇴에 동의합니다.</span>
+                </label>
+            </div>
+
+            <form class="kb-info-form" id="withdrawal-form">
+                <div class="kb-form-row">
+                    <label for="withdrawal-pw" class="kb-label">비밀번호 확인</label>
+                    <input type="password" id="withdrawal-pw" name="password"
+                           class="kb-input-edit" placeholder="본인 확인을 위해 비밀번호를 입력해주세요">
+                </div>
+
+                <div class="kb-btn-area">
+                    <button type="submit" class="kb-btn-danger">회원 탈퇴</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+
+
+</div>
+
+<!-- 게시글 상세 모달 -->
+<div id="post-view-modal" class="kb-post-modal">
+    <div class="kb-post-modal-content">
+        <div class="kb-post-modal-header">
+            <span class="kb-post-modal-title">게시글 상세</span>
+            <span class="kb-post-modal-close" onclick="closePostModal()">✕</span>
+        </div>
+        <div class="kb-post-modal-body" id="post-view-body"></div>
+    </div>
+</div>
+
+<!-- 문의 작성 모달 -->
+<div id="inquiry-write-modal" class="kb-post-modal">
+    <div class="kb-post-modal-content">
+        <div class="kb-post-modal-header">
+            <span class="kb-post-modal-title">문의하기</span>
+            <span class="kb-post-modal-close" onclick="closeInquiryModal()">✕</span>
+        </div>
+
+        <div class="kb-post-modal-body">
+            <form class="kb-info-form" id="inquiry-form">
+
+                <div class="kb-form-row">
+                    <label class="kb-label">카테고리</label>
+                    <select name="category" class="kb-input-edit" style="padding: 0 10px;">
+                        <option value="일반">일반</option>
+                        <option value="계정">계정</option>
+                        <option value="오류신고">오류신고</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </div>
+
+                <div class="kb-form-row">
+                    <label class="kb-label">제목</label>
+                    <input type="text" name="title" id="inq-title"
+                           class="kb-input-edit" placeholder="제목을 입력하세요" required>
+                </div>
+
+                <div class="kb-form-row">
+                    <label class="kb-label">내용</label>
+                    <textarea name="content" id="inq-content"
+                              class="kb-input-edit"
+                              style="height: 150px; resize: none; padding:10px;"
+                              placeholder="문의 내용을 입력하세요" required></textarea>
+                </div>
+
+                <div class="kb-form-row">
+                    <label class="kb-label">첨부파일</label>
+                    <input type="file" name="file" class="kb-input-edit"
+                           style="border:none; padding-left:0;">
+                </div>
+
+                <div class="kb-btn-area kb-btn-area-row" style="margin-top:20px; display:flex; gap:10px;">
+                    <button type="button" class="kb-btn-secondary"
+                            onclick="closeInquiryModal()" style="flex:1;">취소</button>
+                    <button type="submit" class="kb-btn-primary" style="flex:1;">등록하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="/js/member/myInfo/navigation.js"></script>
+<script src="/js/member/myInfo/action.js"></script>
+
+<script>
+    function openInquiryModal() {
+        document.getElementById('inquiry-write-modal').style.display = 'flex';
+    }
+    function closeInquiryModal() {
+        document.getElementById('inquiry-write-modal').style.display = 'none';
+        document.getElementById('inquiry-form').reset();
+    }
+</script>
+
+
+<script>
+    // ... 기존 openInquiryModal, closeInquiryModal 함수 유지 ...
+
+    // 🌟 햄버거 버튼 토글 기능 추가
+    document.getElementById('menu-toggle').addEventListener('click', function() {
+        const sidebar = document.querySelector('.kb-sidebar');
+        sidebar.classList.toggle('is-open');
+    });
+
+    // 🌟 모바일 메뉴 항목 클릭 시 사이드바 닫기 기능 추가 (선택 사항)
+    document.querySelectorAll('.kb-nav-menu a').forEach(item => {
+        item.addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                document.querySelector('.kb-sidebar').classList.remove('is-open');
+            }
+        });
+    });
+</script>
+</body>
+</html>

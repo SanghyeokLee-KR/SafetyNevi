@@ -1,0 +1,172 @@
+/* 기본 설정 */
+html, body {
+    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+    background-color: #f7f9fc; /* 프로젝트 배경색 통일 */
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.kb-write-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px; /* 카드형 디자인 통일 */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+/* --- 헤더/제목 영역 --- */
+.kb-header {
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #337cf4; /* 파란색 강조선 */
+}
+
+.kb-main-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #333;
+    margin: 0 0 5px 0;
+}
+
+.kb-subtitle {
+    font-size: 14px;
+    color: #777;
+    margin: 0;
+}
+
+/* --- 폼 입력 그룹 --- */
+.kb-write-form {
+    padding-top: 20px;
+}
+
+.kb-form-group {
+    margin-bottom: 30px;
+}
+
+.kb-form-label {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* 입력 필드 기본 스타일 (제목, 내용) */
+.kb-form-input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px; /* 둥근 모서리 */
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+}
+
+.kb-form-input:focus {
+    border-color: #337cf4;
+    box-shadow: 0 0 0 3px rgba(51, 124, 244, 0.2);
+}
+
+/* 내용 작성 영역 (Textarea) */
+.kb-content-textarea {
+    min-height: 200px; /* 문의 내용에 맞춰 높이 조정 */
+    resize: vertical;
+    line-height: 1.6;
+}
+
+/* --- 파일 첨부 섹션 --- */
+.kb-file-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.kb-file-select-btn {
+    background-color: #f0f5fd; /* 연한 파란색 배경 */
+    color: #337cf4;
+    border: 1px solid #337cf4;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.kb-file-select-btn:hover {
+    background-color: #e6f0ff;
+}
+
+.kb-file-display {
+    font-size: 14px;
+    color: #777;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- 액션 버튼 --- */
+.kb-action-buttons {
+    display: flex;
+    justify-content: flex-end; /* 오른쪽 정렬 */
+    gap: 10px;
+    margin-top: 40px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.kb-btn {
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 100px;
+    text-decoration: none; /* a 태그 버튼 스타일링 */
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kb-btn-cancel {
+    background-color: #f0f0f0; /* 취소는 회색 톤 */
+    color: #555;
+    border: 1px solid #ccc;
+}
+
+.kb-btn-cancel:hover {
+    background-color: #e0e0e0;
+}
+
+.kb-btn-submit {
+    background-color: #337cf4; /* 메인 컬러 적용 */
+    color: white;
+    border: none;
+    box-shadow: 0 4px 10px rgba(51, 124, 244, 0.4);
+}
+
+.kb-btn-submit:hover {
+    background-color: #1a65d6;
+    box-shadow: 0 6px 15px rgba(51, 124, 244, 0.5);
+}
+
+/* 좁은 화면 대응 */
+@media (max-width: 600px) {
+    .kb-write-container {
+        margin: 20px auto;
+        padding: 20px;
+    }
+    .kb-action-buttons {
+        flex-direction: column;
+    }
+    .kb-btn {
+        width: 100%;
+        min-width: auto;
+    }
+}

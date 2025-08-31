@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>안전네비 - 비밀번호 찾기</title>
+  <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+
+  <link rel="stylesheet" href="/css/member/findAccount/findAccount.css">
+
+    <!-- 🌟 파비콘 추가: /img/logo/favicon.png 및 /img/logo/favicon.ico 🌟 -->
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+</head>
+<body>
+
+<div class="kb-login-container">
+  <div class="kb-login-card">
+    <div class="kb-title-container">
+      <img src="/img/logo/200px-안전네비_로고.png" alt="안전네비 로고">
+      <h1 class="kb-title-text">안전네비</h1>
+    </div>
+
+    <h2 class="kb-login-title">비밀번호 찾기</h2>
+
+    <div id="step-1" class="fade-in">
+      <p class="kb-desc-text">가입 시 등록한 정보를 입력해주세요.</p>
+      <div class="kb-form-group">
+        <label class="kb-form-label">아이디</label>
+        <input type="text" id="find_id" class="kb-form-input" placeholder="아이디 입력">
+      </div>
+      <div class="kb-form-group">
+        <label class="kb-form-label">이메일</label>
+        <input type="email" id="find_email" class="kb-form-input" placeholder="example@naver.com">
+      </div>
+      <button type="button" class="kb-login-button" id="btn-step1">확인 질문 조회</button>
+    </div>
+
+    <div id="step-2" class="hidden-step">
+      <p class="kb-desc-text">본인 확인을 위해 질문에 답변해주세요.</p>
+      <div class="kb-question-box" id="question-display">질문 로딩중...</div>
+      <div class="kb-form-group">
+        <label class="kb-form-label">답변</label>
+        <input type="text" id="find_answer" class="kb-form-input" placeholder="답변을 입력하세요">
+      </div>
+      <button type="button" class="kb-login-button" id="btn-step2">본인 인증</button>
+    </div>
+
+    <div id="step-3" class="hidden-step">
+      <p class="kb-desc-text">새로운 비밀번호를 설정해주세요.</p>
+      <div class="kb-form-group">
+        <label class="kb-form-label">새 비밀번호</label>
+        <input type="password" id="new_pw" class="kb-form-input" placeholder="8자 이상 (영문/숫자/특수문자)">
+      </div>
+      <div class="kb-form-group">
+        <label class="kb-form-label">비밀번호 확인</label>
+        <input type="password" id="new_pw_confirm" class="kb-form-input" placeholder="한 번 더 입력">
+        <p class="kb-input-msg" id="pw-match-msg"></p>
+      </div>
+      <button type="button" class="kb-login-button" id="btn-step3">비밀번호 변경</button>
+    </div>
+
+    <div class="kb-utility-links">
+      <a href="/login" class="kb-link">로그인으로 돌아가기</a>
+    </div>
+  </div>
+</div>
+
+<script src="/js/member/findAccount/findAccount.js"></script>
+</body>
+</html>

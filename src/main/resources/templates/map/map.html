@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SafetyNevi - 내 주변 대피소</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- CSS 연결 -->
+    <link rel="stylesheet" href="/css/map/base.css"/>
+    <link rel="stylesheet" href="/css/map/sidebar.css"/>
+    <link rel="stylesheet" href="/css/map/controls.css"/>
+    <link rel="stylesheet" href="/css/map/overlay.css"/>
+    <link rel="stylesheet" href="/css/map/search.css"/>
+    <link rel="stylesheet" href="/css/map/components.css"/>
+
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+</head>
+<body>
+
+<div class="kb-wrap">
+
+    <!-- 지도 영역 -->
+    <div id="map"></div>
+
+    <!-- 안전 점수 패널 -->
+    <div id="safety-score-panel" class="safety-score-panel" style="display:none;">
+        <div class="score-circle" id="safety-score-val">--</div>
+        <div class="score-text">
+            <strong id="safety-grade">분석 중...</strong>
+            <span>주변 안전 시설 현황</span>
+        </div>
+    </div>
+
+    <!-- 재검색 버튼 -->
+    <button id="btn-re-search" class="kb-re-search-btn">🔄 현 지도에서 검색</button>
+
+    <!-- 필터 버튼 -->
+    <div class="kb-map-filters">
+        <button class="kb-filter-btn" data-type="all">✔️ 전체</button>
+        <button class="kb-filter-btn" data-type="shelter">🚧 대피소</button>
+        <button class="kb-filter-btn" data-type="hospital">🚑 보건소</button>
+        <button class="kb-filter-btn" data-type="police">🚓 경찰서</button>
+        <button class="kb-filter-btn" data-type="fire">🚒 소방서</button>
+        <button class="kb-filter-btn" data-type="etc">🏪 기타</button>
+    </div>
+
+    <!-- 지도 컨트롤 (우측 하단) -->
+    <div class="kb-map-controls">
+        <button id="btn-mode-traffic" class="kb-control-btn" title="실시간 교통정보">🚦 교통</button>
+        <button id="btn-mode-cctv" class="kb-control-btn" title="지형도 확인">🏔️ 지형</button>
+        <button id="btn-mode-skyview" class="kb-control-btn" title="위성지도">🛰️ 위성</button>
+        <button id="btn-mode-roadview" class="kb-control-btn" title="로드뷰 켜기/끄기">👁️ 로드뷰</button>
+        <div style="height:10px;"></div>
+
+        <!-- 글쓰기 버튼 -->
+        <button id="btn-mode-write" class="kb-control-btn" title="게시글 작성" style="color:#e67e22; border-color:#e67e22;">
+            🖊️ 글쓰기
+        </button>
+
+        <button id="btn-sms-report" class="kb-control-btn" title="문자 신고" style="color:#d9534f;">🚨 신고</button>
+        <div style="height:10px;"></div>
+        <button id="btn-mode-track" class="kb-control-btn" title="내 위치 고정">📍 고정</button>
+        <button id="btn-mode-radius" class="kb-control-btn" title="반경 500m/1km 표시">📏 거리</button>
+        <button id="btn-mode-dark" class="kb-control-btn" title="다크 모드 전환">🌙 야간</button>
+    </div>
+
+    <!-- 사이드바 열기 버튼 -->
+    <div id="btn-sidebar-open" class="kb-map-floating-btn">≡</div>
+
+    <!-- 재난 알림 모달 -->
+    <div id="disaster-modal" class="disaster-modal">
+        <span id="disaster-modal-icon">🚨</span>
+        <span id="disaster-modal-message"></span>
+    </div>
+
+    <!-- 로드뷰 모달 -->
+    <div id="roadview-modal">
+        <div id="roadview-container">
+            <div id="roadview" style="width:100%; height:100%;"></div>
+            <button id="roadview-close">닫기</button>
+        </div>
+    </div>
+
+    <!-- 이미지 확대 모달 -->
+    <div id="image-view-modal" class="image-view-modal" style="display: none;">
+        <span class="image-view-close">✕</span>
+        <img class="image-view-content" id="full-image">
+    </div>
+
+    <!-- 글쓰기 모드 선택 모달 -->
+    <div id="write-mode-modal" class="report-modal" style="width: 280px; text-align: center;">
+        <h3 style="justify-content: center;">🖊️ 글쓰기 방식 선택</h3>
+        <p style="font-size:13px; color:#666; margin-bottom:20px;">작성할 위치를 어떻게 지정하시겠습니까?</p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="kb-control-btn" id="btn-mode-gps"
+                    style="width:100%; text-align:center; background:#e3f2fd; border-color:#337cf4; color:#337cf4;">📍 현재
+                위치로 작성 <span style="font-size:11px;">(인증됨)</span></button>
+            <button class="kb-control-btn" id="btn-mode-map" style="width:100%; text-align:center;">🗺️ 지도에서 선택</button>
+        </div>
+        <button onclick="document.getElementById('write-mode-modal').style.display='none'"
+                style="margin-top:15px; background:none; border:none; color:#999; cursor:pointer; font-size:12px; text-decoration:underline;">
+            취소
+        </button>
+    </div>
+
+    <!-- 게시글 작성 모달 -->
+    <div id="board-modal" class="report-modal" style="display:none;">
+        <h3>📝 글 작성</h3>
+        <select id="board-category">
+            <option value="제보">🚨 제보 (사고/공사 등)</option>
+            <option value="질문">❓ 질문 (길묻기 등)</option>
+            <option value="잡담">💬 잡담 (동네 이야기)</option>
+        </select>
+        <input type="text" id="board-title" placeholder="제목을 입력하세요">
+        <textarea id="board-content" placeholder="내용을 입력하세요"></textarea>
+
+        <div style="margin-bottom: 10px;">
+            <label for="board-image" style="display:block; margin-bottom:5px; font-size:12px; color:#666;">📸 사진 첨부
+                (선택)</label>
+            <input type="file" id="board-image" accept="image/*" style="font-size:12px;">
+        </div>
+
+        <input type="hidden" id="board-lat">
+        <input type="hidden" id="board-lon">
+        <input type="hidden" id="board-location-type">
+
+        <div class="report-btn-group">
+            <button class="report-btn-cancel" onclick="document.getElementById('board-modal').style.display='none'">취소
+            </button>
+            <button class="report-btn-save" onclick="import('/js/map/map-board.js').then(m => m.saveBoard())">등록
+            </button>
+        </div>
+    </div>
+
+    <!-- 🌟 [신규] 통합 신고 모달 (오류 신고 + 게시글 신고 + 차단) -->
+    <div id="common-report-modal" class="report-modal" style="display:none;">
+        <h3>🚨 신고하기</h3>
+        <p id="report-target-text" style="font-size:13px; color:#666; margin-bottom:10px;">신고 대상을 확인해주세요.</p>
+
+        <input type="hidden" id="report-type"> <!-- FACILITY or BOARD -->
+        <input type="hidden" id="report-id">
+        <input type="hidden" id="report-user"> <!-- 차단할 유저명 -->
+
+        <label for="report-reason" style="font-size:12px; font-weight:bold;">신고 사유</label>
+        <select id="report-reason">
+            <option value="error">📍 정보 오류 (위치/폐업 등)</option>
+            <option value="abuse">🤬 욕설/비하/혐오</option>
+            <option value="spam">🚫 스팸/홍보/도배</option>
+            <option value="false_info">🤥 허위 사실 유포</option>
+            <option value="etc">🎸 기타</option>
+        </select>
+
+        <textarea id="report-desc" placeholder="상세 내용을 입력해주세요 (선택)"></textarea>
+
+        <!-- 차단 옵션 (게시글 신고일 때만 보임) -->
+        <div id="report-block-option"
+             style="display:none; margin-top:5px; padding:10px; background:#f9f9f9; border-radius:5px;">
+            <label style="display:flex; align-items:center; cursor:pointer; font-size:13px; color:#d9534f; font-weight:bold;">
+                <input type="checkbox" id="chk-block-user" style="margin-right:8px;">
+                이 사용자 차단하기
+            </label>
+            <p style="font-size:11px; color:#888; margin:5px 0 0 20px;">차단하면 이 사용자의 모든 글이 지도에서 사라집니다.</p>
+        </div>
+
+        <div class="report-btn-group">
+            <button class="report-btn-cancel"
+                    onclick="document.getElementById('common-report-modal').style.display='none'">취소
+            </button>
+            <button class="report-btn-save" style="background-color:#d9534f;"
+                    onclick="import('/js/map/map-ui.js').then(m => m.submitReport())">신고 접수
+            </button>
+        </div>
+    </div>
+
+    <!-- 사이드바 -->
+    <div class="kb-sidebar-overlay">
+        <div class="kb-top-bar">
+            <div class="kb-header">
+                <div class="kb-menu-icon">≡</div>
+                <a th:href="@{/}" class="kb-logo">SafetyNevi</a>
+                <div id="btn-search-toggle" class="kb-search-icon">🔍</div>
+            </div>
+
+            <!-- 검색 패널 -->
+            <div id="kb-search-panel" class="kb-search-panel" style="display: none;">
+                <div class="kb-search-box">
+                    <input type="text" id="kb-search-input" placeholder="시설명 검색">
+                    <button id="btn-search-exec">검색</button>
+                    <button id="btn-search-close"
+                            style="background:none; color:#999; font-size:18px; margin-left:5px; border:none; cursor:pointer;">
+                        ✕
+                    </button>
+                </div>
+                <div id="kb-recent-area" style="display:none;">
+                    <div class="recent-title">🕒 최근 검색어 <span id="btn-recent-clear" style="float:right; cursor:pointer;">삭제</span>
+                    </div>
+                    <ul id="kb-recent-list" class="kb-recent-list"></ul>
+                </div>
+                <ul id="kb-search-results" class="kb-search-results"></ul>
+            </div>
+
+            <!-- 탭 버튼 -->
+            <div class="kb-tab-menu">
+                <button class="kb-tab-button kb-active" data-tab="general">전체</button>
+                <button class="kb-tab-button" data-tab="route">길찾기</button>
+                <button class="kb-tab-button" data-tab="my">MY</button>
+            </div>
+        </div>
+
+        <div class="kb-content-scroll">
+
+            <!-- 1. 길찾기 탭 -->
+            <div class="kb-route-finder-container" id="kb-route-finder" style="display:none;">
+                <div style="padding: 10px 0 20px; text-align: center;">
+                    <button id="btn-safety-search"
+                            style="width: 100%; padding: 15px; background-color: #d9534f; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                        🚨 내 주변 안전대피소 찾기
+                    </button>
+                    <div id="route-result-list" style="margin-top: 15px; text-align: left;"></div>
+                </div>
+                <hr class="kb-divider">
+                <div class="kb-route-input-wrap">
+                    <div class="kb-route-input-group">
+                        <div class="kb-route-line">
+                            <div class="kb-start-icon"></div>
+                            <input type="text" placeholder="출발지를 입력하세요" class="kb-route-input">
+                        </div>
+                        <div class="kb-route-line">
+                            <div class="kb-end-icon"></div>
+                            <input type="text" placeholder="도착지를 입력하세요" class="kb-route-input">
+                        </div>
+                    </div>
+                    <div class="kb-route-controls">
+                        <button class="kb-swap-button">⇅</button>
+                        <button class="kb-clear-button">X</button>
+                    </div>
+                </div>
+                <div class="kb-transport-modes">
+                    <button class="kb-mode-button kb-active" data-mode="car"><i class="kb-mode-icon">🚗</i></button>
+                    <button class="kb-mode-button" data-mode="bus"><i class="kb-mode-icon">🚌</i></button>
+                    <button class="kb-mode-button" data-mode="walk"><i class="kb-mode-icon">🚶</i></button>
+                    <button class="kb-mode-button" data-mode="bike"><i class="kb-mode-icon">🚴</i></button>
+                </div>
+            </div>
+
+            <!-- 2. MY 페이지 탭 -->
+            <div id="kb-my-page" style="display:none;">
+                <div class="kb-my-top-tab">
+                    <button class="kb-my-sub-tab" data-target="posts">나의 글</button>
+                    <button class="kb-my-sub-tab kb-my-active" data-target="places">내 장소</button>
+                    <button class="kb-my-sub-tab" data-target="family">가족</button>
+                </div>
+
+                <!-- [1] 내 장소 컨텐츠 -->
+                <div id="content-places">
+                    <div class="kb-my-place-section" style="display: flex; flex-direction: column; gap: 12px;">
+                        <div class="kb-myplace-item">
+                            <div class="kb-place-icon-box home">🏠</div>
+                            <div class="kb-place-info">
+                                <div class="kb-place-name">집</div>
+                                <div class="kb-place-address" id="home-address-text">주소를 등록해주세요.</div>
+                            </div>
+                            <button id="btn-set-home" class="kb-place-action">설정</button>
+                        </div>
+
+                        <div class="kb-myplace-item">
+                            <div class="kb-place-icon-box work">🏢</div>
+                            <div class="kb-place-info">
+                                <div class="kb-place-name">회사</div>
+                                <div class="kb-place-address" id="company-address-text">등록된 정보가 없습니다.</div>
+                            </div>
+                            <button id="btn-set-company" class="kb-place-action">설정</button>
+                        </div>
+                    </div>
+
+                    <hr class="kb-divider">
+
+                    <!-- 즐겨찾기 리스트 -->
+                    <div class="kb-section-title">즐겨찾기</div>
+                    <div id="kb-favorites-list" class="kb-myplace-list">
+                        <div style="text-align:center; padding:30px 0; color:#999; font-size:13px;">즐겨찾기한 장소가 없습니다.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [2] 나의 글 컨텐츠 -->
+                <div id="content-posts" style="display: none;">
+                    <div class="kb-section-title">작성한 게시글</div>
+                    <div style="text-align:center; padding:50px 0; color:#999; font-size:14px;">
+                        아직 작성된 게시글이 없습니다.
+                    </div>
+                </div>
+
+                <!-- [3] 후기 컨텐츠 -->
+                <div id="content-family" style="display: none;">
+                    <div class="kb-section-title">안심 연락망</div>
+
+                    <div id="kb-family-list" class="kb-myplace-list">
+                    </div>
+
+                    <div class="kb-myplace-item" onclick="document.getElementById('family-modal').style.display='block'"
+                         style="justify-content: center; color:#337cf4; border: 2px dashed #e3f2fd; margin-top:10px;">
+                        + 가족/지인 추가하기
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 상세 정보 패널 -->
+            <div id="kb-detail-content" style="display:none; padding: 15px;">
+                <button id="btn-detail-back"
+                        style="border:none; background:none; cursor:pointer; font-size:14px; color:#555; margin-bottom:10px; display:flex; align-items:center;">
+                    <span style="font-size:18px; margin-right:5px;">‹</span> 목록으로 돌아가기
+                </button>
+                <div class="detail-card">
+                    <span id="detail-category-badge"
+                          style="background:#f0f0f0; padding:4px 8px; border-radius:4px; font-size:12px; color:#666; font-weight:bold;">카테고리</span>
+                    <h2 id="detail-name" style="margin: 12px 0; font-size: 20px; color: #222; word-break:keep-all;">
+                        시설명</h2>
+                    <div id="detail-status"
+                         style="margin-bottom: 15px; font-size: 13px; color: #28a745; font-weight:bold;">● 운영중
+                    </div>
+                    <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                    <div style="line-height: 1.8;">
+                        <div class="detail-item"><strong>📍 주소</strong> <span id="detail-address">주소 정보 없음</span></div>
+                        <div class="detail-item"><strong>📞 전화</strong> <span id="detail-tel">전화번호 없음</span></div>
+                        <div class="detail-item" id="detail-time-row"><strong>🕒 시간</strong> <span
+                                id="detail-time">정보 없음</span></div>
+                        <div id="detail-dynamic-area"
+                             style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #eee; display:none;"></div>
+                    </div>
+                    <div id="roadview-btn-area" style="margin-top:10px;"></div>
+                    <div style="margin-top: 15px;">
+                        <button id="btn-find-route"
+                                style="width:100%; padding:12px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:bold; font-size:15px; cursor:pointer;">
+                            🚗 길찾기
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 전체(일반) 탭 -->
+            <div id="kb-general-content">
+                <div class="kb-location-info">
+                    <div class="kb-location-header">
+                        <div class="kb-main-address" id="current-address">위치 확인 중...</div>
+                        <!-- 🌟 [수정] 오류 신고 링크에 ID 부여 -->
+                        <div class="kb-report-link" id="btn-report-facility">오류신고 ></div>
+                    </div>
+                    <div class="kb-weather-row">
+                        <img src="" alt="날씨" id="weather-icon" class="kb-weather-icon" style="display: none;">
+                        <span id="weather-status"></span>
+                        <span class="kb-temp" id="current-temp"></span>
+                    </div>
+                </div>
+
+                <hr class="kb-divider">
+                <div class="kb-section-title">주변 탐색</div>
+                <div class="kb-explore-grid kb-checkbox-grid">
+                    <div class="kb-explore-checkbox"><input type="checkbox" id="kb-explore-all"
+                                                            class="kb-hidden-checkbox"><label for="kb-explore-all"
+                                                                                              class="kb-checkbox-item"><i
+                            class="kb-icon">✔️</i><span>전체</span></label></div>
+                    <div class="kb-explore-checkbox"><input type="checkbox" id="kb-explore-shelter"
+                                                            class="kb-hidden-checkbox kb-target-checkbox"
+                                                            data-type="shelter"><label for="kb-explore-shelter"
+                                                                                       class="kb-checkbox-item"><i
+                            class="kb-icon">🚧</i><span>대피소</span></label></div>
+                    <div class="kb-explore-checkbox"><input type="checkbox" id="kb-explore-public-health-center"
+                                                            class="kb-hidden-checkbox kb-target-checkbox"
+                                                            data-type="hospital"><label
+                            for="kb-explore-public-health-center" class="kb-checkbox-item"><i
+                            class="kb-icon">🚑</i><span>보건소</span></label></div>
+                    <div class="kb-explore-checkbox"><input type="checkbox" id="kb-explore-police-office"
+                                                            class="kb-hidden-checkbox kb-target-checkbox"
+                                                            data-type="police"><label for="kb-explore-police-office"
+                                                                                      class="kb-checkbox-item"><i
+                            class="kb-icon">🚓</i><span>경찰서</span></label></div>
+                    <div class="kb-explore-checkbox"><input type="checkbox" id="kb-explore-fire-station"
+                                                            class="kb-hidden-checkbox kb-target-checkbox"
+                                                            data-type="fire"><label for="kb-explore-fire-station"
+                                                                                    class="kb-checkbox-item"><i
+                            class="kb-icon">🚒</i><span>소방서</span></label></div>
+                    <div class="kb-explore-checkbox"><input type="checkbox" id="kb-explore-etc"
+                                                            class="kb-hidden-checkbox kb-target-checkbox"
+                                                            data-type="etc"><label for="kb-explore-etc"
+                                                                                   class="kb-checkbox-item"><i
+                            class="kb-icon">🏪</i><span>기타</span></label></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="family-modal" class="report-modal" style="width: 280px; text-align: center;">
+    <h3>👨‍👩‍👧 가족/지인 등록</h3>
+    <input type="text" id="fam-name" placeholder="이름 (예: 어머니)">
+    <input type="tel" id="fam-phone" placeholder="전화번호 (010-1234-5678)">
+
+    <div class="report-btn-group">
+        <button class="report-btn-cancel" onclick="document.getElementById('family-modal').style.display='none'">취소
+        </button>
+        <button class="report-btn-save" onclick="import('/js/map/map-myplace.js').then(m => m.addFamily())">등록</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script type="text/javascript"
+        th:src="@{'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoJsKey} + '&libraries=clusterer,services'}">
+</script>
+<script type="module" src="/js/map/map-main.js"></script>
+
+</body>
+</html>

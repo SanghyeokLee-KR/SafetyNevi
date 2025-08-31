@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 - 게시물 관리</title>
+
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" th:href="@{/css/admin/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/components.css}">
+
+    <!-- 이 페이지 전용 CSS -->
+    <link rel="stylesheet" th:href="@{/css/admin/boards.css}">
+
+    <link rel="icon" type="image/png" th:href="@{/img/logo/favicon.png}">
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+</head>
+<body>
+
+<aside class="admin-sidebar">
+    <div class="sidebar-header">
+        <span style="margin-left: 10px;">🛡️ SafetyNevi</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li>
+            <a href="/admin" class="menu-item" th:classappend="${requestURI == '/admin'} ? 'active'">
+                <span class="icon">📊</span> <span>대시보드</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/members" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/members')} ? 'active'">
+                <span class="icon">👥</span> <span>회원 관리</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/boards" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/boards')} ? 'active'">
+                <span class="icon">📝</span> <span>게시물 관리</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/notice/create" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/notice')} ? 'active'">
+                <span class="icon">📢</span> <span>공지 생성</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/inquiries" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/inquiries')} ? 'active'">
+                <span class="icon">💌</span> <span>문의 관리</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/reports" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/reports')} ? 'active'">
+                <span class="icon">🚩</span> <span>신고 관리</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/disaster" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/disaster')} ? 'active'">
+                <span class="icon">🚨</span> <span>재난 관리</span>
+            </a>
+        </li>
+        <li style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+            <a href="/" class="menu-item">
+                <span class="icon">🏠</span> <span>서비스 홈</span>
+            </a>
+        </li>
+    </ul>
+</aside>
+
+<main class="admin-content">
+    <div class="page-header">
+        <div>
+            <div class="page-title">게시물 관리</div>
+            <div class="page-subtitle">사용자가 작성한 커뮤니티 게시글을 모니터링하고 삭제합니다.</div>
+        </div>
+        <!-- 인라인 스타일 제거됨: boards.css의 .input-group 사용 -->
+        <div class="input-group">
+            <input type="text" class="form-input" placeholder="제목 또는 작성자 검색">
+            <button class="btn-search">검색</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th style="width: 80px;">No.</th>
+                <th>카테고리</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>작성일</th>
+                <th>조회수</th>
+                <th>관리</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>102</td>
+                <!-- 인라인 스타일 제거 및 클래스 추가 (.free) -->
+                <td><span class="status-badge free">자유</span></td>
+                <td class="board-title">대피소 위치 정보가 정확하지 않은 것 같아요</td>
+                <td>user01</td>
+                <td>2024-11-29</td>
+                <td>45</td>
+                <td>
+                    <button class="btn-danger-soft">🗑️ 삭제</button>
+                </td>
+            </tr>
+            <tr>
+                <td>101</td>
+                <!-- 인라인 스타일 제거 및 클래스 추가 (.info) -->
+                <td><span class="status-badge info">정보</span></td>
+                <td class="board-title">이번 태풍 대비 행동요령 공유합니다</td>
+                <td>safe_guard</td>
+                <td>2024-11-28</td>
+                <td>120</td>
+                <td>
+                    <button class="btn-danger-soft">🗑️ 삭제</button>
+                </td>
+            </tr>
+
+            <tr th:if="${boards == null}">
+                <td colspan="7" class="no-data-msg">
+                    등록된 게시물이 없습니다.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+</body>
+</html>

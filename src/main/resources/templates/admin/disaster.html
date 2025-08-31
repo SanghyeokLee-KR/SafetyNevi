@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 - 재난 관리</title>
+    <link rel="stylesheet" href="/css/admin/layout.css">
+    <link rel="stylesheet" href="/css/admin/components.css">
+    <link rel="stylesheet" href="/css/admin/disaster.css">
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+
+    <!-- 🌟 파비콘 추가: /img/logo/favicon.png 및 /img/logo/favicon.ico 🌟 -->
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+</head>
+<body>
+
+<aside class="admin-sidebar">
+    <div class="sidebar-header">
+        <span style="margin-left: 10px;">🛡️ SafetyNevi</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li>
+            <a href="/admin" class="menu-item" th:classappend="${requestURI == '/admin'} ? 'active'">
+                <span class="icon">📊</span> <span>대시보드</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/members" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/members')} ? 'active'">
+                <span class="icon">👥</span> <span>회원 관리</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/boards" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/boards')} ? 'active'">
+                <span class="icon">📝</span> <span>게시물 관리</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/notice/create" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/notice')} ? 'active'">
+                <span class="icon">📢</span> <span>공지 생성</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/inquiries" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/inquiries')} ? 'active'">
+                <span class="icon">💌</span> <span>문의 관리</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/reports" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/reports')} ? 'active'">
+                <span class="icon">🚩</span> <span>신고 관리</span>
+            </a>
+        </li>
+        <li>
+            <a href="/admin/disaster" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/disaster')} ? 'active'">
+                <span class="icon">🚨</span> <span>재난 관리</span>
+            </a>
+        </li>
+        <li style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+            <a href="/" class="menu-item">
+                <span class="icon">🏠</span> <span>서비스 홈</span>
+            </a>
+        </li>
+    </ul>
+</aside>
+
+<main class="admin-content">
+    <div class="page-header">
+        <div>
+            <div class="page-title">재난 시뮬레이션 및 관리</div>
+            <div class="page-subtitle">실제 상황을 가정하여 재난 경보를 생성하고 관리합니다.</div>
+        </div>
+        <button onclick="loadActiveDisasters()" class="btn-search" style="background-color: #10b981;">
+            🔄 현황 새로고침
+        </button>
+    </div>
+
+    <div class="dashboard-section">
+        <div class="section-header">🚨 현재 발효 중인 재난</div>
+        <div class="table-container" style="margin-top: 0; box-shadow: none; border: 1px solid #e2e8f0;">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th style="width: 80px;">ID</th>
+                    <th>재난 유형</th>
+                    <th>발생 위치 / 지역</th>
+                    <th>남은 시간</th>
+                    <th style="width: 100px;">관리</th>
+                </tr>
+                </thead>
+                <tbody id="disaster-list-body">
+                <tr><td colspan="5" style="text-align:center; padding:30px; color:#94a3b8;">데이터 로딩 중...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="dashboard-section">
+        <div class="section-header">⚡ 재난 생성 시뮬레이터</div>
+
+        <div style="background: #f1f5f9; padding: 20px; border-radius: 12px; margin-bottom: 10px;">
+            <label class="form-label">📍 중심 위치 설정 (주소 검색)</label>
+            <div class="input-group">
+                <input type="text" id="address" class="form-input" placeholder="발생 지역을 검색하세요 (예: 강남역, 부산시청)" readonly>
+                <button id="search-address-btn" class="btn-search">🔍 주소 찾기</button>
+            </div>
+            <input type="hidden" id="lat"><input type="hidden" id="lon"><input type="hidden" id="areaName">
+        </div>
+
+        <div class="sim-grid">
+            <div class="sim-card">
+                <div class="sim-title" style="color: var(--primary-color);">
+                    🔵 원형 재난 (좌표 기준)
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">재난 유형</label>
+                    <select id="type-circle" class="form-select">
+                        <option value="fire">🔥 화재/폭발</option>
+                        <option value="missile">🚀 미사일/공습</option>
+                        <option value="quake">🌋 지진 (진앙지)</option>
+                        <option value="lightning">⚡ 낙뢰</option>
+                        <option value="heavyRain">🌧️ 국지성 호우</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">반경 (미터)</label>
+                    <input type="number" id="radius" class="form-input" value="1000" placeholder="예: 1000">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">지속 시간 (분)</label>
+                    <input type="number" id="duration-circle" class="form-input" value="30">
+                </div>
+                <button id="simulate-btn-circle" class="btn-block btn-primary-block">원형 재난 발령</button>
+            </div>
+
+            <div class="sim-card">
+                <div class="sim-title" style="color: #ef4444;">
+                    🟥 지역 재난 (행정구역 기준)
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">대상 행정구역</label>
+                    <input type="text" id="areaName-display" class="form-input" value="-" readonly style="color:#ef4444; font-weight:bold;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">재난 유형</label>
+                    <select id="type-area" class="form-select">
+                        <option value="heavyRain">🌧️ 호우 경보</option>
+                        <option value="typhoon">🌀 태풍</option>
+                        <option value="heatwave">☀️ 폭염 경보</option>
+                        <option value="heavysnow">❄️ 대설 주의보</option>
+                        <option value="fire">🔥 산불 (광범위)</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">지속 시간 (분)</label>
+                    <input type="number" id="duration-area" class="form-input" value="60">
+                </div>
+                <button id="simulate-btn-area" class="btn-block btn-danger-block">지역 재난 발령</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d8822c35851508a88d440e6883daef52&libraries=services"></script>
+<script src="/js/admin/disaster.js"></script>
+
+</body>
+</html>

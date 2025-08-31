@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자연재난 행동요령</title>
+    <link rel="stylesheet" href="/css/disasterGuide.css"/>
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <style>
+        /* 모달 오버레이 인라인 스타일 */
+        .kb-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none; /* 기본 숨김 */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+    </style>
+    <!-- 🌟 파비콘 추가: /img/logo/favicon.png 및 /img/logo/favicon.ico 🌟 -->
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+</head>
+<body>
+
+<div class="kb-disaster-page-container">
+
+    <header class="kb-disaster-header kb-header-split">
+        <img src="/img/logo/200px-안전네비_로고.png" alt="안전네비 로고" width="40" class="kb-header-logo">
+        <h1 class="kb-disaster-main-title">자연재난행동요령</h1>
+
+
+    </header>
+
+    <div class="kb-disaster-intro-section">
+        <p class="kb-disaster-intro-text">
+            자연재난이란 태풍, 홍수, 호우, 강풍, 해일, 지진, 한파 등 자연 현상으로 인해 발생하는 재해를 말합니다. 각 재난 상황에 맞는 행동 요령을 숙지하고 안전하게 대비하세요.
+        </p>
+    </div>
+
+    <div class="kb-disaster-guide-list-wrap">
+        <p class="kb-guide-instruction">아래 재난 유형을 클릭하시면 상세 행동 요령을 보실 수 있습니다.</p>
+
+        <div class="kb-disaster-grid">
+
+            <!-- 🌟 재난 항목: data-video-id 및 data-pre/data-during 속성에 모든 내용을 직접 입력 🌟 -->
+            <!-- 주의: 쉼표(,)를 사용하여 각 항목을 구분해야 합니다. -->
+            <a href="#" class="kb-disaster-item" data-disaster="태풍"
+               data-video-id="JCor3p51nPM"
+               data-pre="TV, 라디오, 스마트폰으로 태풍 경로와 기상 정보를 꾸준히 확인합니다., 주택이나 차량 주변의 하수구, 배수구를 미리 점검하고 막힌 곳을 뚫어줍니다., 가족과 함께 비상 상황 시 대피 경로 및 대피 장소, 연락 방법을 미리 정해둡니다."
+               data-during="외출을 자제하고 외부에 노출된 물건(간판, 화분 등)은 단단히 묶거나 실내로 들여놓습니다., 침수 위험 지역에 거주하는 경우, 지정된 대피소나 안전한 고지대로 즉시 대피합니다., 저지대 주차 차량은 안전한 곳으로 이동시키고, 차량 운행 중 침수된 도로는 절대 진입하지 않습니다.">
+                <span class="kb-item-name">태풍</span>
+                <span class="kb-item-arrow"></span>
+            </a>
+
+            <a href="#" class="kb-disaster-item" data-disaster="홍수"
+               data-video-id="--La8S83cAA"
+               data-pre="홍수 예상 시 물이 스며들지 않도록 모래주머니나 흙을 이용하여 하수구, 배수구를 막습니다., 중요 물품을 높은 곳으로 옮겨둡니다., 가족과 비상 연락망을 공유합니다."
+               data-during="하천이나 강 근처에 있는 경우, 즉시 안전한 지역으로 대피합니다., 전기 차단기를 내리고 가스 밸브를 잠근 후 대피합니다.">
+                <span class="kb-item-name">홍수</span>
+                <span class="kb-item-arrow"></span>
+            </a>
+
+            <a href="#" class="kb-disaster-item" data-disaster="호우(豪雨)"
+               data-video-id="5dUpQYvzByA"
+               data-pre="산사태 및 급경사지 주변 위험 여부를 확인합니다., 비상시를 대비하여 응급약품, 식수, 비상식량을 준비합니다."
+               data-during="운전 중에는 감속하고, 시야 확보에 어려움이 있으면 안전한 곳에 잠시 정차합니다., 논이나 밭 등 침수 위험이 있는 곳에서는 작업을 중단하고 즉시 안전한 곳으로 피합니다.">
+                <span class="kb-item-name">호우(豪雨)</span>
+                <span class="kb-item-arrow"></span>
+            </a>
+
+            <a href="#" class="kb-disaster-item" data-disaster="강풍"
+               data-video-id="sVH7USZNGlA"
+               data-pre="노후된 간판, 현수막, 창문 등을 미리 점검하고 단단히 고정합니다., 유리창에 테이프를 붙여 파손 시 피해를 줄입니다., 실외 물건은 실내로 옮겨 바람에 날아가지 않도록 합니다."
+               data-during="실내에서는 창문과 문을 모두 닫고, 창문에서 멀리 떨어져 안전한 곳에 머뭅니다., 외출 시 전선이나 간판, 구조물이 떨어지는 위험에 주의합니다.">
+                <span class="kb-item-name">강풍</span>
+                <span class="kb-item-arrow"></span>
+            </a>
+
+            <a href="#" class="kb-disaster-item" data-disaster="풍랑"
+               data-video-id="OYcQPZ0nv9c"
+               data-pre="어선 및 선박은 튼튼한 밧줄로 단단히 묶어 고정하고, 항구에 대피합니다., 해안가 저지대 주민은 대피 준비를 합니다."
+               data-during="바닷가, 해안도로, 방파제 등 위험 지역 접근을 절대 금지합니다., 어업 활동이나 해상 레저 활동은 모두 중단하고 안전한 장소에 대기합니다.">
+                <span class="kb-item-name">풍랑</span>
+                <span class="kb-item-arrow"></span>
+            </a>
+
+            <a href="#" class="kb-disaster-item" data-disaster="해일(海溢)"
+               data-video-id="yuARNQxUr44"
+               data-pre="해안가 저지대 주민은 재난방송을 수신하며 대피 명령에 대비합니다., 비상 연락망을 확보하고 가족과 대피 장소를 미리 공유합니다."
+               data-during="해일 특보가 발령되면 즉시 고지대로 대피하며, 낮은 지대나 해안가로 접근하지 않습니다., 대피 시 전기 차단기 및 가스 밸브를 잠근 후 대피합니다.">
+                <span class="kb-item-name">해일(海溢)</span>
+                <span class="kb-item-arrow"></span>
+            </a>
+
+            <a href="#" class="kb-disaster-item" data-disaster="대설"
+               data-video-id="EzSjNkqe_Mw"
+               data-pre="자가용 대신 대중교통 이용을 계획합니다., 차량에 스노체인, 부동액 등을 준비합니다., 건물 주변 취약 구조물에 보강 작업을 실시합니다."
+               data-during="가급적 외출을 자제하고 보온을 유지합니다., 빙판길 운전 시에는 서행하고 안전거리를 확보합니다., 동파 발생 시 관리 사무소에 신고합니다.">
+                <span class="kb-item-name">대설</span>
+                <span class="kb-item-arrow"></span>
+            </a>
+
+            <a href="#" class="kb-disaster-item" data-disaster="한파"
+               data-video-id="KQ9VfVJI6KE"
+               data-pre="수도 계량기나 배관에 보온재를 씌워 동파를 예방합니다., 외출 시 체온 유지를 위해 내복, 목도리 등을 착용합니다., 취약 계층의 건강 상태를 수시로 확인합니다."
+               data-during="장시간 야외 활동을 피하고 실내 적정 온도를 유지합니다., 난방기구 사용 시 화재 예방에 주의합니다.">
+                <span class="kb-item-name">한파</span>
+                <span class="kb-item-arrow"></span>
+            </a>
+
+            <a href="#" class="kb-disaster-item" data-disaster="낙뢰"
+               data-video-id="b-MuBHWQyAOc8"
+               data-pre="외부 활동 중 낙뢰 예상 시 안전한 실내나 차량으로 대피합니다., 집안의 TV 안테나나 인터넷 선을 뽑아둡니다."
+               data-during="야외에서는 나무 아래나 높은 구조물 근처를 피합니다., 실내에서는 가전제품이나 수도꼭지 등 금속 물질 접촉을 피합니다., 낙뢰 발생 시 전화기 사용을 자제합니다.">
+                <span class="kb-item-name">낙뢰</span>
+                <span class="kb-item-arrow"></span>
+            </a>
+
+            <a href="#" class="kb-disaster-item" data-disaster="가뭄"
+               data-video-id="HzNX_pX2Kog"
+               data-pre="생활용수 절약을 위해 절수형 수도꼭지를 설치합니다., 농업용수를 효율적으로 사용하기 위해 물탱크 등을 점검합니다."
+               data-during="물을 절약하는 습관을 생활화하고, 식수 부족에 대비해 생수를 준비합니다., 지역별 급수 제한 정보를 확인합니다.">
+                <span class="kb-item-name">가뭄</span>
+                <span class="kb-item-arrow"></span>
+            </a>
+
+            <a href="#" class="kb-disaster-item" data-disaster="폭염"
+               data-video-id="-zfBICWajMw"
+               data-pre="외출 시 양산이나 모자를 착용하고 물병을 소지합니다., 냉방기기의 상태를 점검하고 정비합니다."
+               data-during="가장 더운 시간대(오후 12시~5시)에는 야외 활동을 피하고 시원한 실내에 머뭅니다., 물을 자주 마시며 카페인 음료는 피합니다., 취약 계층의 상태를 수시로 확인합니다.">
+                <span class="kb-item-name">폭염</span>
+                <span class="kb-item-arrow"></span>
+            </a>
+
+            <a href="#" class="kb-disaster-item" data-disaster="지진"
+               data-video-id="QRVofqxkm5I"
+               data-pre="비상 탈출 경로를 숙지하고, 대피 장소를 확인합니다., 가구 및 가전제품을 벽에 고정합니다., 비상 배낭을 준비합니다."
+               data-during="탁자나 책상 밑 등 안전한 공간으로 몸을 숙여 대피합니다., 흔들림이 멈추면 가스, 전기 등을 차단하고 문을 열어 출구를 확보합니다., 건물 밖으로 대피 시 계단을 이용합니다.">
+                <span class="kb-item-name">지진</span>
+                <span class="kb-item-arrow"></span>
+            </a>
+
+            <a href="#" class="kb-disaster-item" data-disaster="황사(黃砂)"
+               data-video-id="5Cztav17C-g"
+               data-pre="황사 예보를 확인하고, 외출 시 마스크를 준비합니다., 창문과 문을 닫아 황사를 차단합니다."
+               data-during="외출을 자제하고, 부득이하게 외출 시 마스크를 착용합니다., 귀가 후에는 손과 발을 깨끗이 씻습니다., 실내 공기 정화를 위해 공기청정기를 사용합니다.">
+                <span class="kb-item-name">황사(黃砂)</span>
+                <span class="kb-item-arrow"></span>
+            </a>
+
+            <a href="#" class="kb-disaster-item" data-disaster="지진해일"
+               data-video-id="S0vA73HKYEY"
+               data-pre="해안가 거주 주민은 해일 가능성을 염두에 두고 대피 계획을 수립합니다., 대피 장소와 경로를 미리 확인합니다."
+               data-during="지진을 느끼거나 해일 경보가 발령되면 즉시 해안가에서 떨어진 높은 곳으로 대피합니다., 해일은 수차례 반복될 수 있으므로 안전한 장소에 머뭅니다.">
+                <span class="kb-item-name">지진해일</span>
+                <span class="kb-item-arrow"></span>
+            </a>
+
+            <a href="#" class="kb-disaster-item kb-etc-item" data-disaster="기타 재난"
+               data-video-id="a1X7yR9p-m4"
+               data-pre="평소 재난 대비 키트(응급약품, 물, 식량)를 준비해 둡니다., 정부 및 지자체의 재난 안전 정보를 수시로 확인합니다."
+               data-during="재난 상황 발생 시, 주변의 안내에 따라 침착하게 행동합니다., 휴대폰, 라디오 등으로 최신 정보를 확인하고 불필요한 이동을 자제합니다.">
+                <span class="kb-item-name">기타 재난</span>
+                <span class="kb-item-arrow"></span>
+            </a>
+
+            <!-- 3열 배치를 위한 빈 공간 아이템 추가 -->
+            <div class="kb-disaster-item-placeholder"></div>
+            <div class="kb-disaster-item-placeholder"></div>
+            <div class="kb-disaster-item-placeholder"></div>
+        </div>
+    </div>
+
+</div>
+
+<!-- 🌟 상세 행동요령 모달 🌟 -->
+<div id="disaster-modal" class="kb-modal-overlay">
+    <div class="kb-modal-content">
+        <button class="kb-modal-close" id="close-modal-x">X</button>
+
+        <h2 class="kb-modal-title" id="modal-title"></h2>
+
+        <!-- 🌟 1. 유튜브 영상 컨테이너 🌟 -->
+        <div class="kb-video-container">
+            <iframe id="disaster-youtube-player"
+                    width="100%"
+                    height="100%"
+                    src=""
+                    frameborder="0"
+                    allow="autoplay; encrypted-media"
+                    allowfullscreen>
+            </iframe>
+        </div>
+
+        <div class="kb-modal-body" id="modal-content-body">
+            <!-- JavaScript로 내용 채워짐 -->
+        </div>
+
+        <div class="kb-modal-footer">
+            <button class="kb-modal-btn kb-btn-close">닫기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const items = document.querySelectorAll('.kb-disaster-item');
+        const modal = document.getElementById('disaster-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContentBody = document.getElementById('modal-content-body');
+        const youtubePlayer = document.getElementById('disaster-youtube-player');
+
+        const closeBtnX = document.getElementById('close-modal-x');
+        const closeBtnFooter = document.querySelector('.kb-btn-close');
+
+        // 🌟 순수 HTML 속성에서 데이터를 가져와 모달 내용을 구성하는 함수 🌟
+        function generateGuideHtml(itemElement) {
+            const preItems = itemElement.getAttribute('data-pre').split(',').map(s => s.trim()).filter(s => s.length > 0);
+            const duringItems = itemElement.getAttribute('data-during').split(',').map(s => s.trim()).filter(s => s.length > 0);
+
+            let html = '';
+
+            // 1. 발생 전 준비 사항
+            html += '<h3 class="kb-guide-step-title">재난 발생 전 준비 사항</h3>';
+            html += '<ul class="kb-guide-list">';
+            preItems.forEach(item => { html += `<li>${item}</li>`; });
+            html += '</ul>';
+
+            // 2. 발생 시 행동 요령
+            html += '<h3 class="kb-guide-step-title">재난 발생 시 행동 요령</h3>';
+            html += '<ul class="kb-guide-list">';
+            duringItems.forEach(item => { html += `<li>${item}</li>`; });
+            html += '</ul>';
+
+            return html;
+        }
+
+        // 모달 열기 및 내용 변경 함수
+        function openModal(itemElement, disasterName) {
+            const videoId = itemElement.getAttribute('data-video-id');
+
+            modalTitle.textContent = `${disasterName} 행동 요령`;
+            modalContentBody.innerHTML = generateGuideHtml(itemElement);
+
+            // 🌟 유튜브 링크 설정 (data-video-id 사용) 🌟
+            if (videoId) {
+                const videoUrl = `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`;
+                youtubePlayer.src = videoUrl;
+            } else {
+                youtubePlayer.src = ''; // 영상이 없으면 비웁니다.
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        // 모달 닫기 함수
+        function closeModal() {
+            modal.style.display = 'none';
+            // 🌟 모달 닫을 때 영상 재생 중지 (필수) 🌟
+            youtubePlayer.src = '';
+        }
+
+        // 항목 클릭 이벤트
+        items.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const disaster = this.getAttribute('data-disaster');
+                openModal(this, disaster); // 항목 요소 자체를 전달
+            });
+        });
+
+        // 닫기 버튼 이벤트
+        closeBtnX.addEventListener('click', closeModal);
+        closeBtnFooter.addEventListener('click', closeModal);
+
+        // 오버레이 클릭 시 닫기
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    });
+</script>

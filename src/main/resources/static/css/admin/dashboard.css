@@ -1,0 +1,115 @@
+/* /css/admin/dashboard.css */
+
+/* 대시보드 전용 그리드 스타일 */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 140px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    z-index: 2;
+}
+
+.stat-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-icon-bg {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    opacity: 0.9;
+}
+
+.stat-value {
+    font-size: 36px;
+    font-weight: 800;
+    color: #1e293b;
+    z-index: 2;
+    margin-top: 10px;
+}
+
+/* 카드별 색상 */
+.card-blue .stat-icon-bg { background: #dbeafe; color: #2563eb; }
+.card-green .stat-icon-bg { background: #dcfce7; color: #16a34a; }
+.card-red .stat-icon-bg { background: #fee2e2; color: #dc2626; }
+
+/* 바로가기 그리드 */
+.shortcut-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.shortcut-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #1e293b;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.shortcut-btn:hover {
+    background-color: #fff;
+    border-color: #337cf4;
+    box-shadow: 0 4px 12px rgba(51, 124, 244, 0.15);
+    transform: translateY(-3px);
+    color: #337cf4;
+}
+
+.shortcut-btn .icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+/* 시스템 상태 */
+.system-status-list {
+    display: flex;
+    gap: 40px;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}

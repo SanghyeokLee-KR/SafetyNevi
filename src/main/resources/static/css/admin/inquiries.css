@@ -1,0 +1,85 @@
+/* --- 섹션 스타일 --- */
+.dashboard-section {
+    margin-bottom: 40px;
+}
+
+.section-header {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* --- 테이블 컨테이너 커스텀 (그림자 제거, 평면 스타일) --- */
+.table-container.flat {
+    margin-top: 0;
+    box-shadow: none;
+    border: 1px solid #e2e8f0;
+}
+
+/* --- 상태 뱃지 (Status Badge) --- */
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* 답변 대기 (빨강) */
+.status-badge.waiting {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+/* 답변 완료 (초록) */
+.status-badge.completed {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+}
+
+/* --- 테이블 내부 텍스트 스타일 --- */
+.inquiry-subject {
+    font-weight: 600;
+    color: #334155;
+}
+
+/* 읽음/완료 처리된 제목 */
+.inquiry-subject.read {
+    color: #64748b;
+    font-weight: 400;
+}
+
+/* --- 소형 액션 버튼 --- */
+.btn-action-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+/* 답변하기 버튼 (Primary Color) */
+.btn-action-sm.reply {
+    background-color: #334155; /* 기본값, hover시 변경 가능 */
+}
+.btn-action-sm.reply:hover {
+    background-color: #1e293b;
+}
+
+/* 조회 버튼 (회색) */
+.btn-action-sm.view {
+    background: #94a3b8;
+}
+.btn-action-sm.view:hover {
+    background: #64748b;
+}

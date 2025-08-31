@@ -1,0 +1,233 @@
+/* 기본 설정 */
+html, body {
+    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+}
+
+/* 모달 콘텐츠 박스 */
+.kb-modal-content {
+    background-color: white;
+    width: 90%;
+    max-width: 420px; /* 모바일/카드 최적화 너비 */
+    border-radius: 10px;
+    position: relative;
+    padding: 20px; /* 내부 패딩 */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+}
+
+/* 닫기 버튼 */
+.kb-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    line-height: 1;
+    padding: 0;
+}
+
+/* --- 1. 주요 정보 섹션 --- */
+.kb-info-section {
+    margin-bottom: 20px;
+}
+
+.kb-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    line-height: 1.4;
+    margin-top: 0;
+    margin-bottom: 5px;
+    padding-right: 30px; /* X 버튼 공간 확보 */
+}
+
+.kb-address, .kb-address-detail {
+    font-size: 14px;
+    color: #555;
+    margin: 0;
+    line-height: 1.5;
+}
+.kb-address-detail {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 15px;
+}
+
+/* --- 2. 상세 속성 섹션 --- */
+.kb-attributes-section {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    margin-bottom: 20px;
+}
+
+.kb-attribute-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.kb-attribute-row:last-child {
+    margin-bottom: 0;
+}
+
+/* 민방위대피소 / 제공 행정안전부 행 */
+.kb-type-row {
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.kb-attribute-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+}
+
+.kb-attribute-provider {
+    position: absolute;
+    right: 0;
+    font-size: 12px;
+    color: #999;
+    font-weight: 400;
+}
+
+.kb-attribute-name {
+    color: #999;
+    min-width: 80px; /* 라벨 너비 고정 */
+    font-weight: 500;
+}
+
+.kb-attribute-value {
+    font-weight: 600;
+    color: #333;
+}
+
+/* --- 3. 게시판 미리보기 섹션 (새로운 스타일) --- */
+
+.kb-mini-board-wrap {
+    background-color: #f8f8f8; /* 배경을 연하게 주어 구분 */
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #eee;
+}
+
+.kb-mini-board-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    margin: 5px 0 10px 0;
+}
+
+.kb-mini-post-list {
+    display: flex;
+    flex-direction: column;
+    /* 🌟 3개 항목이 잘리지 않고 모두 보이도록 max-height 조정 🌟 */
+    max-height: 78px; /* 3개 항목이 깔끔하게 보이도록 조정 (패딩, 폰트크기, 라인 높이 고려) */
+    overflow: hidden; /* 4번째 항목부터는 숨김 */
+}
+
+.kb-mini-post-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: #555;
+    font-size: 13px;
+    padding: 5px 0;
+    border-bottom: 1px dashed #e0e0e0;
+}
+
+.kb-mini-post-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.kb-mini-post-item:hover .kb-mini-post-title {
+    text-decoration: underline;
+    color: #337cf4;
+}
+
+.kb-mini-post-title {
+    max-width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #444;
+}
+
+.kb-mini-post-date {
+    color: #999;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.kb-more-posts {
+    display: block;
+    text-align: right;
+    font-size: 12px;
+    color: #337cf4;
+    text-decoration: none;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+/* --- 4. 하단 액션 버튼 --- */
+.kb-action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.kb-icon-buttons {
+    display: flex;
+    gap: 10px;
+    flex-grow: 1;
+}
+
+.kb-icon-btn {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.kb-icon-btn svg {
+    width: 20px;
+    height: 20px;
+    color: #666;
+}
+
+.kb-icon-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.kb-route-button {
+    background-color: #337cf4; /* 파란색 버튼 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 20px; /* 이미지와의 간격 */
+}
+
+.kb-route-button:hover {
+    background-color: #1a65d6;
+}

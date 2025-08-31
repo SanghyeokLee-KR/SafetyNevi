@@ -1,0 +1,173 @@
+/* 기본 설정 */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+    background-color: #f7f9fc; /* 전체 배경색 통일 */
+    color: #333;
+}
+
+.kb-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- 메인 콘텐츠 영역 --- */
+.kb-content-wrap {
+    flex: 1; /* 푸터를 하단으로 밀어내기 위해 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* 화면 중앙 정렬 */
+    padding: 40px 20px;
+}
+
+/* 로고 타이틀 */
+.kb-title-link {
+    text-decoration: none;
+    color: inherit;
+    margin-bottom: 50px; /* 그리드와의 간격 */
+}
+
+.kb-title-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.kb-logo-img {
+    width: 50px;
+    height: auto;
+}
+
+.kb-title-text {
+    font-size: 32px;
+    font-weight: 800;
+    color: #333;
+    margin: 0;
+    letter-spacing: -1px;
+}
+
+/* --- 내비게이션 그리드 --- */
+.kb-nav-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2열 그리드 */
+    gap: 25px;
+    width: 100%;
+    max-width: 600px; /* 전체 너비 제한 */
+}
+
+/* 내비게이션 카드 (버튼) */
+.kb-nav-card {
+    background-color: #ffffff;
+    border-radius: 20px; /* 둥근 모서리 강조 */
+    padding: 40px 20px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* 부드러운 그림자 */
+    transition: transform 0.3s, box-shadow 0.3s;
+    color: #333;
+    border: 1px solid transparent; /* 호버 시 테두리 효과를 위해 */
+    height: 180px; /* 높이 고정으로 정사각형 느낌 */
+    box-sizing: border-box;
+}
+
+.kb-nav-card:hover {
+    transform: translateY(-5px); /* 위로 살짝 떠오르는 효과 */
+    box-shadow: 0 12px 30px rgba(51, 124, 244, 0.2); /* 파란색 그림자 */
+    border-color: #337cf4; /* 테두리 파란색 */
+}
+
+/* 카드 아이콘 */
+.kb-card-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+/* 카드 텍스트 */
+.kb-card-text {
+    font-size: 20px;
+    font-weight: 700;
+    color: #444;
+}
+
+/* 카드 개별 색상 포인트 (아이콘 색상 등으로 활용 가능, 현재는 통일감 위해 제거하거나 은은하게 적용) */
+/* 만약 배경색을 다르게 하고 싶다면 아래 주석 해제 */
+/*
+.kb-card-message { background-color: #eef4ff; color: #003668; }
+.kb-card-shelter { background-color: #eaffef; color: #3dc15d; }
+.kb-card-manual { background-color: #fffde7; color: #fbc02d; }
+.kb-card-board { background-color: #fff0f2; color: #e6002d; }
+*/
+
+
+/* --- 푸터 스타일 --- */
+.kb-footer {
+    background-color: #333; /* 어두운 배경 */
+    color: #ccc;
+    padding: 40px 20px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.kb-footer-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.kb-footer-nav {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #444;
+}
+
+.kb-footer-nav a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 10px;
+    font-weight: 600;
+}
+
+.kb-footer-nav a:hover {
+    text-decoration: underline;
+}
+
+.kb-footer-info p {
+    margin: 5px 0;
+    line-height: 1.5;
+}
+
+.kb-copyright {
+    margin-top: 15px;
+    color: #888;
+}
+
+/* 반응형: 모바일 화면 */
+@media (max-width: 600px) {
+    .kb-nav-grid {
+        gap: 15px;
+    }
+
+    .kb-nav-card {
+        height: 140px;
+        padding: 20px;
+    }
+
+    .kb-card-icon {
+        font-size: 36px;
+    }
+
+    .kb-card-text {
+        font-size: 16px;
+    }
+
+    .kb-footer-nav a {
+        display: inline-block;
+        margin: 5px 8px;
+    }
+}

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 - 신고 관리</title>
+
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" th:href="@{/css/admin/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/components.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/reports.css}">
+
+    <!-- 모달 전용 CSS -->
+    <link rel="stylesheet" th:href="@{/css/admin/reports-modal.css}">
+
+    <link rel="icon" type="image/png" th:href="@{/img/logo/favicon.png}">
+</head>
+
+<body>
+
+<!-- ========================================================= -->
+<!--  ⭐ 최신 규격의 관리자 사이드바 (다른 admin 페이지와 동일) ⭐ -->
+<!-- ========================================================= -->
+<aside class="admin-sidebar">
+    <div class="sidebar-header">
+        <span style="margin-left: 10px;">🛡️ SafetyNevi</span>
+    </div>
+
+    <ul class="sidebar-menu">
+
+        <li>
+            <a href="/admin" class="menu-item"
+               th:classappend="${requestURI == '/admin'} ? 'active'">
+                <span class="icon">📊</span> <span>대시보드</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="/admin/members" class="menu-item"
+               th:classappend="${requestURI.startsWith('/admin/members')} ? 'active'">
+                <span class="icon">👥</span> <span>회원 관리</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="/admin/boards" class="menu-item"
+               th:classappend="${requestURI.startsWith('/admin/boards')} ? 'active'">
+                <span class="icon">📝</span> <span>게시물 관리</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="/admin/notice/create" class="menu-item"
+               th:classappend="${requestURI.startsWith('/admin/notice')} ? 'active'">
+                <span class="icon">📢</span> <span>공지 생성</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="/admin/inquiries" class="menu-item"
+               th:classappend="${requestURI.startsWith('/admin/inquiries')} ? 'active'">
+                <span class="icon">💌</span> <span>문의 관리</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="/admin/reports" class="menu-item"
+               th:classappend="${requestURI.startsWith('/admin/reports')} ? 'active'">
+                <span class="icon">🚩</span> <span>신고 관리</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="/admin/disaster" class="menu-item"
+               th:classappend="${requestURI.startsWith('/admin/disaster')} ? 'active'">
+                <span class="icon">🚨</span> <span>재난 관리</span>
+            </a>
+        </li>
+
+        <li style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+            <a href="/" class="menu-item">
+                <span class="icon">🏠</span> <span>서비스 홈</span>
+            </a>
+        </li>
+
+    </ul>
+</aside>
+
+<!-- ========================================================= -->
+<!--  ⭐ 메인 컨텐츠 영역 ⭐ -->
+<!-- ========================================================= -->
+<main class="admin-content">
+    <div class="page-header">
+        <div>
+            <div class="page-title">신고 관리</div>
+            <div class="page-subtitle">접수된 신고 내역을 확인하고 처리합니다. (페이지당 10건)</div>
+        </div>
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!--  🚨 1. 접수된 신고 리스트 -->
+    <!-- ========================================================= -->
+    <div class="dashboard-section">
+        <div class="section-header">🚨 접수된 신고 (처리 필요)</div>
+
+        <div class="table-container flat">
+            <table class="admin-table kb-table-reports">
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>유형</th>
+                    <th>신고 내용</th>
+                    <th>신고자</th>
+                    <th>접수일</th>
+                    <th>상태</th>
+                    <th>관리</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="report : ${reports}" th:if="${report.status == 'RECEIVED'}">
+
+                    <td th:text="${report.id}"></td>
+
+                    <td>
+                        <span class="target-type" th:text="'[' + ${report.targetType} + ']'"></span>
+                    </td>
+
+                    <td>
+                        <div class="report-reason" th:text="${report.reason}"></div>
+
+                        <div class="target-user"
+                             th:text="${report.targetUser != null ?
+                             '대상: ' + report.targetUser :
+                             '대상 ID: ' + report.targetId}">
+                        </div>
+
+                        <div th:if="${report.targetType == 'BOARD'}" style="margin-top:6px;">
+                            <button class="btn-action-sm btn-view-post"
+                                    th:data-id="${report.targetId}">
+                                📄 게시글 보기
+                            </button>
+                        </div>
+                    </td>
+
+                    <td th:text="${report.reporter.nickname}"></td>
+
+                    <td th:text="${#temporals.format(report.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+
+                    <td><span class="status-badge pending">접수</span></td>
+
+                    <td>
+                        <button class="btn-action-sm btn-update-status"
+                                th:data-id="${report.id}"
+                                data-status="COMPLETED">
+                            처리완료
+                        </button>
+                    </td>
+
+                </tr>
+
+                <tr th:if="${reports.isEmpty()}">
+                    <td colspan="7" class="empty-msg">
+                        접수된 신고가 없습니다.
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!--  ✅ 2. 처리 완료된 신고 -->
+    <!-- ========================================================= -->
+    <div class="dashboard-section">
+        <div class="section-header">✅ 처리 완료 내역</div>
+
+        <div class="table-container flat">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>유형</th>
+                    <th>신고 내용</th>
+                    <th>신고자</th>
+                    <th>접수일</th>
+                    <th>상태</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="report : ${reports}"
+                    th:if="${report.status == 'COMPLETED' or report.status == 'PROCESSED'}">
+
+                    <td th:text="${report.id}"></td>
+
+                    <td>
+                        <span class="target-type" th:text="'[' + ${report.targetType} + ']'"></span>
+                    </td>
+
+                    <td th:text="${report.reason}"></td>
+
+                    <td th:text="${report.reporter.nickname}"></td>
+
+                    <td th:text="${#temporals.format(report.createdAt, 'yyyy-MM-dd')}"></td>
+
+                    <td><span class="status-badge completed">완료</span></td>
+                </tr>
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!--  📄 페이징 -->
+    <!-- ========================================================= -->
+    <div class="pagination-area" th:if="${reports.totalPages > 0}">
+
+        <a th:href="@{/admin/reports(page=${reports.number - 1})}"
+           class="page-btn"
+           th:classappend="${reports.first} ? 'disabled'">« 이전</a>
+
+        <span th:each="p : ${#numbers.sequence(0, reports.totalPages-1)}"
+              th:if="${p >= reports.number - 2 and p <= reports.number + 2}">
+            <a th:href="@{/admin/reports(page=${p})}"
+               th:text="${p+1}"
+               class="page-num"
+               th:classappend="${p == reports.number} ? 'active'"></a>
+        </span>
+
+        <a th:href="@{/admin/reports(page=${reports.number + 1})}"
+           class="page-btn"
+           th:classappend="${reports.last} ? 'disabled'">다음 »</a>
+
+    </div>
+
+</main>
+
+
+<!-- ========================================================= -->
+<!--  🌟 게시글 상세 모달 -->
+<!-- ========================================================= -->
+<div id="postModal" class="modal-overlay" style="display:none;">
+    <div class="modal-window">
+        <div class="modal-header">
+            <h3>📄 게시글 상세 보기</h3>
+            <button class="modal-close" onclick="closePostModal()">×</button>
+        </div>
+        <div id="modal-content" class="modal-content"></div>
+    </div>
+</div>
+
+
+<!-- JS -->
+<script src="/js/admin/admin-reports.js"></script>
+
+</body>
+</html>

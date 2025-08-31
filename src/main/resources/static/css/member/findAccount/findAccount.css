@@ -1,0 +1,88 @@
+/* 공통 변수 */
+:root {
+    --primary-color: #337cf4;
+    --primary-hover: #2864c6;
+    --bg-color: #f0f4f8;
+    --text-color: #333333;
+    --gray-border: #e1e5e9;
+    --success-color: #28a745; /* 성공 색상 */
+    --error-color: #dc3545;   /* 에러 색상 */
+}
+
+html, body {
+    width: 100%; height: 100%; margin: 0; padding: 0;
+    font-family: 'Pretendard', sans-serif;
+    background-color: var(--bg-color);
+    display: flex; justify-content: center; align-items: center;
+}
+
+.kb-login-container {
+    width: 100%; max-width: 480px; padding: 20px; box-sizing: border-box;
+}
+
+.kb-login-card {
+    background-color: #ffffff; border-radius: 20px; padding: 50px 40px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    text-align: center; display: flex; flex-direction: column; align-items: center;
+}
+
+.kb-title-container {
+    display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 20px;
+}
+.kb-title-container img { width: 60px; height: auto; }
+.kb-title-text { font-size: 24px; font-weight: 800; color: var(--text-color); margin: 0; }
+.kb-login-title { font-size: 20px; font-weight: 700; color: #333; margin-bottom: 20px; }
+
+.kb-desc-text { font-size: 14px; color: #666; margin-bottom: 20px; word-break: keep-all; }
+.hidden-step { display: none !important; }
+
+.kb-question-box {
+    width: 100%; padding: 15px; border-radius: 10px;
+    background-color: #f1f8ff; color: var(--primary-color);
+    font-weight: 700; font-size: 15px; margin-bottom: 20px;
+    border: 1px solid #dbeafe; box-sizing: border-box;
+}
+
+.kb-form-group { width: 100%; margin-bottom: 20px; text-align: left; position: relative; }
+.kb-form-label { display: block; font-size: 14px; font-weight: 600; color: #555; margin-bottom: 8px; margin-left: 4px; }
+
+.kb-form-input {
+    width: 100%; height: 50px; padding: 0 15px;
+    border: 1px solid var(--gray-border); border-radius: 10px;
+    font-size: 15px; background-color: #fdfdfd; box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+.kb-form-input:focus {
+    outline: none; border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(51, 124, 244, 0.15);
+}
+
+/* 🌟 유효성 검사 스타일 (회원가입과 동일하게 적용) */
+.kb-form-input.valid {
+    border-color: var(--success-color);
+    /* 체크 아이콘 SVG */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2328a745' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 20px;
+}
+.kb-form-input.invalid { border-color: var(--error-color); background-color: #fff5f5; }
+
+.kb-input-msg { font-size: 12px; margin-top: 5px; margin-left: 5px; display: none; }
+.kb-input-msg.error { display: block; color: var(--error-color); }
+.kb-input-msg.success { display: block; color: var(--success-color); }
+
+.kb-login-button {
+    width: 100%; height: 56px; background-color: var(--primary-color);
+    color: white; border: none; border-radius: 12px;
+    font-size: 18px; font-weight: 700; cursor: pointer;
+    transition: all 0.3s; box-shadow: 0 10px 20px rgba(51, 124, 244, 0.3);
+}
+.kb-login-button:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
+
+.kb-utility-links { margin-top: 25px; font-size: 14px; }
+.kb-link { color: #888; text-decoration: none; }
+.kb-link:hover { color: var(--primary-color); font-weight: 600; }
+
+.fade-in { animation: fadeIn 0.5s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
