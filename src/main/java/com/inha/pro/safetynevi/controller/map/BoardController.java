@@ -87,12 +87,32 @@ public class BoardController {
     // 댓글 작성
     @PostMapping("/{id}/comment")
     public ResponseEntity<BoardDto.CommentDto> addComment(@PathVariable Long id, @RequestBody Map<String, Object> payload, @AuthenticationPrincipal User user) {
-        Long parentId = payload.containsKey("parentId") ? Long.valueOf(payload.get("parentId").toString()) : null;
+
+        Object pidObj = payload.get("parentId");
+        Long parentId = null;
+
+        if (pidObj != null) {
+            String pidStr = String.valueOf(pidObj).trim();
+
+            // 값이 "null" 문자열이 아니고 비어있지 않은 경우에만 변환 시도
+            if (!pidStr.equalsIgnoreCase("null") && !pidStr.isEmpty()) {
+                try {
+                    // String이 Long 타입으로 변환 가능한 경우
+                    parentId = Long.valueOf(pidStr);
+                } catch (NumberFormatException e) {
+                    // 숫자가 아닌 값이 들어왔을 때 (예외 처리)
+                    parentId = null;
+                }
+            }
+        }
 
         BoardDto.CommentDto comment = boardService.addComment(id, user.getUsername(), (String)payload.get("content"), parentId);
 
+        // 웹소켓 메시지 전송 (프론트엔드에서 대댓글 위치를 파악할 수 있도록 parentId 전달)
+        // parentId가 null이면 -1을 보내서 메인 댓글임을 표시
         messagingTemplate.convertAndSend("/topic/board/comment",
                 Map.of("boardId", id, "comment", comment, "parentId", parentId != null ? parentId : -1));
+
         return ResponseEntity.ok(comment);
     }
 }
