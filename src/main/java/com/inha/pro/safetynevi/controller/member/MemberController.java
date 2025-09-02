@@ -10,6 +10,7 @@ import com.inha.pro.safetynevi.service.map.BoardService;
 import com.inha.pro.safetynevi.service.member.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -159,17 +160,31 @@ public class MemberController {
     // 비밀번호 찾기: 답변 검증
     @PostMapping("/api/find/verify")
     @ResponseBody
-    public ResponseEntity<?> verifyAnswer(@RequestBody Map<String, String> request) {
-        boolean isCorrect = memberService.verifyPwAnswer(request.get("userId"), request.get("answer"));
-        return isCorrect ? ResponseEntity.ok("verified") : ResponseEntity.badRequest().body("Answer mismatch");
+    public ResponseEntity<?> verifyAnswer(@RequestBody Map<String, String> request, HttpSession session) {
+        String userId = request.get("userId");
+        boolean isCorrect = memberService.verifyPwAnswer(userId, request.get("answer"));
+        if (isCorrect) {
+            // 검증 통과한 userId를 세션에 묶어, 재설정 단계에서 본인확인을 강제한다
+            session.setAttribute("PW_RESET_VERIFIED", userId);
+            return ResponseEntity.ok("verified");
+        }
+        session.removeAttribute("PW_RESET_VERIFIED");
+        return ResponseEntity.badRequest().body("Answer mismatch");
     }
 
     // 비밀번호 재설정
     @PostMapping("/api/find/reset")
     @ResponseBody
-    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request, HttpSession session) {
+        String userId = request.get("userId");
+        // 보안 질문 검증을 통과한 동일 세션·동일 userId만 재설정 허용 (계정 탈취 방지)
+        Object verified = session.getAttribute("PW_RESET_VERIFIED");
+        if (verified == null || !verified.equals(userId)) {
+            return ResponseEntity.status(403).body("본인 확인이 필요합니다.");
+        }
         try {
-            memberService.resetPassword(request.get("userId"), request.get("password"));
+            memberService.resetPassword(userId, request.get("password"));
+            session.removeAttribute("PW_RESET_VERIFIED");
             return ResponseEntity.ok("changed");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Reset failed");

@@ -110,7 +110,7 @@ public class InquiryEntity {
         this.title = title;
         this.content = content;
         this.category = category;
-        this.isSecret = isSecret;
+        this.isSecret = secret;
 
         // 이미지가 새로 들어왔을 때만 변경 (null이면 기존 이미지 유지)
         if (imageUrl != null) {

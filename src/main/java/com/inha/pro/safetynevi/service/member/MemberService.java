@@ -29,6 +29,14 @@ public class MemberService {
     public void signup(MemberSignupDto dto) {
         validatePassword(dto.getPassword());
 
+        // 서버 측 중복 검사 (클라이언트 검사 우회 + 기존 계정(admin 포함) 탈취 방지)
+        if (memberRepository.existsByUserId(dto.getUserId()))
+            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+        if (dto.getEmail() != null && memberRepository.existsByEmail(dto.getEmail()))
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+        if (dto.getNickname() != null && memberRepository.existsByNickname(dto.getNickname()))
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+
         Member member = Member.builder()
                 .userId(dto.getUserId())
                 .email(dto.getEmail())

@@ -60,8 +60,9 @@ public class MapApiController {
 
     // 장소 삭제
     @DeleteMapping("/place/{id}")
-    public ResponseEntity<?> deletePlace(@PathVariable Long id) {
-        mapService.deletePlace(id);
+    public ResponseEntity<?> deletePlace(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        if (user == null) return ResponseEntity.status(401).build();
+        mapService.deletePlace(user.getUsername(), id);
         return ResponseEntity.ok("deleted");
     }
 
@@ -69,18 +70,21 @@ public class MapApiController {
 
     @GetMapping("/family")
     public ResponseEntity<?> getFamilyList(@AuthenticationPrincipal User user) {
+        if (user == null) return ResponseEntity.status(401).build();
         return ResponseEntity.ok(mapService.getFamilyList(user.getUsername()));
     }
 
     @PostMapping("/family")
     public ResponseEntity<?> addFamily(@RequestBody Map<String, String> payload, @AuthenticationPrincipal User user) {
+        if (user == null) return ResponseEntity.status(401).build();
         mapService.addFamily(user.getUsername(), payload.get("name"), payload.get("phone"));
         return ResponseEntity.ok("added");
     }
 
     @DeleteMapping("/family/{id}")
-    public ResponseEntity<?> deleteFamily(@PathVariable Long id) {
-        mapService.deleteFamily(id);
+    public ResponseEntity<?> deleteFamily(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        if (user == null) return ResponseEntity.status(401).build();
+        mapService.deleteFamily(user.getUsername(), id);
         return ResponseEntity.ok("deleted");
     }
 }

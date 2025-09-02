@@ -50,9 +50,14 @@ public class MapService {
         return favoritePlaceRepository.findAllByUserId(userId);
     }
 
-    // 4. 장소 삭제
-    public void deletePlace(Long placeId) {
-        favoritePlaceRepository.deleteById(placeId);
+    // 4. 장소 삭제 (본인 소유만 삭제 가능)
+    public void deletePlace(String userId, Long placeId) {
+        FavoritePlace place = favoritePlaceRepository.findById(placeId)
+                .orElseThrow(() -> new IllegalArgumentException("장소를 찾을 수 없습니다."));
+        if (!place.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        }
+        favoritePlaceRepository.delete(place);
     }
 
     // 🌟 [가족] 목록 조회
@@ -67,9 +72,14 @@ public class MapService {
                 .userId(userId).name(name).phone(phone).build());
     }
 
-    // 🌟 [가족] 삭제
-    public void deleteFamily(Long familyId) {
-        familyRepository.deleteById(familyId);
+    // 🌟 [가족] 삭제 (본인 소유만 삭제 가능)
+    public void deleteFamily(String userId, Long familyId) {
+        Family family = familyRepository.findById(familyId)
+                .orElseThrow(() -> new IllegalArgumentException("연락처를 찾을 수 없습니다."));
+        if (!family.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        }
+        familyRepository.delete(family);
     }
 
 }

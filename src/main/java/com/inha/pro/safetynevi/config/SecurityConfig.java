@@ -51,7 +51,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/board").permitAll()
 
                         // 관리자 전용
-                        .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**", "/api/admin/**", "/dashboardChart").hasRole("ADMIN")
 
                         // 그 외 요청은 인증 필요
                         .anyRequest().authenticated()
