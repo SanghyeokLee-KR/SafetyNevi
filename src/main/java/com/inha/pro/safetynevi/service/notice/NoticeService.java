@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -41,7 +42,9 @@ public class NoticeService {
         MultipartFile file = dto.getFile();
         if (file != null && !file.isEmpty()) {
             try {
-                String originalFilename = file.getOriginalFilename();
+                // 경로 조작(../) 방지: 정규화 후 파일명만 추출
+                String originalFilename = StringUtils.getFilename(
+                        StringUtils.cleanPath(file.getOriginalFilename() == null ? "file" : file.getOriginalFilename()));
                 String uuid = UUID.randomUUID().toString().substring(0, 8);
                 String savedFileName = uuid + "_" + originalFilename;
 

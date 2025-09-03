@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -112,8 +113,11 @@ public class BoardService {
 
         if (file != null && !file.isEmpty()) {
             try {
-                String storeName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-                File dest = new File(uploadDir + storeName);
+                // 경로 조작(../) 방지: 정규화 후 파일명만 추출하고, 경로 결합도 File(parent, child)로 안전하게
+                String safeName = StringUtils.getFilename(
+                        StringUtils.cleanPath(file.getOriginalFilename() == null ? "file" : file.getOriginalFilename()));
+                String storeName = UUID.randomUUID() + "_" + safeName;
+                File dest = new File(uploadDir, storeName);
                 if (!dest.getParentFile().exists()) dest.getParentFile().mkdirs();
                 file.transferTo(dest);
                 imagePath = "/images/uploads/" + storeName;

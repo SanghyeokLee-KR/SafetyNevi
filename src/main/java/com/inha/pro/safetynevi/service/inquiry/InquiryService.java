@@ -68,7 +68,9 @@ public class InquiryService {
         MultipartFile file = dto.getFile();
         if (file != null && !file.isEmpty()) {
             try {
-                String originalFilename = file.getOriginalFilename();
+                // 경로 조작(../) 방지: 정규화 후 파일명만 추출
+                String originalFilename = StringUtils.getFilename(
+                        StringUtils.cleanPath(file.getOriginalFilename() == null ? "file" : file.getOriginalFilename()));
                 String uuid = UUID.randomUUID().toString().substring(0, 8);
                 String savedFileName = uuid + "_" + originalFilename;
 
@@ -167,7 +169,9 @@ public class InquiryService {
             // (2) 새 파일 저장
             try {
                 String uuid = UUID.randomUUID().toString().substring(0, 8);
-                String originalFilename = file.getOriginalFilename();
+                // 경로 조작(../) 방지: 정규화 후 파일명만 추출
+                String originalFilename = StringUtils.getFilename(
+                        StringUtils.cleanPath(file.getOriginalFilename() == null ? "file" : file.getOriginalFilename()));
                 String savedFileName = uuid + "_" + originalFilename;
 
                 // 🌟 [수정 6] 절대 경로 사용
