@@ -1,6 +1,6 @@
 package com.inha.pro.safetynevi.controller.admin;
 
-import com.inha.pro.safetynevi.entity.member.Member;
+import com.inha.pro.safetynevi.dto.member.MemberResponse;
 import com.inha.pro.safetynevi.entity.report.Report;
 import com.inha.pro.safetynevi.service.calamity.DisasterService;
 import com.inha.pro.safetynevi.service.map.BoardService;
@@ -49,7 +49,7 @@ public class AdminPageController {
     // 2. 회원 관리 페이지
     @GetMapping("/members")
     public String members(Model model) {
-        List<Member> members = memberService.findAllMembers();
+        List<MemberResponse> members = memberService.findAllMemberResponses();
         model.addAttribute("members", members);
         return "admin/members";
     }

@@ -3,8 +3,7 @@ package com.inha.pro.safetynevi.controller.member;
 import com.inha.pro.safetynevi.dto.inquiry.InquiryDTO;
 import com.inha.pro.safetynevi.dto.map.BoardDto;
 import com.inha.pro.safetynevi.dto.member.MemberSignupDto;
-import com.inha.pro.safetynevi.entity.member.AccessLog;
-import com.inha.pro.safetynevi.entity.member.Member;
+import com.inha.pro.safetynevi.dto.member.MemberResponse;
 import com.inha.pro.safetynevi.service.inquiry.InquiryService;
 import com.inha.pro.safetynevi.service.map.BoardService;
 import com.inha.pro.safetynevi.service.member.MemberService;
@@ -72,7 +71,7 @@ public class MemberController {
     public String myInfoPage(Model model, @AuthenticationPrincipal User user) {
         if (user != null) {
             String userId = user.getUsername();
-            Member member = memberService.getMember(userId);
+            MemberResponse member = memberService.getMemberResponse(userId);
 
             if (member != null) {
                 model.addAttribute("member", member);

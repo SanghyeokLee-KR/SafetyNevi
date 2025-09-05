@@ -1,6 +1,7 @@
 package com.inha.pro.safetynevi.service.member;
 
 import com.inha.pro.safetynevi.dao.member.*;
+import com.inha.pro.safetynevi.dto.member.MemberResponse;
 import com.inha.pro.safetynevi.dto.member.MemberSignupDto;
 import com.inha.pro.safetynevi.entity.member.*;
 import lombok.RequiredArgsConstructor;
@@ -126,6 +127,17 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public List<Member> findAllMembers() { return memberRepository.findAll(); }
+
+    // 화면/응답용: 비밀번호·보안답변 같은 민감 정보를 뺀 DTO로 변환해서 반환
+    @Transactional(readOnly = true)
+    public List<MemberResponse> findAllMemberResponses() {
+        return memberRepository.findAll().stream().map(MemberResponse::from).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public MemberResponse getMemberResponse(String userId) {
+        return memberRepository.findById(userId).map(MemberResponse::from).orElse(null);
+    }
 
     // 탈퇴 처리
     public void withdrawMember(String userId, String password) {
