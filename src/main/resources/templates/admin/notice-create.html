@@ -104,7 +104,7 @@
 
 <div id="noticeModal" class="modal-overlay">
     <div class="modal-window">
-        <form action="/admin/notice/NoticeWrite" method="post" enctype="multipart/form-data">
+        <form th:action="@{/admin/notice/NoticeWrite}" method="post" enctype="multipart/form-data">
             <div class="modal-header">
                 <span>📝 신규 공지 등록</span>
                 <button type="button" class="close-btn" onclick="closeModal()">&times;</button>

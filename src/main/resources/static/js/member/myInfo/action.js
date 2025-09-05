@@ -111,7 +111,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(msg);
             }
             alert("비밀번호가 변경되었습니다. 다시 로그인해주세요.");
-            location.href = "/logout";
+            // CSRF 보호가 켜져 있어 로그아웃은 토큰을 실은 POST 폼으로 전송한다
+            const logoutForm = document.createElement('form');
+            logoutForm.method = 'POST';
+            logoutForm.action = '/logout';
+            const csrfMeta = document.querySelector('meta[name="_csrf"]');
+            if (csrfMeta) {
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '_csrf';
+                tokenInput.value = csrfMeta.getAttribute('content');
+                logoutForm.appendChild(tokenInput);
+            }
+            document.body.appendChild(logoutForm);
+            logoutForm.submit();
 
         } catch (err) {
             alert(err.message || "비밀번호 변경 실패");

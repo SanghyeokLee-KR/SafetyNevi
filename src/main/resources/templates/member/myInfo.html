@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="/css/member/myInfo/layout.css"/>
     <link rel="stylesheet" href="/css/member/myInfo/components.css"/>
     <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <script src="/js/common/csrf.js"></script>
 </head>
 <body>
 

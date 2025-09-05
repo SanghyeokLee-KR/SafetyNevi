@@ -28,7 +28,7 @@
             안녕하세요!<br>서비스 이용을 위해 로그인해주세요.
         </h2>
 
-        <form class="kb-login-form" action="/login" method="post">
+        <form class="kb-login-form" th:action="@{/login}" method="post">
 
             <div th:if="${param.error}" class="kb-alert-msg error">
                 아이디 또는 비밀번호가 일치하지 않습니다.

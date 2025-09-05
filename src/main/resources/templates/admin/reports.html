@@ -13,6 +13,9 @@
     <link rel="stylesheet" th:href="@{/css/admin/reports-modal.css}">
 
     <link rel="icon" type="image/png" th:href="@{/img/logo/favicon.png}">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <script src="/js/common/csrf.js"></script>
 </head>
 
 <body>

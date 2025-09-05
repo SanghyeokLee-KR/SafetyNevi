@@ -16,7 +16,7 @@
         <p class="kb-subtitle">문의 내용을 상세히 작성해주시면 빠르게 답변 드리겠습니다.</p>
     </header>
 
-    <form class="kb-write-form" action="/inquiry/write" method="post" enctype="multipart/form-data">
+    <form class="kb-write-form" th:action="@{/inquiry/write}" method="post" enctype="multipart/form-data">
 
         <div class="kb-form-group">
             <label for="category" class="kb-form-label">* 카테고리</label>

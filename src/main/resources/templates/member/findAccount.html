@@ -12,6 +12,9 @@
     <!-- 🌟 파비콘 추가: /img/logo/favicon.png 및 /img/logo/favicon.ico 🌟 -->
     <link rel="icon" type="image/png" href="/img/logo/favicon.png">
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <script src="/js/common/csrf.js"></script>
 </head>
 <body>
 
