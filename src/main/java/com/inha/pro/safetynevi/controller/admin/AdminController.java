@@ -1,5 +1,6 @@
 package com.inha.pro.safetynevi.controller.admin;
 
+import com.inha.pro.safetynevi.dto.calamity.DisasterZoneResponse;
 import com.inha.pro.safetynevi.entity.calamity.DisasterZone;
 import com.inha.pro.safetynevi.service.calamity.DisasterService;
 import com.inha.pro.safetynevi.service.member.MemberService;
@@ -24,24 +25,24 @@ public class AdminController {
 
     // 원형(Circle) 재난 시뮬레이션 생성 (위도, 경도, 반경)
     @PostMapping("/simulate")
-    public ResponseEntity<DisasterZone> createDisaster(
+    public ResponseEntity<DisasterZoneResponse> createDisaster(
             @RequestParam double lat, @RequestParam double lon,
             @RequestParam String type, @RequestParam double radius,
             @RequestParam int durationMinutes
     ) {
         DisasterZone zone = disasterService.createCircleDisaster(lat, lon, type, radius, durationMinutes);
-        return ResponseEntity.ok(zone);
+        return ResponseEntity.ok(DisasterZoneResponse.from(zone));
     }
 
     // 지역(Polygon) 기반 재난 시뮬레이션 생성 (행정구역명)
     @PostMapping("/simulate-area")
-    public ResponseEntity<DisasterZone> createAreaDisaster(
+    public ResponseEntity<DisasterZoneResponse> createAreaDisaster(
             @RequestParam String areaName,
             @RequestParam String type,
             @RequestParam int durationMinutes
     ) {
         DisasterZone zone = disasterService.createAreaDisaster(areaName, type, durationMinutes);
-        return ResponseEntity.ok(zone);
+        return ResponseEntity.ok(DisasterZoneResponse.from(zone));
     }
 
     // 재난 상황 종료 및 삭제

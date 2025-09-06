@@ -1,6 +1,6 @@
 package com.inha.pro.safetynevi.controller.disaster;
 
-import com.inha.pro.safetynevi.entity.calamity.DisasterZone;
+import com.inha.pro.safetynevi.dto.calamity.DisasterZoneResponse;
 import com.inha.pro.safetynevi.service.calamity.DisasterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,9 @@ public class DisasterController {
     private final DisasterService disasterService;
 
     @GetMapping("/api/disaster-zones")
-    public List<DisasterZone> getActiveDisasterZones() {
-        return disasterService.findActiveDisasters();
+    public List<DisasterZoneResponse> getActiveDisasterZones() {
+        return disasterService.findActiveDisasters().stream()
+                .map(DisasterZoneResponse::from)
+                .toList();
     }
 }
