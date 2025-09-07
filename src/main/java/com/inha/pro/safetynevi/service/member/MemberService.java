@@ -1,6 +1,7 @@
 package com.inha.pro.safetynevi.service.member;
 
 import com.inha.pro.safetynevi.dao.member.*;
+import com.inha.pro.safetynevi.dto.member.AccessLogResponse;
 import com.inha.pro.safetynevi.dto.member.MemberResponse;
 import com.inha.pro.safetynevi.dto.member.MemberSignupDto;
 import com.inha.pro.safetynevi.entity.member.*;
@@ -114,6 +115,13 @@ public class MemberService {
     @Transactional(readOnly = true)
     public List<AccessLog> getAccessLogs(String userId) {
         return accessLogRepository.findTop20ByUserIdOrderByLogDateDesc(userId);
+    }
+
+    // 화면용: 접속 로그를 응답 DTO로 변환해서 반환
+    @Transactional(readOnly = true)
+    public List<AccessLogResponse> getAccessLogResponses(String userId) {
+        return accessLogRepository.findTop20ByUserIdOrderByLogDateDesc(userId)
+                .stream().map(AccessLogResponse::from).toList();
     }
 
     @Transactional(readOnly = true)

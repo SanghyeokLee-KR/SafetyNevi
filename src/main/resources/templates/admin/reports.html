@@ -146,7 +146,7 @@
                         </div>
                     </td>
 
-                    <td th:text="${report.reporter.nickname}"></td>
+                    <td th:text="${report.reporterNickname}"></td>
 
                     <td th:text="${#temporals.format(report.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
 
@@ -205,7 +205,7 @@
 
                     <td th:text="${report.reason}"></td>
 
-                    <td th:text="${report.reporter.nickname}"></td>
+                    <td th:text="${report.reporterNickname}"></td>
 
                     <td th:text="${#temporals.format(report.createdAt, 'yyyy-MM-dd')}"></td>
 

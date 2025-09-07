@@ -1,7 +1,7 @@
 package com.inha.pro.safetynevi.controller.admin;
 
 import com.inha.pro.safetynevi.dto.member.MemberResponse;
-import com.inha.pro.safetynevi.entity.report.Report;
+import com.inha.pro.safetynevi.dto.report.ReportResponse;
 import com.inha.pro.safetynevi.service.calamity.DisasterService;
 import com.inha.pro.safetynevi.service.map.BoardService;
 import com.inha.pro.safetynevi.service.member.MemberService;
@@ -63,16 +63,16 @@ public class AdminPageController {
     // 4. 신고 관리 페이지 (페이징 적용)
     @GetMapping("/reports")
     public String reports(Model model, @RequestParam(defaultValue = "0") int page) {
-        // 한 페이지당 10개씩 조회
-        Page<Report> reportPage = reportService.getAllReports(page, 10);
+        // 한 페이지당 10개씩 조회 (신고자 Member 대신 ReportResponse DTO로 변환해 전달)
+        Page<ReportResponse> reportPage = reportService.getAllReports(page, 10).map(ReportResponse::from);
         model.addAttribute("reports", reportPage);
         return "admin/reports";
     }
 
     // 5. 재난 관리 및 시뮬레이션 페이지
     @GetMapping("/disaster")
-    public String disasterPage(Model model) {
-        model.addAttribute("disasters", disasterService.findAll());
+    public String disasterPage() {
+        // 재난 목록은 화면에서 /api/disaster-zones(JS)로 불러오므로 모델에 담지 않는다
         return "admin/disaster";
     }
 }

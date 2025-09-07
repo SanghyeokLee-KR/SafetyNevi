@@ -1,7 +1,6 @@
 package com.inha.pro.safetynevi.controller.map;
 
 import com.inha.pro.safetynevi.dto.map.FacilityDto;
-import com.inha.pro.safetynevi.entity.Facility;
 import com.inha.pro.safetynevi.service.map.FacilityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +40,10 @@ public class FacilityController {
 
     // 시설명 키워드 검색
     @GetMapping("/search")
-    public ResponseEntity<List<Facility>> searchFacilities(@RequestParam String keyword) {
+    public ResponseEntity<List<FacilityDto>> searchFacilities(@RequestParam String keyword) {
         log.info("Search request: keyword={}", keyword);
-        return ResponseEntity.ok(facilityService.searchFacilitiesByName(keyword));
+        List<FacilityDto> results = facilityService.searchFacilitiesByName(keyword)
+                .stream().map(FacilityDto::new).toList();
+        return ResponseEntity.ok(results);
     }
 }

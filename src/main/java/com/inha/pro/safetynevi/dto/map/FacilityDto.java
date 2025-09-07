@@ -17,6 +17,7 @@ public class FacilityDto {
     private Long id;
     private String type;            // 시설 유형 (police, fire, hospital, shelter)
     private String name;
+    private String address;
     private double latitude;
     private double longitude;
     private String operatingStatus; // 운영 상태 (영업/폐업 등)
@@ -26,6 +27,7 @@ public class FacilityDto {
         this.id = facility.getId();
         this.type = facility.getType();
         this.name = facility.getName();
+        this.address = facility.getAddress();
         this.latitude = facility.getLatitude();
         this.longitude = facility.getLongitude();
 

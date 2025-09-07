@@ -76,7 +76,7 @@ public class MemberController {
             if (member != null) {
                 model.addAttribute("member", member);
                 model.addAttribute("questionText", questionMap.getOrDefault(member.getPwQuestion(), "질문 없음"));
-                model.addAttribute("loginLogs", memberService.getAccessLogs(userId));
+                model.addAttribute("loginLogs", memberService.getAccessLogResponses(userId));
                 model.addAttribute("myInquiries", inquiryService.getMyInquiries(userId));
                 model.addAttribute("myBoards", boardService.getMyBoards(userId));
             }
