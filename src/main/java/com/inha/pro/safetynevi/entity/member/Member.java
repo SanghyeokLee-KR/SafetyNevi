@@ -64,6 +64,10 @@ public class Member {
     @Column(name = "JOIN_DATE", updatable = false)
     private LocalDateTime joinDate;
 
+    // 권한 (USER 또는 ADMIN)
+    @Column(name = "ROLE", length = 20)
+    private String role;
+
     // --- 비즈니스 로직 메서드 ---
 
     public void updatePassword(String newPassword) {
@@ -80,4 +84,12 @@ public class Member {
     public void setAddress(String address) { this.address = address; }
     public void setLatitude(Double latitude) { this.latitude = latitude; }
     public void setLongitude(Double longitude) { this.longitude = longitude; }
+
+    public boolean isAdmin() {
+        return "ADMIN".equals(role);
+    }
+
+    public void updateRole(String role) {
+        this.role = role;
+    }
 }

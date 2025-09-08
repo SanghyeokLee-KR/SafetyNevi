@@ -57,7 +57,7 @@ public class AdminController {
     public ResponseEntity<String> kickMember(@PathVariable String userId) {
         log.info("[Admin] Force withdrawal request: ID={}", userId);
 
-        if("admin".equals(userId)) {
+        if (memberService.isAdmin(userId)) {
             return ResponseEntity.badRequest().body("관리자 계정은 삭제할 수 없습니다.");
         }
 

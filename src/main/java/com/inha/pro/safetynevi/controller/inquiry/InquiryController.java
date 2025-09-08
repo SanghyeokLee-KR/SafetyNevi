@@ -182,9 +182,11 @@ public class InquiryController {
                                  @RequestParam("answerContent") String answerContent, // HTML name 속성과 일치해야 함
                                  @AuthenticationPrincipal UserDetails user) {
 
-        // 보안 검사: 관리자('admin')가 맞는지 확인
-        if (user == null || !"admin".equals(user.getUsername())) {
-            throw new IllegalStateException("관리자만 답변을 등록할 수 있습니다.");
+        // 보안 검사: 관리자(ADMIN) 권한 확인
+        boolean isAdmin = user != null && user.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (!isAdmin) {
+            throw new SecurityException("관리자만 답변을 등록할 수 있습니다.");
         }
 
         // 서비스 호출

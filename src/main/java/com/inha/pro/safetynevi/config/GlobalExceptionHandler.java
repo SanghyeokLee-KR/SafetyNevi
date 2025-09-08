@@ -67,6 +67,17 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    // 권한 없음 (403)
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<?> handleForbidden(SecurityException e) {
+        log.warn("Forbidden: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of(
+                        "error", "FORBIDDEN",
+                        "message", e.getMessage()
+                ));
+    }
+
     // 서버 내부 오류 공통 처리 (500)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(HttpServletRequest request, Exception e) {

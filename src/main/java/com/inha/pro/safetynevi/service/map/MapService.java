@@ -55,7 +55,7 @@ public class MapService {
         FavoritePlace place = favoritePlaceRepository.findById(placeId)
                 .orElseThrow(() -> new IllegalArgumentException("장소를 찾을 수 없습니다."));
         if (!place.getUserId().equals(userId)) {
-            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+            throw new SecurityException("삭제 권한이 없습니다.");
         }
         favoritePlaceRepository.delete(place);
     }
@@ -77,7 +77,7 @@ public class MapService {
         Family family = familyRepository.findById(familyId)
                 .orElseThrow(() -> new IllegalArgumentException("연락처를 찾을 수 없습니다."));
         if (!family.getUserId().equals(userId)) {
-            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+            throw new SecurityException("삭제 권한이 없습니다.");
         }
         familyRepository.delete(family);
     }

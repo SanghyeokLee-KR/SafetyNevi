@@ -97,14 +97,20 @@ public class InquiryService {
         irepo.save(inquiry);
     }
 
+    // 해당 사용자가 관리자(ADMIN)인지 확인
+    @Transactional(readOnly = true)
+    public boolean isAdmin(String userId) {
+        return userId != null && mrepo.findById(userId).map(Member::isAdmin).orElse(false);
+    }
+
     @Transactional(readOnly = true)
     public InquiryDTO getInquiryDetail(Long id, String currentUserId) {
         InquiryEntity inquiry = irepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("글이 없습니다."));
 
         if (inquiry.getIsSecret() == 1 && !inquiry.getWriterId().equals(currentUserId)) {
-            if(!"admin".equals(currentUserId)) {
-                throw new IllegalStateException("비밀글은 작성자만 확인할 수 있습니다.");
+            if (!isAdmin(currentUserId)) {
+                throw new SecurityException("비밀글은 작성자만 확인할 수 있습니다.");
             }
         }
         return InquiryDTO.toDto(inquiry);
@@ -116,7 +122,7 @@ public class InquiryService {
                 .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
 
         if (!inquiry.getWriterId().equals(userId)) {
-            throw new IllegalStateException("삭제 권한이 없습니다.");
+            throw new SecurityException("삭제 권한이 없습니다.");
         }
 
         String imageUrl = inquiry.getImageUrl();

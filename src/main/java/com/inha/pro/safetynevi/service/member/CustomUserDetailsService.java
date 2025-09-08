@@ -33,7 +33,8 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new DisabledException("Account is suspended.");
         }
 
-        String role = "admin".equals(member.getUserId()) ? "ADMIN" : "USER";
+        // role 컬럼 기반으로 권한 부여 (값이 없으면 USER로 취급)
+        String role = (member.getRole() != null && !member.getRole().isBlank()) ? member.getRole() : "USER";
 
         return User.builder()
                 .username(member.getUserId())

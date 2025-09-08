@@ -53,6 +53,7 @@ public class MemberService {
                 .emergencyPhone(dto.getEmergencyPhone())
                 .pwQuestion(dto.getPwQuestion())
                 .pwAnswer(passwordEncoder.encode(dto.getPwAnswer()))
+                .role("USER")
                 .build();
         memberRepository.save(member);
     }
@@ -111,6 +112,12 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public Member getMember(String userId) { return memberRepository.findById(userId).orElse(null); }
+
+    // 해당 사용자가 관리자(ADMIN)인지 확인
+    @Transactional(readOnly = true)
+    public boolean isAdmin(String userId) {
+        return memberRepository.findById(userId).map(Member::isAdmin).orElse(false);
+    }
 
     @Transactional(readOnly = true)
     public List<AccessLog> getAccessLogs(String userId) {

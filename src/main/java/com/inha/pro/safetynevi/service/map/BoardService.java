@@ -40,17 +40,19 @@ public class BoardService {
     // 전체 게시글 조회
     @Transactional(readOnly = true)
     public List<BoardDto> getAllBoards(String currentUserId) {
+        boolean admin = isAdmin(currentUserId);
         return boardRepository.findAll().stream()
                 .sorted(Comparator.comparing(Board::getCreatedAt).reversed())
-                .map(board -> convertToBoardDto(board, currentUserId))
+                .map(board -> convertToBoardDto(board, currentUserId, admin))
                 .collect(Collectors.toList());
     }
 
     // 내 작성 글 조회
     @Transactional(readOnly = true)
     public List<BoardDto> getMyBoards(String userId) {
+        boolean admin = isAdmin(userId);
         return boardRepository.findAllByWriterWithAssociations(userId).stream()
-                .map(b -> convertToBoardDto(b, userId))
+                .map(b -> convertToBoardDto(b, userId, admin))
                 .collect(Collectors.toList());
     }
 
@@ -59,17 +61,22 @@ public class BoardService {
     public BoardDto getBoardDetail(Long boardId, String currentUserId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("Board not found"));
-        return convertToBoardDto(board, currentUserId);
+        return convertToBoardDto(board, currentUserId, isAdmin(currentUserId));
+    }
+
+    // 해당 사용자가 관리자(ADMIN)인지 확인
+    private boolean isAdmin(String userId) {
+        return userId != null && memberRepository.findById(userId).map(Member::isAdmin).orElse(false);
     }
 
     // Entity -> DTO 변환 (좋아요 여부 및 삭제 권한 확인 포함)
-    private BoardDto convertToBoardDto(Board board, String currentUserId) {
+    private BoardDto convertToBoardDto(Board board, String currentUserId, boolean isAdmin) {
         boolean isLiked = false;
         boolean canDelete = false;
 
         if (currentUserId != null) {
             isLiked = board.getLikes().stream().anyMatch(l -> l.getUser().getUserId().equals(currentUserId));
-            if (board.getWriter().getUserId().equals(currentUserId) || "admin".equals(currentUserId)) {
+            if (board.getWriter().getUserId().equals(currentUserId) || isAdmin) {
                 canDelete = true;
             }
         }
@@ -129,13 +136,13 @@ public class BoardService {
                 .latitude(lat).longitude(lon).locationType(locationType)
                 .imageUrl(imagePath).writer(member).build());
 
-        return convertToBoardDto(saved, userId);
+        return convertToBoardDto(saved, userId, isAdmin(userId));
     }
 
     // 게시글 삭제
     public void deleteBoard(Long boardId, String userId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("Board not found"));
-        if (!board.getWriter().getUserId().equals(userId) && !"admin".equals(userId)) {
+        if (!board.getWriter().getUserId().equals(userId) && !isAdmin(userId)) {
             throw new SecurityException("Permission denied");
         }
         boardRepository.delete(board);
