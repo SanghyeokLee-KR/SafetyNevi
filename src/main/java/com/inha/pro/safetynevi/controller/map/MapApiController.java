@@ -1,5 +1,7 @@
 package com.inha.pro.safetynevi.controller.map;
 
+import com.inha.pro.safetynevi.dto.map.FamilyResponse;
+import com.inha.pro.safetynevi.dto.map.FavoritePlaceResponse;
 import com.inha.pro.safetynevi.service.map.MapService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,7 +28,9 @@ public class MapApiController {
     @GetMapping("/my-places")
     public ResponseEntity<?> getMyPlaces(@AuthenticationPrincipal User user) {
         if (user == null) return ResponseEntity.status(401).build();
-        return ResponseEntity.ok(mapService.getMyAllPlaces(user.getUsername()));
+        List<FavoritePlaceResponse> places = mapService.getMyAllPlaces(user.getUsername())
+                .stream().map(FavoritePlaceResponse::from).toList();
+        return ResponseEntity.ok(places);
     }
 
     // 주요 장소(집/회사) 등록
@@ -71,7 +76,9 @@ public class MapApiController {
     @GetMapping("/family")
     public ResponseEntity<?> getFamilyList(@AuthenticationPrincipal User user) {
         if (user == null) return ResponseEntity.status(401).build();
-        return ResponseEntity.ok(mapService.getFamilyList(user.getUsername()));
+        List<FamilyResponse> families = mapService.getFamilyList(user.getUsername())
+                .stream().map(FamilyResponse::from).toList();
+        return ResponseEntity.ok(families);
     }
 
     @PostMapping("/family")
