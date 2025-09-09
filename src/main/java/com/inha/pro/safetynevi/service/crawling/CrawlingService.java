@@ -11,7 +11,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
@@ -25,8 +24,9 @@ public class CrawlingService {
     private final AiClientService aiClientService;
 
     // 1분마다 실행
+    // 외부 크롤링·AI 호출 동안 DB 커넥션을 점유하지 않도록 메서드 단위 트랜잭션은 두지 않는다.
+    // (메시지 저장·재난영역 생성은 각 호출이 자체 트랜잭션으로 처리)
     @Scheduled(fixedDelay = 60000)
-    @Transactional
     public void crawlAndSaveDisasterMessage() {
         // [테스트용] 강제 화재 경보 테스트 (필요시 주석 해제)
         // forceTestFireDisaster();

@@ -41,8 +41,8 @@ public class BoardService {
     @Transactional(readOnly = true)
     public List<BoardDto> getAllBoards(String currentUserId) {
         boolean admin = isAdmin(currentUserId);
-        return boardRepository.findAll().stream()
-                .sorted(Comparator.comparing(Board::getCreatedAt).reversed())
+        // fetch join 쿼리로 작성자·댓글·좋아요를 한 번에 가져와 N+1 제거 (정렬은 쿼리에서 처리)
+        return boardRepository.findAllWithAllAssociations().stream()
                 .map(board -> convertToBoardDto(board, currentUserId, admin))
                 .collect(Collectors.toList());
     }
