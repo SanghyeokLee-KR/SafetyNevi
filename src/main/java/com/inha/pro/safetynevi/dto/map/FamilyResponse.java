@@ -4,10 +4,7 @@ import com.inha.pro.safetynevi.entity.member.Family;
 import lombok.Builder;
 import lombok.Getter;
 
-/**
- * 안심 연락처(가족/지인) 응답 DTO
- * - 소유자 userId는 요청자 본인이라 내려보내지 않는다.
- */
+/** 안심 연락처 응답 DTO */
 @Getter
 @Builder
 public class FamilyResponse {

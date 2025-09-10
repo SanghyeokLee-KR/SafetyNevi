@@ -41,7 +41,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public List<BoardDto> getAllBoards(String currentUserId) {
         boolean admin = isAdmin(currentUserId);
-        // fetch join 쿼리로 작성자·댓글·좋아요를 한 번에 가져와 N+1 제거 (정렬은 쿼리에서 처리)
+        // fetch join으로 N+1 방지
         return boardRepository.findAllWithAllAssociations().stream()
                 .map(board -> convertToBoardDto(board, currentUserId, admin))
                 .collect(Collectors.toList());
@@ -64,7 +64,6 @@ public class BoardService {
         return convertToBoardDto(board, currentUserId, isAdmin(currentUserId));
     }
 
-    // 해당 사용자가 관리자(ADMIN)인지 확인
     private boolean isAdmin(String userId) {
         return userId != null && memberRepository.findById(userId).map(Member::isAdmin).orElse(false);
     }

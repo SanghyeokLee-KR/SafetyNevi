@@ -16,6 +16,6 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     // 특정 유형(게시글/시설 등)의 신고 내역
     List<Report> findAllByTargetType(String targetType);
 
-    // 🌟 [핵심] 페이징이 적용된 전체 조회 (최신순)
+    // 페이징 전체 조회 (최신순)
     Page<Report> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }

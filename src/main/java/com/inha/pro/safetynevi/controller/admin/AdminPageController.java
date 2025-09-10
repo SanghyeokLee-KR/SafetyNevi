@@ -63,7 +63,6 @@ public class AdminPageController {
     // 4. 신고 관리 페이지 (페이징 적용)
     @GetMapping("/reports")
     public String reports(Model model, @RequestParam(defaultValue = "0") int page) {
-        // 한 페이지당 10개씩 조회 (신고자 Member 대신 ReportResponse DTO로 변환해 전달)
         Page<ReportResponse> reportPage = reportService.getAllReports(page, 10).map(ReportResponse::from);
         model.addAttribute("reports", reportPage);
         return "admin/reports";

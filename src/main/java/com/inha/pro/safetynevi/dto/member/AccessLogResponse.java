@@ -6,10 +6,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-/**
- * 접속 로그 응답 DTO
- * - 마이페이지 접속 이력에 보여줄 값만 노출한다.
- */
+/** 접속 로그 응답 DTO */
 @Getter
 @Builder
 public class AccessLogResponse {

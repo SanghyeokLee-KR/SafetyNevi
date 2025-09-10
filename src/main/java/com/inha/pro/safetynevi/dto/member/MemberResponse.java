@@ -6,10 +6,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-/**
- * 회원 정보 응답 DTO
- * - 비밀번호·보안답변 해시 같은 민감 정보는 빼고, 화면과 API에 필요한 값만 노출한다.
- */
+/** 회원 정보 응답 DTO (비밀번호·보안답변 등 민감 정보 제외) */
 @Getter
 @Builder
 public class MemberResponse {

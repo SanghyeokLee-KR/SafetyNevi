@@ -23,9 +23,7 @@ public class CrawlingService {
     private final DisasterService disasterService;
     private final AiClientService aiClientService;
 
-    // 1분마다 실행
-    // 외부 크롤링·AI 호출 동안 DB 커넥션을 점유하지 않도록 메서드 단위 트랜잭션은 두지 않는다.
-    // (메시지 저장·재난영역 생성은 각 호출이 자체 트랜잭션으로 처리)
+    // 1분마다 실행. 외부 I/O(크롤링·AI) 중에는 DB 커넥션을 잡지 않으려고 메서드 트랜잭션은 두지 않음
     @Scheduled(fixedDelay = 60000)
     public void crawlAndSaveDisasterMessage() {
         String url = "https://search.naver.com/search.naver?where=nexearch&query=%EC%9E%AC%EB%82%9C%EB%AC%B8%EC%9E%90";
@@ -51,13 +49,13 @@ public class CrawlingService {
             // DB 저장
             DisasterMessage newMessage = new DisasterMessage(crawledDto);
             disasterMessageRepository.save(newMessage);
-            log.info("📥 [크롤링] 새 메시지 저장: {} ({})", newMessage.getArea(), newMessage.getDisasterType());
+            log.info("새 메시지 저장: {} ({})", newMessage.getArea(), newMessage.getDisasterType());
 
-            // 🌟 AI 분석 및 지도 표시 연결
+            // AI 분석 후 위험하면 지도에 표시
             analyzeAndTriggerDisaster(newMessage);
 
         } catch (IOException e) {
-            log.error("❌ 크롤링 오류: ", e);
+            log.error("크롤링 오류", e);
         }
     }
 
@@ -66,18 +64,16 @@ public class CrawlingService {
         boolean isDangerous = aiClientService.isCritical(msg.getContent());
 
         if (isDangerous) {
-            log.info("🚨 [AI 판단] 'DANGER' -> 지도에 폴리곤(영역) 생성 요청");
+            log.info("위험 판정 - 재난 영역 생성");
 
-            // 🌟 [핵심] createAreaDisaster를 호출합니다.
-            // 이 메서드는 lat/lon을 null로 저장하므로,
-            // 프론트엔드(JS)에서 "광범위한 지역 재난입니다" 알림을 띄우고 폴리곤을 그립니다.
+            // 좌표 없이 지역명만 저장 -> 프론트에서 폴리곤으로 표시
             disasterService.createAreaDisaster(
                     msg.getArea(),         // 지역명 (예: 경상북도 경주시 -> geojson 매핑됨)
                     msg.getDisasterType(), // 재난유형 (예: 호우, 지진 -> 색상 결정)
                     60                     // 지속시간 (60분)
             );
         } else {
-            log.info("✅ [AI 판단] 'SAFE' -> 지도 표시 안함");
+            log.info("안전 판정 - 표시 안 함");
         }
     }
 

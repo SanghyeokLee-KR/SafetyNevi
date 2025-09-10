@@ -2,7 +2,7 @@ package com.inha.pro.safetynevi.service.calamity;
 
 import com.inha.pro.safetynevi.dao.calamity.DisasterZoneRepository;
 import com.inha.pro.safetynevi.entity.calamity.DisasterZone;
-import com.inha.pro.safetynevi.exception.ResourceNotFoundException; // 🌟 커스텀 예외 임포트
+import com.inha.pro.safetynevi.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class DisasterService {
         Instant expiryTime = Instant.now().plus(durationMinutes, ChronoUnit.MINUTES);
         zone.setExpiryTime(expiryTime);
 
-        log.info("🌍 [Service] 원형 재난 생성: {}", zone);
+        log.info("원형 재난 생성: {}", zone);
         return disasterZoneRepository.save(zone);
     }
 
@@ -45,18 +45,17 @@ public class DisasterService {
         Instant expiryTime = Instant.now().plus(durationMinutes, ChronoUnit.MINUTES);
         zone.setExpiryTime(expiryTime);
 
-        log.info("🏙️ [Service] 지역 재난 생성: {}", zone);
+        log.info("지역 재난 생성: {}", zone);
         return disasterZoneRepository.save(zone);
     }
 
-    // 3. 🌟 [수정] 재난 삭제 (명시적 예외 처리)
+    // 재난 삭제 (없으면 404)
     public void deleteDisaster(Long id) {
-        // 먼저 조회하고, 없으면 404 예외를 던짐 -> GlobalExceptionHandler가 받음
         DisasterZone zone = disasterZoneRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 재난 정보가 없습니다: " + id));
 
         disasterZoneRepository.delete(zone);
-        log.info("🗑️ [Service] 재난 삭제 완료: ID={}", id);
+        log.info("재난 삭제 완료: id={}", id);
     }
 
     // 4. 모든 재난 조회

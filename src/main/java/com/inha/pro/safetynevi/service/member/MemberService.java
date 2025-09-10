@@ -113,7 +113,6 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Member getMember(String userId) { return memberRepository.findById(userId).orElse(null); }
 
-    // 해당 사용자가 관리자(ADMIN)인지 확인
     @Transactional(readOnly = true)
     public boolean isAdmin(String userId) {
         return memberRepository.findById(userId).map(Member::isAdmin).orElse(false);
@@ -124,7 +123,6 @@ public class MemberService {
         return accessLogRepository.findTop20ByUserIdOrderByLogDateDesc(userId);
     }
 
-    // 화면용: 접속 로그를 응답 DTO로 변환해서 반환
     @Transactional(readOnly = true)
     public List<AccessLogResponse> getAccessLogResponses(String userId) {
         return accessLogRepository.findTop20ByUserIdOrderByLogDateDesc(userId)
@@ -143,7 +141,6 @@ public class MemberService {
     @Transactional(readOnly = true)
     public List<Member> findAllMembers() { return memberRepository.findAll(); }
 
-    // 화면/응답용: 비밀번호·보안답변 같은 민감 정보를 뺀 DTO로 변환해서 반환
     @Transactional(readOnly = true)
     public List<MemberResponse> findAllMemberResponses() {
         return memberRepository.findAll().stream().map(MemberResponse::from).toList();

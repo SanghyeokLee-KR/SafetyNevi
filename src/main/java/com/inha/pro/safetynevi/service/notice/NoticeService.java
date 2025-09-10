@@ -48,7 +48,6 @@ public class NoticeService {
                 String uuid = UUID.randomUUID().toString().substring(0, 8);
                 String savedFileName = uuid + "_" + originalFilename;
 
-                // 🌟 [수정] System.getProperty 제거, 절대 경로(uploadDir) 사용
                 Path uploadPath = Paths.get(uploadDir);
 
                 if (!Files.exists(uploadPath)) {
@@ -58,7 +57,6 @@ public class NoticeService {
                 Path filePath = uploadPath.resolve(savedFileName);
                 file.transferTo(filePath.toFile());
 
-                // 🌟 [수정] DB URL 저장 시 '/upload/notice/' 경로 명시
                 dto.setAttachmentUrl("/upload/notice/" + savedFileName);
 
             } catch (IOException e) {
@@ -97,13 +95,12 @@ public class NoticeService {
         // 첨부파일 삭제 로직
         if (notice.getAttachmentUrl() != null) {
             try {
-                // 🌟 [수정] URL 앞부분(/upload/notice/)을 잘라내야 실제 파일명만 남음
+                // URL 접두사를 떼고 실제 파일명만 추출
                 String fileName = notice.getAttachmentUrl().substring("/upload/notice/".length());
 
                 // 한글 파일명 깨짐 방지 디코딩
                 fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
 
-                // 🌟 [수정] 절대 경로(uploadDir) + 파일명 조합
                 Path filePath = Paths.get(uploadDir, fileName);
 
                 Files.deleteIfExists(filePath);

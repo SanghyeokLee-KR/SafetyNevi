@@ -74,7 +74,6 @@ public class InquiryService {
                 String uuid = UUID.randomUUID().toString().substring(0, 8);
                 String savedFileName = uuid + "_" + originalFilename;
 
-                // 🌟 [수정 1] System.getProperty 제거! 절대 경로(uploadDir) 그대로 사용
                 Path uploadPath = Paths.get(uploadDir);
 
                 if (!Files.exists(uploadPath)) {
@@ -84,8 +83,7 @@ public class InquiryService {
                 Path filePath = uploadPath.resolve(savedFileName);
                 file.transferTo(filePath.toFile());
 
-                // 🌟 [수정 2] DB URL 저장 시 '/upload/inquiry/' 경로 명시
-                // (WebMvcConfig에서 /upload/** -> C:/safety_uploads/ 로 매핑했다고 가정)
+                // DB에는 /upload/inquiry/ 접두사로 저장 (WebMvcConfig 매핑)
                 dto.setImageUrl("/upload/inquiry/" + savedFileName);
 
             } catch (IOException e) {
@@ -97,7 +95,6 @@ public class InquiryService {
         irepo.save(inquiry);
     }
 
-    // 해당 사용자가 관리자(ADMIN)인지 확인
     @Transactional(readOnly = true)
     public boolean isAdmin(String userId) {
         return userId != null && mrepo.findById(userId).map(Member::isAdmin).orElse(false);
@@ -110,7 +107,7 @@ public class InquiryService {
 
         if (inquiry.getIsSecret() == 1 && !inquiry.getWriterId().equals(currentUserId)) {
             if (!isAdmin(currentUserId)) {
-                throw new SecurityException("비밀글은 작성자만 확인할 수 있습니다.");
+                throw new IllegalStateException("비밀글은 작성자만 확인할 수 있습니다.");
             }
         }
         return InquiryDTO.toDto(inquiry);
@@ -128,13 +125,11 @@ public class InquiryService {
         String imageUrl = inquiry.getImageUrl();
         if (StringUtils.hasText(imageUrl)) {
             try {
-                // 🌟 [수정 3] URL 앞부분(/upload/inquiry/)을 잘라내야 실제 파일명만 남음
-                // 예: /upload/inquiry/abc.jpg -> abc.jpg
+                // URL 접두사를 떼고 실제 파일명만 추출
                 String fileName = imageUrl.substring("/upload/inquiry/".length());
 
                 fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
 
-                // 🌟 [수정 4] 절대 경로(uploadDir) + 파일명 조합
                 Path filePath = Paths.get(uploadDir, fileName);
 
                 Files.deleteIfExists(filePath);
@@ -161,7 +156,6 @@ public class InquiryService {
             // (1) 기존 파일 삭제
             if (StringUtils.hasText(inquiry.getImageUrl())) {
                 try {
-                    // 🌟 [수정 5] URL 자르기 로직 통일
                     String oldFileName = inquiry.getImageUrl().substring("/upload/inquiry/".length());
                     oldFileName = URLDecoder.decode(oldFileName, StandardCharsets.UTF_8);
 
@@ -180,14 +174,12 @@ public class InquiryService {
                         StringUtils.cleanPath(file.getOriginalFilename() == null ? "file" : file.getOriginalFilename()));
                 String savedFileName = uuid + "_" + originalFilename;
 
-                // 🌟 [수정 6] 절대 경로 사용
                 Path uploadPath = Paths.get(uploadDir);
                 if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
 
                 Path filePath = uploadPath.resolve(savedFileName);
                 file.transferTo(filePath.toFile());
 
-                // 🌟 [수정 7] URL 경로 명시
                 newImageUrl = "/upload/inquiry/" + savedFileName;
 
             } catch (IOException e) {

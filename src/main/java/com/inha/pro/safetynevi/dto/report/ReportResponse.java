@@ -6,10 +6,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-/**
- * 신고 응답 DTO
- * - 신고자(Member) 엔티티를 통째로 넘기지 않고 화면에 필요한 닉네임만 노출한다.
- */
+/** 신고 응답 DTO (신고자는 닉네임만 노출) */
 @Getter
 @Builder
 public class ReportResponse {

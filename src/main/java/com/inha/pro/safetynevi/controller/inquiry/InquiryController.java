@@ -78,7 +78,6 @@ public class InquiryController {
     // 3. 글쓰기 처리 (DB 저장 및 파일 업로드)
     @PostMapping("/write")
     public String inquiryWrite(@ModelAttribute InquiryDTO inquiryDTO,
-                               // 🌟 로그인한 사용자 정보 가져오기
                                @AuthenticationPrincipal UserDetails user) {
 
         if (user == null) {
@@ -86,9 +85,6 @@ public class InquiryController {
             return "redirect:/login";
         }
 
-        System.out.println("작성 내용 : " + inquiryDTO);
-
-        // 서비스에게 DTO와 함께 '누가 썼는지(ID)'를 같이 넘겨줍니다.
         isvc.writeInquiry(inquiryDTO, user.getUsername());
 
         return "redirect:/inquiry/list";
@@ -97,14 +93,12 @@ public class InquiryController {
     // 4. 상세보기 페이지 매핑
     @GetMapping("/detail/{id}")
     public String inquiryDetail(@PathVariable("id") Long id, Model model,
-                                // 🌟 로그인한 사용자 정보 (비회원이면 user가 null임)
                                 @AuthenticationPrincipal UserDetails user) {
 
         // 1. 현재 접속한 사람의 ID 추출 (비회원이면 null)
         String currentUserId = (user != null) ? user.getUsername() : null;
 
         try {
-            // 🌟 [수정] id와 currentUserId 두 개를 같이 넘겨줍니다!
             InquiryDTO inquiryDTO = isvc.getInquiryDetail(id, currentUserId);
 
             model.addAttribute("inquiry", inquiryDTO);
@@ -117,14 +111,10 @@ public class InquiryController {
             return "inquiry/inquiryDetail";
 
         } catch (IllegalStateException e) {
-            // 🚨 서비스에서 "비밀글입니다" 예외를 던지면 여기로 옵니다.
-            // 자바스크립트로 "작성자만 볼 수 있습니다" 띄우고 목록으로 돌려보내기
-            model.addAttribute("msg", e.getMessage()); // "비밀글은 작성자만..."
+            // 비밀글 접근 거부 -> 알림 페이지로
+            model.addAttribute("msg", e.getMessage());
             model.addAttribute("url", "/inquiry/list");
-            return "alert"; // alert.html 같은 공통 알림 페이지가 있다면 사용 (없으면 redirect:/inquiry/list)
-
-            // 만약 alert 페이지가 없다면 그냥 목록으로 리다이렉트:
-            // return "redirect:/inquiry/list";
+            return "alert";
         }
     }
 
@@ -149,8 +139,7 @@ public class InquiryController {
         }
 
         try {
-            // 🌟 [수정] 여기서도 user.getUsername()을 같이 넘깁니다.
-            // (이미 본인 확인 로직이 Service의 getInquiryDetail 안에 들어있어서 안전합니다)
+            // 본인 확인은 getInquiryDetail 내부에서 처리
             InquiryDTO inquiryDTO = isvc.getInquiryDetail(id, user.getUsername());
 
             model.addAttribute("inquiry", inquiryDTO);

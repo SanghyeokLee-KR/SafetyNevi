@@ -15,7 +15,7 @@ import java.util.List;
 public class MapService {
 
     private final FavoritePlaceRepository favoritePlaceRepository;
-    private final FamilyRepository familyRepository; // 🌟 추가
+    private final FamilyRepository familyRepository;
 
     // 1. 집/회사 위치 저장 또는 업데이트
     public void saveSpecialPlace(String userId, String type, String address, Double lat, Double lon) {
@@ -60,19 +60,19 @@ public class MapService {
         favoritePlaceRepository.delete(place);
     }
 
-    // 🌟 [가족] 목록 조회
+    // 가족 연락처 목록 조회
     @Transactional(readOnly = true)
     public List<Family> getFamilyList(String userId) {
         return familyRepository.findAllByUserId(userId);
     }
 
-    // 🌟 [가족] 추가
+    // 가족 연락처 추가
     public void addFamily(String userId, String name, String phone) {
         familyRepository.save(Family.builder()
                 .userId(userId).name(name).phone(phone).build());
     }
 
-    // 🌟 [가족] 삭제 (본인 소유만 삭제 가능)
+    // 가족 연락처 삭제 (본인 소유만)
     public void deleteFamily(String userId, Long familyId) {
         Family family = familyRepository.findById(familyId)
                 .orElseThrow(() -> new IllegalArgumentException("연락처를 찾을 수 없습니다."));

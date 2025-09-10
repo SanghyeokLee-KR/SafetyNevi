@@ -51,9 +51,7 @@ public class NoticeEntity {
     @Column(name = "WRITER_NAME", nullable = false)
     private String writerName; // 작성자 이름 (관리자)
 
-    // ==========================================
-    // 🌟 비즈니스 로직 메서드
-    // ==========================================
+    // --- 비즈니스 로직 ---
 
     // 1. 조회수 증가
     public void increaseViewCount() {
