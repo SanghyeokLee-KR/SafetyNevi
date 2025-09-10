@@ -31,11 +31,11 @@ public class RouteService {
      * 현재 위치 기준 최적의 대피소 3곳 추천
      */
     public List<RouteDto> getOptimalShelters(double currentLat, double currentLon) {
-        // 1. 모든 대피소 가져오기 (실제 서비스에선 반경 5km 등으로 1차 필터링 권장)
-        List<Shelter> allShelters = shelterRepository.findAll();
+        // 1. 현재 위치 주변 대피소만 조회 (전국 풀스캔 대신 박스 쿼리, 부족하면 범위 확대)
+        List<Shelter> nearbyShelters = findNearbyShelters(currentLat, currentLon);
 
         // 2. DTO 변환 및 거리 계산
-        List<RouteDto> candidates = allShelters.stream()
+        List<RouteDto> candidates = nearbyShelters.stream()
                 .map(shelter -> {
                     double dist = calculateDistance(currentLat, currentLon, shelter.getLatitude(), shelter.getLongitude());
                     return RouteDto.builder()
@@ -88,6 +88,21 @@ public class RouteService {
         return results;
     }
 
+    // 현재 위치 주변 대피소를 박스(위경도 범위)로 조회한다. 반경을 점차 넓혀 후보를 확보하고,
+    // 그래도 거의 없으면(극외딴 지역) 전체에서 찾는다.
+    private List<Shelter> findNearbyShelters(double lat, double lon) {
+        List<Shelter> found = new ArrayList<>();
+        for (double radiusKm : new double[]{5, 20, 100}) {
+            double latDelta = radiusKm / 111.0;                                   // 위도 1도 ≈ 111km
+            double lonDelta = radiusKm / (111.0 * Math.cos(Math.toRadians(lat))); // 경도는 위도에 따라 보정
+            found = shelterRepository.findAllInBounds(
+                    lat - latDelta, lat + latDelta, lon - lonDelta, lon + lonDelta);
+            if (found.size() >= 3) return found;
+        }
+        // 100km 안에도 3곳 미만이면: 후보가 있으면 그걸로, 아예 없으면 전체 폴백(드문 경우)
+        return found.isEmpty() ? shelterRepository.findAll() : found;
+    }
+
     // --- Helper Methods ---
 
     // Haversine 공식 (직선 거리 계산, 단위: 미터)
@@ -116,6 +131,7 @@ public class RouteService {
     private String kakaoRestKey;
 
     private final WebClient webClient = WebClient.create();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * 카카오 모빌리티 API를 호출하여 실제 경로(Vertex) 데이터를 가져옵니다.
@@ -135,8 +151,7 @@ public class RouteService {
                     .bodyToMono(String.class)
                     .block(); // 간단한 구현을 위해 동기식(block) 처리
 
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readTree(response);
+            return objectMapper.readTree(response);
 
         } catch (Exception e) {
             log.error("카카오 길찾기 API 호출 실패", e);

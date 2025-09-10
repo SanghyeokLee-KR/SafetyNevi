@@ -28,10 +28,6 @@ public class CrawlingService {
     // (메시지 저장·재난영역 생성은 각 호출이 자체 트랜잭션으로 처리)
     @Scheduled(fixedDelay = 60000)
     public void crawlAndSaveDisasterMessage() {
-        // [테스트용] 강제 화재 경보 테스트 (필요시 주석 해제)
-        // forceTestFireDisaster();
-        // return;
-
         String url = "https://search.naver.com/search.naver?where=nexearch&query=%EC%9E%AC%EB%82%9C%EB%AC%B8%EC%9E%90";
 
         try {
@@ -88,17 +84,5 @@ public class CrawlingService {
     private String getText(Document doc, String selector) {
         if (doc.selectFirst(selector) != null) return doc.selectFirst(selector).text();
         return "정보 없음";
-    }
-
-    // [테스트] 강제로 '호우' 경보를 발생시켜 폴리곤이 그려지는지 확인
-    private void forceTestFireDisaster() {
-        System.out.println("🧪 [테스트] 강제 호우 경보 발령 (지역: 서울특별시)");
-
-        DisasterMessage fakeMsg = new DisasterMessage();
-        fakeMsg.setContent("[화재경보] 강원도 전역에 화재 발생 긴급 상황.");
-        fakeMsg.setArea("강원도"); // GeoJSON에 있는 정확한 지역명이어야 폴리곤이 그려짐
-        fakeMsg.setDisasterType("화재");
-
-        analyzeAndTriggerDisaster(fakeMsg);
     }
 }

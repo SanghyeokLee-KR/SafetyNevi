@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
 /**
  * AI 분석 서버 연동 서비스
@@ -17,8 +18,16 @@ import org.springframework.http.*;
 @RequiredArgsConstructor
 public class AiClientService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = createRestTemplate();
     private static final String AI_URL = "http://localhost:8000/predict";
+
+    // AI 서버가 응답하지 않을 때 호출 스레드(크롤러 등)가 무한 대기하지 않도록 타임아웃을 둔다.
+    private static RestTemplate createRestTemplate() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(3000); // 연결 3초
+        factory.setReadTimeout(5000);    // 응답 5초
+        return new RestTemplate(factory);
+    }
 
     public AiResponseDto analyze(String text) {
         AiRequestDto req = new AiRequestDto(text);
