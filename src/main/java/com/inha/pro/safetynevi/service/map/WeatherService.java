@@ -35,22 +35,26 @@ public class WeatherService {
     private String kakaoRestKey;
 
     public Mono<WeatherDto> getWeatherInfo(double lat, double lon) {
-        // 주소 조회와 날씨 조회를 병렬(zip)로 처리
-        Mono<String> addressMono = getAddressFromKakao(lat, lon);
+        // 주소·날씨를 병렬 조회하되, 한쪽이 실패해도 나머지는 보여주도록 각각 폴백을 둔다
+        Mono<String> addressMono = getAddressFromKakao(lat, lon)
+                .onErrorReturn("주소 정보 없음");
+
         GpsConverter.LatXLngY grid = gpsConverter.convertGpsToGrid(lat, lon);
-        Mono<JsonNode> weatherMono = getKmaWeather(grid.x, grid.y);
+        Mono<Map<String, String>> weatherMono = getKmaWeather(grid.x, grid.y)
+                .map(this::parseKmaWeather)
+                .onErrorResume(e -> {
+                    log.warn("기상청 날씨 조회 실패: {}", e.getMessage());
+                    return Mono.just(Map.<String, String>of());
+                });
 
         return Mono.zip(addressMono, weatherMono)
                 .map(tuple -> {
                     String address = tuple.getT1();
-                    JsonNode weatherData = tuple.getT2();
-                    Map<String, String> weatherMap = parseKmaWeather(weatherData);
-
+                    Map<String, String> weatherMap = tuple.getT2();
                     String status = combineWeatherStatus(
                             weatherMap.getOrDefault("PTY", "0"),
                             weatherMap.getOrDefault("SKY", "0")
                     );
-
                     return WeatherDto.builder()
                             .address(address)
                             .temp(weatherMap.getOrDefault("T1H", "N/A"))
