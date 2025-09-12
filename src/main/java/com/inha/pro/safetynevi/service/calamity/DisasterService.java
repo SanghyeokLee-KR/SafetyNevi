@@ -1,10 +1,12 @@
 package com.inha.pro.safetynevi.service.calamity;
 
 import com.inha.pro.safetynevi.dao.calamity.DisasterZoneRepository;
+import com.inha.pro.safetynevi.dto.calamity.DisasterZoneResponse;
 import com.inha.pro.safetynevi.entity.calamity.DisasterZone;
 import com.inha.pro.safetynevi.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class DisasterService {
 
     private final DisasterZoneRepository disasterZoneRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     // 1. 원형 재난 생성
     public DisasterZone createCircleDisaster(double lat, double lon, String type, double radius, int durationMinutes) {
@@ -32,8 +35,10 @@ public class DisasterService {
         Instant expiryTime = Instant.now().plus(durationMinutes, ChronoUnit.MINUTES);
         zone.setExpiryTime(expiryTime);
 
-        log.info("원형 재난 생성: {}", zone);
-        return disasterZoneRepository.save(zone);
+        DisasterZone saved = disasterZoneRepository.save(zone);
+        log.info("원형 재난 생성: {}", saved);
+        messagingTemplate.convertAndSend("/topic/disaster/new", DisasterZoneResponse.from(saved));
+        return saved;
     }
 
     // 2. 지역(Polygon) 재난 생성
@@ -45,8 +50,10 @@ public class DisasterService {
         Instant expiryTime = Instant.now().plus(durationMinutes, ChronoUnit.MINUTES);
         zone.setExpiryTime(expiryTime);
 
-        log.info("지역 재난 생성: {}", zone);
-        return disasterZoneRepository.save(zone);
+        DisasterZone saved = disasterZoneRepository.save(zone);
+        log.info("지역 재난 생성: {}", saved);
+        messagingTemplate.convertAndSend("/topic/disaster/new", DisasterZoneResponse.from(saved));
+        return saved;
     }
 
     // 재난 삭제 (없으면 404)
@@ -55,6 +62,7 @@ public class DisasterService {
                 .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 재난 정보가 없습니다: " + id));
 
         disasterZoneRepository.delete(zone);
+        messagingTemplate.convertAndSend("/topic/disaster/delete", id);
         log.info("재난 삭제 완료: id={}", id);
     }
 

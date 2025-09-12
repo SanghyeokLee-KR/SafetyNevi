@@ -6,7 +6,7 @@ import { initMap } from './map-core.js';
 import { setupTabNavigation, setupCheckboxLogic, setupDetailViewEvents, setupGlobalUI } from './map-ui.js';
 import { setupMarkerImages, setupMapEventListeners } from './map-marker.js';
 import { loadCurrentLocationAndWeather } from './map-weather.js';
-import { setupDisasterMarkerImages, updateDisasterZones } from './map-disaster.js';
+import { setupDisasterMarkerImages, loadDisasterZones, connectDisasterSocket } from './map-disaster.js';
 import { setupSearchLogic } from './map-search.js';
 import { setupRouteLogic } from './map-route.js';
 import { setupMyPlaceLogic } from './map-myplace.js';
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupMapEventListeners();
     loadCurrentLocationAndWeather();
 
-    // 5. 재난 데이터 주기적 갱신 (10초 간격)
-    updateDisasterZones();
-    setInterval(updateDisasterZones, 10000);
+    // 5. 재난 데이터 초기 로드 + WebSocket 실시간 수신 (10초 폴링 대신 푸시)
+    loadDisasterZones();
+    connectDisasterSocket();
 });

@@ -1,15 +1,14 @@
 /**
- * 재난 구역 시각화 및 알림 관리
+ * 재난 구역 시각화 및 실시간 수신 (WebSocket)
  */
 import { map } from './map-core.js';
 
 let disasterMarkerImages = {};
-let currentDisasterZones = [];
+let zoneGraphics = new Map();   // 재난 id -> 해당 구역의 그래픽(원/폴리곤/마커) 배열
 let sigunguGeoJson = null;
 let isModalShowing = false;
-let processedDisasterIds = [];
+let alertedIds = new Set();     // 경보 모달을 이미 띄운 재난 id
 
-// 재난 명칭 매핑 (영문/한글 -> 표시명)
 const disasterNames = {
     'fire': '🔥 화재/산불', 'missile': '🚀 미사일/공습', 'lightning': '⚡ 낙뢰',
     'quake': '🌋 지진', 'typhoon': '🌀 태풍', 'heatwave': '☀️ 폭염',
@@ -32,73 +31,93 @@ export function setupDisasterMarkerImages() {
     disasterMarkerImages.default = new kakao.maps.MarkerImage(path + 'etc.png', size, options);
 }
 
-// 재난 구역 업데이트
-export async function updateDisasterZones() {
+// 최초 1회: 현재 활성 재난 구역을 모두 그린다
+export async function loadDisasterZones() {
     try {
         const response = await fetch('/api/disaster-zones');
         if (!response.ok) throw new Error("API error");
         const zones = await response.json();
 
-        // 기존 구역 초기화
-        currentDisasterZones.forEach(graphic => graphic.setMap(null));
-        currentDisasterZones = [];
+        zoneGraphics.forEach(arr => arr.forEach(g => g.setMap(null)));
+        zoneGraphics.clear();
 
-        // 신규 재난 알림 표시
-        showDisasterAlert(zones);
-
-        // 지도에 구역 그리기
         for (const zone of zones) {
-            const style = getDisasterStyle(zone.disasterType);
-            const markerImg = getDisasterMarkerImage(zone.disasterType);
-
-            // 1. 원형 구역 (좌표 및 반경)
-            if (zone.radius > 0 && zone.latitude && zone.longitude) {
-                drawCircleZone(zone, style, markerImg);
-            }
-
-            // 2. 행정구역 폴리곤
-            if (zone.areaName) {
-                await drawPolygonZone(zone.areaName, style, markerImg);
-            }
+            await drawZone(zone, false); // 초기 로드는 경보 모달 없이
         }
     } catch (e) {
-        console.error("Disaster zone update failed:", e);
+        console.error("재난 구역 로드 실패:", e);
     }
 }
 
-// 재난 알림 모달 처리
-function showDisasterAlert(zones) {
-    if (zones.length === 0) return;
+// WebSocket으로 재난 생성/삭제를 실시간 수신 (10초 폴링 대체)
+export function connectDisasterSocket() {
+    const socket = new SockJS('/ws');
+    const client = Stomp.over(socket);
+    client.debug = null;
 
-    const newDisaster = zones.find(zone => !processedDisasterIds.includes(zone.id));
-    if (newDisaster && !isModalShowing) {
-        isModalShowing = true;
-        processedDisasterIds.push(newDisaster.id);
+    client.connect({}, () => {
+        client.subscribe('/topic/disaster/new', (msg) => drawZone(JSON.parse(msg.body), true));
+        client.subscribe('/topic/disaster/delete', (msg) => removeZone(JSON.parse(msg.body)));
+    });
+}
 
-        const modal = document.getElementById('disaster-modal');
-        const msgEl = document.getElementById('disaster-modal-message');
+// 재난 하나를 그리고 id로 그래픽을 보관 (이미 그려져 있으면 무시)
+async function drawZone(zone, alert) {
+    if (!zone || zoneGraphics.has(zone.id)) return;
 
-        let typeName = disasterNames[newDisaster.disasterType] || "⚠️ 재난 경보";
-        msgEl.innerHTML = `🚨 긴급: '${newDisaster.areaName || "인근"}' 지역 ${typeName}`;
+    const graphics = [];
+    const style = getDisasterStyle(zone.disasterType);
+    const markerImg = getDisasterMarkerImage(zone.disasterType);
 
-        modal.classList.add('show');
+    if (zone.radius > 0 && zone.latitude && zone.longitude) {
+        drawCircleZone(zone, style, markerImg, graphics);
+    }
+    if (zone.areaName) {
+        await drawPolygonZone(zone.areaName, style, markerImg, graphics);
+    }
 
-        // 알림 클릭 시 해당 위치로 이동
-        modal.onclick = () => {
-            if (newDisaster.latitude && newDisaster.longitude) {
-                map.setLevel(7);
-                map.panTo(new kakao.maps.LatLng(newDisaster.latitude, newDisaster.longitude));
-            }
-        };
+    zoneGraphics.set(zone.id, graphics);
+    if (alert) showDisasterAlert(zone);
+}
 
-        setTimeout(() => {
-            modal.classList.remove('show');
-            isModalShowing = false;
-        }, 5000);
+// 특정 재난의 그래픽만 제거 (전체 재그리기 없이 변경분만)
+function removeZone(id) {
+    const arr = zoneGraphics.get(id);
+    if (arr) {
+        arr.forEach(g => g.setMap(null));
+        zoneGraphics.delete(id);
     }
 }
 
-// 재난 유형별 스타일(색상) 반환
+// 신규 재난 경보 모달
+function showDisasterAlert(zone) {
+    if (!zone || alertedIds.has(zone.id) || isModalShowing) return;
+
+    isModalShowing = true;
+    alertedIds.add(zone.id);
+
+    const modal = document.getElementById('disaster-modal');
+    const msgEl = document.getElementById('disaster-modal-message');
+    if (!modal || !msgEl) { isModalShowing = false; return; }
+
+    const typeName = disasterNames[zone.disasterType] || "⚠️ 재난 경보";
+    msgEl.innerHTML = `🚨 긴급: '${zone.areaName || "인근"}' 지역 ${typeName}`;
+    modal.classList.add('show');
+
+    modal.onclick = () => {
+        if (zone.latitude && zone.longitude) {
+            map.setLevel(7);
+            map.panTo(new kakao.maps.LatLng(zone.latitude, zone.longitude));
+        }
+    };
+
+    setTimeout(() => {
+        modal.classList.remove('show');
+        isModalShowing = false;
+    }, 5000);
+}
+
+// 재난 유형별 스타일(색상)
 function getDisasterStyle(type) {
     const t = (type || "").toLowerCase();
     if (t.match(/fire|missile|heat|화재/)) return { fill: '#FF0000', stroke: '#FF0000' };
@@ -113,8 +132,6 @@ function getDisasterStyle(type) {
 function getDisasterMarkerImage(type) {
     if (!type) return disasterMarkerImages.default;
     const t = type.toLowerCase();
-
-    // 단순화된 매칭 로직
     for (const key in disasterMarkerImages) {
         if (t.includes(key)) return disasterMarkerImages[key];
     }
@@ -122,34 +139,29 @@ function getDisasterMarkerImage(type) {
 }
 
 // 원형 구역 그리기
-function drawCircleZone(zone, style, image) {
+function drawCircleZone(zone, style, image, graphics) {
     const circle = new kakao.maps.Circle({
         center: new kakao.maps.LatLng(zone.latitude, zone.longitude),
         radius: zone.radius,
-        strokeWeight: 2,
-        strokeColor: style.stroke,
-        strokeOpacity: 0.8,
-        fillColor: style.fill,
-        fillOpacity: 0.4
+        strokeWeight: 2, strokeColor: style.stroke, strokeOpacity: 0.8,
+        fillColor: style.fill, fillOpacity: 0.4
     });
     circle.setMap(map);
-    currentDisasterZones.push(circle);
-    drawMarker(zone.latitude, zone.longitude, image);
+    graphics.push(circle);
+    drawMarker(zone.latitude, zone.longitude, image, graphics);
 }
 
 // 마커 그리기 헬퍼
-function drawMarker(lat, lng, image) {
+function drawMarker(lat, lng, image, graphics) {
     const marker = new kakao.maps.Marker({
-        position: new kakao.maps.LatLng(lat, lng),
-        image: image,
-        zIndex: 10
+        position: new kakao.maps.LatLng(lat, lng), image: image, zIndex: 10
     });
     marker.setMap(map);
-    currentDisasterZones.push(marker);
+    graphics.push(marker);
 }
 
 // 행정구역 폴리곤 그리기
-async function drawPolygonZone(areaName, style, markerImg) {
+async function drawPolygonZone(areaName, style, markerImg, graphics) {
     try {
         if (!sigunguGeoJson) {
             const res = await fetch('/geojson/skorea-municipalities-2018-geo.json');
@@ -169,34 +181,24 @@ async function drawPolygonZone(areaName, style, markerImg) {
             const drawPath = (polygonCoords) => {
                 const path = polygonCoords.map(p => new kakao.maps.LatLng(p[1], p[0]));
                 const polygon = new kakao.maps.Polygon({
-                    path: path,
-                    strokeWeight: 2,
-                    strokeColor: style.stroke,
-                    strokeOpacity: 0.8,
-                    fillColor: style.fill,
-                    fillOpacity: 0.35
+                    path: path, strokeWeight: 2, strokeColor: style.stroke,
+                    strokeOpacity: 0.8, fillColor: style.fill, fillOpacity: 0.35
                 });
                 polygon.setMap(map);
-                currentDisasterZones.push(polygon);
+                graphics.push(polygon);
 
                 latSum += path[0].getLat();
                 lngSum += path[0].getLng();
                 count++;
             };
 
-            if (type === "Polygon") {
-                drawPath(coords[0]);
-            } else if (type === "MultiPolygon") {
-                coords.forEach(c => drawPath(c[0]));
-            }
+            if (type === "Polygon") drawPath(coords[0]);
+            else if (type === "MultiPolygon") coords.forEach(c => drawPath(c[0]));
         });
 
-        // 중심점에 마커 표시
-        if (count > 0) {
-            drawMarker(latSum / count, lngSum / count, markerImg);
-        }
+        if (count > 0) drawMarker(latSum / count, lngSum / count, markerImg, graphics);
     } catch (e) {
-        console.error("Polygon drawing failed:", e);
+        console.error("폴리곤 그리기 실패:", e);
     }
 }
 
@@ -205,7 +207,6 @@ function findGeoJsonFeatures(areaName) {
     const nameParts = areaName.split(',').map(s => s.trim());
     const primary = nameParts[0];
 
-    // 시도 코드 매핑
     const sidoMap = { '서울':'11', '부산':'21', '대구':'22', '인천':'23', '광주':'24', '대전':'25', '울산':'26', '세종':'29', '경기':'31', '강원':'32', '충북':'33', '충남':'34', '전북':'35', '전남':'36', '경북':'37', '경남':'38', '제주':'39' };
     let codePrefix = null;
 
@@ -217,10 +218,8 @@ function findGeoJsonFeatures(areaName) {
         const sidoFeatures = sigunguGeoJson.features.filter(f => f.properties.code.startsWith(codePrefix));
 
         if (nameParts.length > 1) {
-            // 상세 시군구 필터링
             return sidoFeatures.filter(f => nameParts.slice(1).some(d => f.properties.name.includes(d)));
         }
-        // 시도 전체 또는 시군구 검색
         const districts = sidoFeatures.filter(f => primary.includes(f.properties.name));
         return districts.length > 0 ? districts : sidoFeatures;
     }
