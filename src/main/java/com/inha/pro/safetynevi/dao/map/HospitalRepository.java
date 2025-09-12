@@ -1,6 +1,7 @@
 package com.inha.pro.safetynevi.dao.map;
 
 import com.inha.pro.safetynevi.entity.Hospital;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,7 +19,8 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
             @Param("swLat") double swLat,
             @Param("swLng") double swLng,
             @Param("neLat") double neLat,
-            @Param("neLng") double neLng
+            @Param("neLng") double neLng,
+            Pageable pageable
     );
 
     // 폐업/휴업 등 비정상 운영 병원 조회 (지도 '기타' 필터용)
@@ -30,6 +32,7 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
             @Param("swLat") double swLat,
             @Param("swLng") double swLng,
             @Param("neLat") double neLat,
-            @Param("neLng") double neLng
+            @Param("neLng") double neLng,
+            Pageable pageable
     );
 }

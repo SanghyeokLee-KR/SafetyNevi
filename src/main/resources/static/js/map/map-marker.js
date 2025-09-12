@@ -2,7 +2,7 @@
  * 시설물 마커 및 클러스터링 관리
  */
 import { map, clusterer } from './map-core.js';
-import { updateSidebar } from './map-ui.js';
+import { updateSidebar, showToast } from './map-ui.js';
 
 let markerImages = {};
 let currentOverlay = null;
@@ -44,6 +44,13 @@ export async function updateMarkers() {
 
     // 선택된 필터가 없으면 안전 점수만 초기화 후 종료
     if (facilityTypes.length === 0) {
+        if(window.calculateSafetyScore) window.calculateSafetyScore([]);
+        return;
+    }
+
+    // 너무 줌아웃하면 시설이 수만 개라 마커를 그리지 않는다 (확대 유도)
+    if (map.getLevel() > 8) {
+        showToast("지도를 확대하면 주변 시설이 표시됩니다.");
         if(window.calculateSafetyScore) window.calculateSafetyScore([]);
         return;
     }
@@ -151,8 +158,7 @@ async function handleMarkerClick(facilityId) {
         const res = await fetch(`/api/facilities/detail/${facilityId}`);
         if (!res.ok) throw new Error("API error");
         const data = await res.json();
-
-        import('./map-ui.js').then(ui => ui.updateSidebar(data));
+        updateSidebar(data);
     } catch (error) {
         console.error(error);
     }

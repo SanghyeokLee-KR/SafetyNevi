@@ -1,6 +1,7 @@
 package com.inha.pro.safetynevi.dao.map;
 
 import com.inha.pro.safetynevi.entity.Shelter;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,7 +19,8 @@ public interface ShelterRepository extends JpaRepository<Shelter, Long> {
             @Param("swLat") double swLat,
             @Param("swLng") double swLng,
             @Param("neLat") double neLat,
-            @Param("neLng") double neLng
+            @Param("neLng") double neLng,
+            Pageable pageable
     );
 
     // [신규] '사용중'이 아닌 대피소만 검색 (기타 체크박스용)
@@ -30,7 +32,8 @@ public interface ShelterRepository extends JpaRepository<Shelter, Long> {
             @Param("swLat") double swLat,
             @Param("swLng") double swLng,
             @Param("neLat") double neLat,
-            @Param("neLng") double neLng
+            @Param("neLng") double neLng,
+            Pageable pageable
     );
 
     // 현재 위치 주변(위경도 박스) 대피소 전체 조회 — 경로 추천 후보용

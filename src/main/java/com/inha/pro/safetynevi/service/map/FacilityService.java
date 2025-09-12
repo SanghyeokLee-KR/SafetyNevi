@@ -5,6 +5,8 @@ import com.inha.pro.safetynevi.dao.map.*;
 import com.inha.pro.safetynevi.dto.map.*;
 import com.inha.pro.safetynevi.entity.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,10 @@ public class FacilityService {
     private final HospitalRepository hospitalRepository;
     private final ShelterRepository shelterRepository;
 
+    // 한 번에 그릴 시설 수 상한 (지도가 수만 개 마커를 만들지 않도록)
+    private static final Pageable BOUNDS_LIMIT = PageRequest.of(0, 1500);
+    private static final Pageable SEARCH_LIMIT = PageRequest.of(0, 50);
+
     // 지도 영역 내 시설물 검색
     public List<FacilityDto> findFacilitiesInBounds(String type, double swLat, double swLng, double neLat, double neLng) {
         List<Facility> facilities = new ArrayList<>();
@@ -33,21 +39,17 @@ public class FacilityService {
         switch (type) {
             case "police":
             case "fire":
-                // 경찰/소방서는 상태 필터링 없이 전체 조회
-                facilities.addAll(facilityRepository.findFacilitiesInBounds(type, swLat, swLng, neLat, neLng));
+                facilities.addAll(facilityRepository.findFacilitiesInBounds(type, swLat, swLng, neLat, neLng, BOUNDS_LIMIT));
                 break;
             case "hospital":
-                // 병원은 '운영중'인 시설만 조회
-                facilities.addAll(hospitalRepository.findOperationalInBounds(swLat, swLng, neLat, neLng));
+                facilities.addAll(hospitalRepository.findOperationalInBounds(swLat, swLng, neLat, neLng, BOUNDS_LIMIT));
                 break;
             case "shelter":
-                // 대피소는 사용 가능한 시설만 조회
-                facilities.addAll(shelterRepository.findOperationalInBounds(swLat, swLng, neLat, neLng));
+                facilities.addAll(shelterRepository.findOperationalInBounds(swLat, swLng, neLat, neLng, BOUNDS_LIMIT));
                 break;
             case "etc":
-                // 기타: 운영 중단된 병원 및 대피소 포함
-                facilities.addAll(hospitalRepository.findNonOperationalInBounds(swLat, swLng, neLat, neLng));
-                facilities.addAll(shelterRepository.findNonOperationalInBounds(swLat, swLng, neLat, neLng));
+                facilities.addAll(hospitalRepository.findNonOperationalInBounds(swLat, swLng, neLat, neLng, BOUNDS_LIMIT));
+                facilities.addAll(shelterRepository.findNonOperationalInBounds(swLat, swLng, neLat, neLng, BOUNDS_LIMIT));
                 break;
         }
 
@@ -73,6 +75,6 @@ public class FacilityService {
     // 시설명 검색
     public List<Facility> searchFacilitiesByName(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) return List.of();
-        return facilityRepository.findByNameContaining(keyword.trim());
+        return facilityRepository.findByNameContaining(keyword.trim(), SEARCH_LIMIT);
     }
 }
