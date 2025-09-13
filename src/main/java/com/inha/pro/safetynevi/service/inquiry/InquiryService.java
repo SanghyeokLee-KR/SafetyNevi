@@ -6,6 +6,7 @@ import com.inha.pro.safetynevi.dto.inquiry.InquiryDTO;
 import com.inha.pro.safetynevi.entity.inquiry.InquiryEntity;
 import com.inha.pro.safetynevi.entity.member.Member;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class InquiryService {
@@ -87,7 +89,7 @@ public class InquiryService {
                 dto.setImageUrl("/upload/inquiry/" + savedFileName);
 
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("문의 첨부파일 저장 실패", e);
             }
         }
 
@@ -134,7 +136,7 @@ public class InquiryService {
 
                 Files.deleteIfExists(filePath);
             } catch (Exception e) {
-                System.err.println("파일 삭제 중 오류 발생: " + e.getMessage());
+                log.warn("문의 첨부파일 삭제 실패: {}", e.getMessage());
             }
         }
         irepo.delete(inquiry);
@@ -162,7 +164,7 @@ public class InquiryService {
                     Path oldFilePath = Paths.get(uploadDir, oldFileName);
                     Files.deleteIfExists(oldFilePath);
                 } catch (Exception e) {
-                    System.err.println("기존 파일 삭제 실패: " + e.getMessage());
+                    log.warn("문의 기존 첨부파일 삭제 실패: {}", e.getMessage());
                 }
             }
 
@@ -183,7 +185,7 @@ public class InquiryService {
                 newImageUrl = "/upload/inquiry/" + savedFileName;
 
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("문의 첨부파일 저장 실패", e);
             }
         }
 

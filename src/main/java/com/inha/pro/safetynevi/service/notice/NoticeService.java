@@ -4,6 +4,7 @@ import com.inha.pro.safetynevi.dao.notice.NoticeRepository;
 import com.inha.pro.safetynevi.dto.notice.NoticeDTO;
 import com.inha.pro.safetynevi.entity.notice.NoticeEntity;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NoticeService {
@@ -60,7 +62,7 @@ public class NoticeService {
                 dto.setAttachmentUrl("/upload/notice/" + savedFileName);
 
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("공지 첨부파일 저장 실패", e);
             }
         }
 
@@ -106,7 +108,7 @@ public class NoticeService {
                 Files.deleteIfExists(filePath);
 
             } catch (Exception e) {
-                System.err.println("파일 삭제 실패: " + e.getMessage());
+                log.warn("공지 첨부파일 삭제 실패: {}", e.getMessage());
             }
         }
 
