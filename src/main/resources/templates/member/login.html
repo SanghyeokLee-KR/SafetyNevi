@@ -33,6 +33,9 @@
             <div th:if="${param.error}" class="kb-alert-msg error">
                 아이디 또는 비밀번호가 일치하지 않습니다.
             </div>
+            <div th:if="${param.locked}" class="kb-alert-msg error">
+                로그인 시도가 많아 계정이 잠시 잠겼습니다. 잠시 후 다시 시도해주세요.
+            </div>
             <div th:if="${param.logout}" class="kb-alert-msg success">
                 로그아웃 되었습니다.
             </div>

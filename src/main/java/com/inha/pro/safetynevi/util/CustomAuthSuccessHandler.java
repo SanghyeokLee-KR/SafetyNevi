@@ -20,11 +20,14 @@ import java.io.IOException;
 public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler {
 
     private final AccessLogRepository accessLogRepository;
+    private final LoginAttemptService loginAttemptService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
 
         String userId = authentication.getName();
+        loginAttemptService.loginSucceeded(userId);
+
         String ip = ClientUtils.getRemoteIP(request);
         String simpleUA = ClientUtils.getBrowserInfo(request.getHeader("User-Agent"));
 

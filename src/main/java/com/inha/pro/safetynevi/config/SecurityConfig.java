@@ -2,6 +2,7 @@ package com.inha.pro.safetynevi.config;
 
 import com.inha.pro.safetynevi.service.member.CustomUserDetailsService;
 import com.inha.pro.safetynevi.util.CustomAccessDeniedHandler;
+import com.inha.pro.safetynevi.util.CustomAuthFailureHandler;
 import com.inha.pro.safetynevi.util.CustomAuthSuccessHandler;
 import com.inha.pro.safetynevi.util.CustomLogoutSuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomAuthSuccessHandler customAuthSuccessHandler;
+    private final CustomAuthFailureHandler customAuthFailureHandler;
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomUserDetailsService customUserDetailsService;
@@ -64,7 +66,7 @@ public class SecurityConfig {
                         .usernameParameter("username")
                         .passwordParameter("password")
                         .successHandler(customAuthSuccessHandler)
-                        .failureUrl("/login?error")
+                        .failureHandler(customAuthFailureHandler)
                         .permitAll()
                 )
 
