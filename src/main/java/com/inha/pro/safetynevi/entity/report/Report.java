@@ -27,7 +27,7 @@ public class Report {
     private Long id;
 
     // 신고자
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REPORTER_ID", nullable = false)
     private Member reporter;
 
