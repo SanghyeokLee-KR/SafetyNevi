@@ -50,7 +50,7 @@
     </div>
 
     <!-- 재검색 버튼 -->
-    <button id="btn-re-search" class="kb-re-search-btn">🔄 현 지도에서 검색</button>
+    <button id="btn-re-search" class="kb-re-search-btn" aria-label="현 지도 범위에서 다시 검색">🔄 현 지도에서 검색</button>
 
     <!-- 필터 버튼 -->
     <div class="kb-map-filters">
@@ -64,26 +64,26 @@
 
     <!-- 지도 컨트롤 (우측 하단) -->
     <div class="kb-map-controls">
-        <button id="btn-mode-traffic" class="kb-control-btn" title="실시간 교통정보">🚦 교통</button>
-        <button id="btn-mode-cctv" class="kb-control-btn" title="지형도 확인">🏔️ 지형</button>
-        <button id="btn-mode-skyview" class="kb-control-btn" title="위성지도">🛰️ 위성</button>
-        <button id="btn-mode-roadview" class="kb-control-btn" title="로드뷰 켜기/끄기">👁️ 로드뷰</button>
+        <button id="btn-mode-traffic" class="kb-control-btn" title="실시간 교통정보" aria-label="실시간 교통정보">🚦 교통</button>
+        <button id="btn-mode-cctv" class="kb-control-btn" title="지형도 확인" aria-label="지형도">🏔️ 지형</button>
+        <button id="btn-mode-skyview" class="kb-control-btn" title="위성지도" aria-label="위성지도">🛰️ 위성</button>
+        <button id="btn-mode-roadview" class="kb-control-btn" title="로드뷰 켜기/끄기" aria-label="로드뷰 켜기 끄기">👁️ 로드뷰</button>
         <div style="height:10px;"></div>
 
         <!-- 글쓰기 버튼 -->
-        <button id="btn-mode-write" class="kb-control-btn" title="게시글 작성" style="color:#e67e22; border-color:#e67e22;">
+        <button id="btn-mode-write" class="kb-control-btn" title="게시글 작성" aria-label="게시글 작성" style="color:#e67e22; border-color:#e67e22;">
             🖊️ 글쓰기
         </button>
 
-        <button id="btn-sms-report" class="kb-control-btn" title="문자 신고" style="color:#d9534f;">🚨 신고</button>
+        <button id="btn-sms-report" class="kb-control-btn" title="문자 신고" aria-label="긴급 문자 신고" style="color:#d9534f;">🚨 신고</button>
         <div style="height:10px;"></div>
-        <button id="btn-mode-track" class="kb-control-btn" title="내 위치 고정">📍 고정</button>
-        <button id="btn-mode-radius" class="kb-control-btn" title="반경 500m/1km 표시">📏 거리</button>
-        <button id="btn-mode-dark" class="kb-control-btn" title="다크 모드 전환">🌙 야간</button>
+        <button id="btn-mode-track" class="kb-control-btn" title="내 위치 고정" aria-label="내 위치 고정">📍 고정</button>
+        <button id="btn-mode-radius" class="kb-control-btn" title="반경 500m/1km 표시" aria-label="반경 표시">📏 거리</button>
+        <button id="btn-mode-dark" class="kb-control-btn" title="다크 모드 전환" aria-label="다크 모드 전환">🌙 야간</button>
     </div>
 
     <!-- 사이드바 열기 버튼 -->
-    <div id="btn-sidebar-open" class="kb-map-floating-btn">≡</div>
+    <div id="btn-sidebar-open" class="kb-map-floating-btn" role="button" tabindex="0" aria-label="메뉴 열기">≡</div>
 
     <!-- 재난 알림 모달 -->
     <div id="disaster-modal" class="disaster-modal">
