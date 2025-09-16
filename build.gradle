@@ -35,6 +35,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testRuntimeOnly 'com.h2database:h2'
     implementation 'org.jsoup:jsoup:1.17.2'
 
     // 1. CSV 파일 처리를 위한 OpenCSV 라이브러리
