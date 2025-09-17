@@ -8,4 +8,7 @@ public interface AccessLogRepository extends JpaRepository<AccessLog, Long> {
 
     // 최근 접속 이력 20건 조회 (마이페이지 노출용)
     List<AccessLog> findTop20ByUserIdOrderByLogDateDesc(String userId);
+
+    // 회원 탈퇴 시 정리
+    void deleteByUserId(String userId);
 }

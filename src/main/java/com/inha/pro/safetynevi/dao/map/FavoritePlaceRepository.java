@@ -12,4 +12,7 @@ public interface FavoritePlaceRepository extends JpaRepository<FavoritePlace, Lo
 
     // 특정 유저의 모든 장소 목록 조회
     List<FavoritePlace> findAllByUserId(String userId);
+
+    // 회원 탈퇴 시 정리
+    void deleteByUserId(String userId);
 }

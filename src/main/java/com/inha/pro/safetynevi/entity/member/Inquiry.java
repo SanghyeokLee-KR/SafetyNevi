@@ -3,6 +3,8 @@ package com.inha.pro.safetynevi.entity.member;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import java.time.LocalDateTime;
 
 @Entity
@@ -30,6 +32,7 @@ public class Inquiry {
     // 작성자 (Member와 N:1 관계)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
     @CreationTimestamp

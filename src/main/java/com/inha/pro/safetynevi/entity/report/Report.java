@@ -4,6 +4,8 @@ import com.inha.pro.safetynevi.entity.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -29,6 +31,7 @@ public class Report {
     // 신고자
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REPORTER_ID", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member reporter;
 
     // 신고 대상 유형 (FACILITY, BOARD, USER)

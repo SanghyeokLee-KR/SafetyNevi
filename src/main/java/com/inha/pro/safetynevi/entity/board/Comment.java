@@ -4,6 +4,8 @@ import com.inha.pro.safetynevi.entity.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,15 +32,18 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BOARD_ID")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Board board;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member writer;
 
     // 상위 댓글 (부모)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_ID")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Comment parent;
 
     // 대댓글 목록 (자식)

@@ -1,5 +1,6 @@
 package com.inha.pro.safetynevi.service.member;
 
+import com.inha.pro.safetynevi.dao.map.FavoritePlaceRepository;
 import com.inha.pro.safetynevi.dao.member.*;
 import com.inha.pro.safetynevi.dto.member.AccessLogResponse;
 import com.inha.pro.safetynevi.dto.member.MemberResponse;
@@ -25,6 +26,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final AccessLogRepository accessLogRepository;
     private final InquiryRepository inquiryRepository;
+    private final FavoritePlaceRepository favoritePlaceRepository;
+    private final FamilyRepository familyRepository;
     private final PasswordEncoder passwordEncoder;
 
     // --- 회원 가입 ---
@@ -155,11 +158,21 @@ public class MemberService {
     public void withdrawMember(String userId, String password) {
         Member member = memberRepository.findById(userId).orElseThrow();
         if (!passwordEncoder.matches(password, member.getPassword())) throw new IllegalArgumentException("비밀번호 불일치");
+        deleteUserOwnedData(userId);
         memberRepository.delete(member);
     }
 
     public void forceWithdraw(String userId) {
         Member member = memberRepository.findById(userId).orElseThrow();
+        deleteUserOwnedData(userId);
         memberRepository.delete(member);
+    }
+
+    // 게시글·댓글·좋아요·문의·신고는 FK에 걸린 ON DELETE CASCADE로 회원과 함께 지워진다.
+    // 장소·가족·접속로그는 userId만 들고 있어 직접 정리.
+    private void deleteUserOwnedData(String userId) {
+        favoritePlaceRepository.deleteByUserId(userId);
+        familyRepository.deleteByUserId(userId);
+        accessLogRepository.deleteByUserId(userId);
     }
 }
