@@ -148,3 +148,8 @@ html, body {
 }
 .kb-alert-msg.error { background-color: #fff5f5; color: var(--error-color); border: 1px solid #ffc9c9; }
 .kb-alert-msg.success { background-color: #f0fdf4; color: var(--success-color); border: 1px solid #bbf7d0; }
+
+@media (max-width: 480px) {
+    .kb-login-card { padding: 35px 24px; }
+    .kb-login-title { font-size: 16px; margin-bottom: 30px; }
+}
