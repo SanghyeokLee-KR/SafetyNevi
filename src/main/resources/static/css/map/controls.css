@@ -2,6 +2,7 @@
 .kb-control-btn { background: var(--card-bg); border: 1px solid #ccc; border-radius: 5px; padding: 8px 10px; font-size: 13px; font-weight: bold; color: var(--text-color); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 80px; text-align: center; }
 .kb-control-btn:hover { background: var(--hover-bg); }
 .kb-control-btn.active { background: #003668; color: #fff; border-color: #003668; }
+.kb-ctrl-label { margin-left: 4px; }
 
 .kb-re-search-btn { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 100; background: #fff; color: #337cf4; border: 1px solid #ddd; border-radius: 20px; padding: 10px 20px; font-size: 14px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.15); cursor: pointer; display: none; }
 .kb-re-search-btn:hover { background-color: #f0f8ff; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
@@ -16,5 +17,9 @@ body.dark-mode .kb-filter-btn.active { background-color: #337cf4; border-color: 
 .kb-map-floating-btn { position: absolute; top: 12px; left: 15px; width: 40px; height: 40px; background: #fff; color: #333; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; z-index: 10001; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
 
 @media (max-width: 768px) {
-    .kb-map-controls { bottom: 130px; }
+    /* 폰: 라벨 숨기고 아이콘만 남겨 9개 버튼이 세로로 화면을 침범하지 않게 압축 */
+    .kb-map-controls { bottom: 130px; gap: 6px; }
+    .kb-ctrl-label { display: none; }
+    .kb-control-btn { width: 42px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; }
+    .kb-control-btn .svg-ic { width: 19px; height: 19px; vertical-align: 0; }
 }

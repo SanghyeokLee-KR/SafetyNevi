@@ -1,0 +1,46 @@
+/* 지도 UI 아이콘 - Lucide (ISC License)
+   로컬 SVG를 currentColor 마스크로 채색해 버튼의 글자색을 그대로 따라가게 함 (활성/다크모드 자동 대응) */
+.svg-ic {
+    display: inline-block;
+    width: 1.05em;
+    height: 1.05em;
+    vertical-align: -0.15em;
+    background-color: currentColor;
+    -webkit-mask-image: var(--svg-ic);
+    mask-image: var(--svg-ic);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+}
+
+/* 카테고리 */
+.ic-all       { --svg-ic: url('/img/icons/layers.svg'); }
+.ic-shelter   { --svg-ic: url('/img/icons/house.svg'); }
+.ic-health    { --svg-ic: url('/img/icons/heart-pulse.svg'); }
+.ic-police    { --svg-ic: url('/img/icons/shield.svg'); }
+.ic-fire      { --svg-ic: url('/img/icons/flame.svg'); }
+.ic-etc       { --svg-ic: url('/img/icons/ellipsis.svg'); }
+
+/* 컨트롤 */
+.ic-traffic   { --svg-ic: url('/img/icons/traffic-cone.svg'); }
+.ic-terrain   { --svg-ic: url('/img/icons/mountain.svg'); }
+.ic-satellite { --svg-ic: url('/img/icons/satellite.svg'); }
+.ic-roadview  { --svg-ic: url('/img/icons/eye.svg'); }
+.ic-write     { --svg-ic: url('/img/icons/pencil.svg'); }
+.ic-report    { --svg-ic: url('/img/icons/siren.svg'); }
+.ic-fix       { --svg-ic: url('/img/icons/locate-fixed.svg'); }
+.ic-radius    { --svg-ic: url('/img/icons/ruler.svg'); }
+.ic-night     { --svg-ic: url('/img/icons/moon.svg'); }
+.ic-search    { --svg-ic: url('/img/icons/search.svg'); }
+
+/* 주변탐색 그리드: .kb-icon 박스(35px·체크 시 배경/색 변경)의 기존 규칙을 눌러 마스크 아이콘으로 대체.
+   본 파일을 map.html에서 마지막에 로드하므로 동일 특이도 충돌은 소스 순서로 이긴다 */
+.kb-checkbox-item .kb-icon.svg-ic,
+.kb-hidden-checkbox:checked + .kb-checkbox-item .kb-icon.svg-ic {
+    width: 26px;
+    height: 26px;
+    background-color: currentColor;
+}

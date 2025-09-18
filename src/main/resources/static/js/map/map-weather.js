@@ -84,7 +84,8 @@ function updateWeatherUI(data) {
     if (addrEl) addrEl.innerText = data.address || "주소정보 없음";
 
     const tempEl = document.querySelector('#current-temp');
-    if (tempEl) tempEl.innerText = data.temp ? `${data.temp}°` : '';
+    const temp = data.temp;
+    if (tempEl) tempEl.innerText = (temp && temp !== 'N/A') ? `${temp}°` : '';
 
     const weatherStatusEl = document.querySelector('#weather-status');
     if (weatherStatusEl) weatherStatusEl.innerText = data.weatherStatus || "";

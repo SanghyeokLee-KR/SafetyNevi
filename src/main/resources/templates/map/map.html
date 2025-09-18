@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/css/map/overlay.css"/>
     <link rel="stylesheet" href="/css/map/search.css"/>
     <link rel="stylesheet" href="/css/map/components.css"/>
+    <link rel="stylesheet" href="/css/map/icons.css"/>
 
     <style>
         html, body {
@@ -54,32 +55,30 @@
 
     <!-- 필터 버튼 -->
     <div class="kb-map-filters">
-        <button class="kb-filter-btn" data-type="all">✔️ 전체</button>
-        <button class="kb-filter-btn" data-type="shelter">🚧 대피소</button>
-        <button class="kb-filter-btn" data-type="hospital">🚑 보건소</button>
-        <button class="kb-filter-btn" data-type="police">🚓 경찰서</button>
-        <button class="kb-filter-btn" data-type="fire">🚒 소방서</button>
-        <button class="kb-filter-btn" data-type="etc">🏪 기타</button>
+        <button class="kb-filter-btn" data-type="all"><span class="svg-ic ic-all"></span> 전체</button>
+        <button class="kb-filter-btn" data-type="shelter"><span class="svg-ic ic-shelter"></span> 대피소</button>
+        <button class="kb-filter-btn" data-type="hospital"><span class="svg-ic ic-health"></span> 보건소</button>
+        <button class="kb-filter-btn" data-type="police"><span class="svg-ic ic-police"></span> 경찰서</button>
+        <button class="kb-filter-btn" data-type="fire"><span class="svg-ic ic-fire"></span> 소방서</button>
+        <button class="kb-filter-btn" data-type="etc"><span class="svg-ic ic-etc"></span> 기타</button>
     </div>
 
     <!-- 지도 컨트롤 (우측 하단) -->
     <div class="kb-map-controls">
-        <button id="btn-mode-traffic" class="kb-control-btn" title="실시간 교통정보" aria-label="실시간 교통정보">🚦 교통</button>
-        <button id="btn-mode-cctv" class="kb-control-btn" title="지형도 확인" aria-label="지형도">🏔️ 지형</button>
-        <button id="btn-mode-skyview" class="kb-control-btn" title="위성지도" aria-label="위성지도">🛰️ 위성</button>
-        <button id="btn-mode-roadview" class="kb-control-btn" title="로드뷰 켜기/끄기" aria-label="로드뷰 켜기 끄기">👁️ 로드뷰</button>
+        <button id="btn-mode-traffic" class="kb-control-btn" title="실시간 교통정보" aria-label="실시간 교통정보"><span class="svg-ic ic-traffic"></span><span class="kb-ctrl-label">교통</span></button>
+        <button id="btn-mode-cctv" class="kb-control-btn" title="지형도 확인" aria-label="지형도"><span class="svg-ic ic-terrain"></span><span class="kb-ctrl-label">지형</span></button>
+        <button id="btn-mode-skyview" class="kb-control-btn" title="위성지도" aria-label="위성지도"><span class="svg-ic ic-satellite"></span><span class="kb-ctrl-label">위성</span></button>
+        <button id="btn-mode-roadview" class="kb-control-btn" title="로드뷰 켜기/끄기" aria-label="로드뷰 켜기 끄기"><span class="svg-ic ic-roadview"></span><span class="kb-ctrl-label">로드뷰</span></button>
         <div style="height:10px;"></div>
 
         <!-- 글쓰기 버튼 -->
-        <button id="btn-mode-write" class="kb-control-btn" title="게시글 작성" aria-label="게시글 작성" style="color:#e67e22; border-color:#e67e22;">
-            🖊️ 글쓰기
-        </button>
+        <button id="btn-mode-write" class="kb-control-btn" title="게시글 작성" aria-label="게시글 작성" style="color:#e67e22; border-color:#e67e22;"><span class="svg-ic ic-write"></span><span class="kb-ctrl-label">글쓰기</span></button>
 
-        <button id="btn-sms-report" class="kb-control-btn" title="문자 신고" aria-label="긴급 문자 신고" style="color:#d9534f;">🚨 신고</button>
+        <button id="btn-sms-report" class="kb-control-btn" title="문자 신고" aria-label="긴급 문자 신고" style="color:#d9534f;"><span class="svg-ic ic-report"></span><span class="kb-ctrl-label">신고</span></button>
         <div style="height:10px;"></div>
-        <button id="btn-mode-track" class="kb-control-btn" title="내 위치 고정" aria-label="내 위치 고정">📍 고정</button>
-        <button id="btn-mode-radius" class="kb-control-btn" title="반경 500m/1km 표시" aria-label="반경 표시">📏 거리</button>
-        <button id="btn-mode-dark" class="kb-control-btn" title="다크 모드 전환" aria-label="다크 모드 전환">🌙 야간</button>
+        <button id="btn-mode-track" class="kb-control-btn" title="내 위치 고정" aria-label="내 위치 고정"><span class="svg-ic ic-fix"></span><span class="kb-ctrl-label">고정</span></button>
+        <button id="btn-mode-radius" class="kb-control-btn" title="반경 500m/1km 표시" aria-label="반경 표시"><span class="svg-ic ic-radius"></span><span class="kb-ctrl-label">거리</span></button>
+        <button id="btn-mode-dark" class="kb-control-btn" title="다크 모드 전환" aria-label="다크 모드 전환"><span class="svg-ic ic-night"></span><span class="kb-ctrl-label">야간</span></button>
     </div>
 
     <!-- 사이드바 열기 버튼 -->
@@ -196,7 +195,7 @@
             <div class="kb-header">
                 <div class="kb-menu-icon">≡</div>
                 <a th:href="@{/}" class="kb-logo">SafetyNevi</a>
-                <div id="btn-search-toggle" class="kb-search-icon">🔍</div>
+                <div id="btn-search-toggle" class="kb-search-icon"><span class="svg-ic ic-search"></span></div>
             </div>
 
             <!-- 검색 패널 -->
@@ -377,32 +376,32 @@
                     <div class="kb-explore-checkbox"><input type="checkbox" id="kb-explore-all"
                                                             class="kb-hidden-checkbox"><label for="kb-explore-all"
                                                                                               class="kb-checkbox-item"><i
-                            class="kb-icon">✔️</i><span>전체</span></label></div>
+                            class="kb-icon svg-ic ic-all"></i><span>전체</span></label></div>
                     <div class="kb-explore-checkbox"><input type="checkbox" id="kb-explore-shelter"
                                                             class="kb-hidden-checkbox kb-target-checkbox"
                                                             data-type="shelter"><label for="kb-explore-shelter"
                                                                                        class="kb-checkbox-item"><i
-                            class="kb-icon">🚧</i><span>대피소</span></label></div>
+                            class="kb-icon svg-ic ic-shelter"></i><span>대피소</span></label></div>
                     <div class="kb-explore-checkbox"><input type="checkbox" id="kb-explore-public-health-center"
                                                             class="kb-hidden-checkbox kb-target-checkbox"
                                                             data-type="hospital"><label
                             for="kb-explore-public-health-center" class="kb-checkbox-item"><i
-                            class="kb-icon">🚑</i><span>보건소</span></label></div>
+                            class="kb-icon svg-ic ic-health"></i><span>보건소</span></label></div>
                     <div class="kb-explore-checkbox"><input type="checkbox" id="kb-explore-police-office"
                                                             class="kb-hidden-checkbox kb-target-checkbox"
                                                             data-type="police"><label for="kb-explore-police-office"
                                                                                       class="kb-checkbox-item"><i
-                            class="kb-icon">🚓</i><span>경찰서</span></label></div>
+                            class="kb-icon svg-ic ic-police"></i><span>경찰서</span></label></div>
                     <div class="kb-explore-checkbox"><input type="checkbox" id="kb-explore-fire-station"
                                                             class="kb-hidden-checkbox kb-target-checkbox"
                                                             data-type="fire"><label for="kb-explore-fire-station"
                                                                                     class="kb-checkbox-item"><i
-                            class="kb-icon">🚒</i><span>소방서</span></label></div>
+                            class="kb-icon svg-ic ic-fire"></i><span>소방서</span></label></div>
                     <div class="kb-explore-checkbox"><input type="checkbox" id="kb-explore-etc"
                                                             class="kb-hidden-checkbox kb-target-checkbox"
                                                             data-type="etc"><label for="kb-explore-etc"
                                                                                    class="kb-checkbox-item"><i
-                            class="kb-icon">🏪</i><span>기타</span></label></div>
+                            class="kb-icon svg-ic ic-etc"></i><span>기타</span></label></div>
                 </div>
             </div>
         </div>

@@ -67,7 +67,7 @@ body.dark-mode .overlay-title { color: #fff; }
 }
 
 .safety-score-panel {
-    position: absolute; top: 125px; left: 15px; background: rgba(255, 255, 255, 0.95);
+    position: absolute; top: 138px; left: 15px; background: rgba(255, 255, 255, 0.95);
     padding: 8px 12px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     z-index: 15; display: flex; align-items: center; gap: 10px; transition: top 0.3s;
 }
@@ -76,7 +76,7 @@ body.dark-mode .overlay-title { color: #fff; }
 .score-text strong { display: block; font-size: 13px; color: #333; margin-bottom: 2px; }
 
 @media (max-width: 768px) {
-    .safety-score-panel { top: 125px; left: 10px; padding: 6px 10px; }
+    .safety-score-panel { top: 138px; left: 10px; padding: 6px 10px; }
 }
 
 

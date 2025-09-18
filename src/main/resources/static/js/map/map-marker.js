@@ -199,6 +199,12 @@ function calculateSafetyScore(facilities) {
     const gradeEl = document.getElementById('safety-grade');
     if (!panel) return;
 
+    // 분석할 시설이 없으면(검색 전·줌아웃·필터 해제) 패널을 숨긴다 — '취약 0'이 경고처럼 뜨는 것 방지
+    if (!facilities || facilities.length === 0) {
+        panel.style.display = 'none';
+        return;
+    }
+
     let score = 0;
     facilities.forEach(f => {
         const t = (f.type || "").toLowerCase();
@@ -212,9 +218,9 @@ function calculateSafetyScore(facilities) {
 
     if(gradeEl) {
         let color, text;
-        if (score >= 80) { text = "매우 안전 🛡️"; color = "#28a745"; }
-        else if (score >= 50) { text = "보통 😐"; color = "#ffc107"; }
-        else { text = "취약 ⚠️"; color = "#d9534f"; }
+        if (score >= 80) { text = "매우 안전"; color = "#28a745"; }
+        else if (score >= 50) { text = "보통"; color = "#ffc107"; }
+        else { text = "취약"; color = "#d9534f"; }
 
         gradeEl.innerText = text;
         gradeEl.style.color = color;
