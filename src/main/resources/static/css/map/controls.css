@@ -21,5 +21,5 @@ body.dark-mode .kb-filter-btn.active { background-color: #337cf4; border-color: 
     .kb-map-controls { bottom: 130px; gap: 6px; }
     .kb-ctrl-label { display: none; }
     .kb-control-btn { width: 42px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; }
-    .kb-control-btn .svg-ic { width: 19px; height: 19px; vertical-align: 0; }
+    .kb-control-btn .ctrl-ic { width: 22px; height: 22px; vertical-align: 0; }
 }

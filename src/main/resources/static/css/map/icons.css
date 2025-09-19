@@ -21,16 +21,8 @@
 .cat-ic-grid { width: 26px; height: 26px; }
 .kb-checkbox-item .kb-icon { display: flex; align-items: center; justify-content: center; }
 
-/* 컨트롤 */
-.ic-traffic   { --svg-ic: url('/img/icons/traffic-cone.svg'); }
-.ic-terrain   { --svg-ic: url('/img/icons/mountain.svg'); }
-.ic-satellite { --svg-ic: url('/img/icons/satellite.svg'); }
-.ic-roadview  { --svg-ic: url('/img/icons/eye.svg'); }
-.ic-write     { --svg-ic: url('/img/icons/pencil.svg'); }
-.ic-report    { --svg-ic: url('/img/icons/siren.svg'); }
-.ic-fix       { --svg-ic: url('/img/icons/locate-fixed.svg'); }
-.ic-radius    { --svg-ic: url('/img/icons/ruler.svg'); }
-.ic-night     { --svg-ic: url('/img/icons/moon.svg'); }
-.ic-search    { --svg-ic: url('/img/icons/search.svg'); }
+/* 컨트롤: 컬러 아이콘(Fluent Emoji, MIT)을 <img>로 노출. 검색(🔍)만 라인 마스크 유지 */
+.ctrl-ic { width: 16px; height: 16px; vertical-align: -0.2em; }
+.ic-search { --svg-ic: url('/img/icons/search.svg'); }
 
 /* 주변탐색 그리드는 .kb-icon 박스 안에 컬러 img(.cat-ic-grid)를 flex 중앙정렬로 넣는다 */
