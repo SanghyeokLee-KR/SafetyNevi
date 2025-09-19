@@ -16,13 +16,10 @@
     mask-repeat: no-repeat;
 }
 
-/* 카테고리 */
-.ic-all       { --svg-ic: url('/img/icons/layers.svg'); }
-.ic-shelter   { --svg-ic: url('/img/icons/house.svg'); }
-.ic-health    { --svg-ic: url('/img/icons/heart-pulse.svg'); }
-.ic-police    { --svg-ic: url('/img/icons/shield.svg'); }
-.ic-fire      { --svg-ic: url('/img/icons/flame.svg'); }
-.ic-etc       { --svg-ic: url('/img/icons/ellipsis.svg'); }
+/* 카테고리: 컬러 아이콘(Fluent Emoji, MIT)을 마스크 대신 <img>로 색 그대로 노출 */
+.cat-ic { width: 18px; height: 18px; vertical-align: -0.3em; }
+.cat-ic-grid { width: 26px; height: 26px; }
+.kb-checkbox-item .kb-icon { display: flex; align-items: center; justify-content: center; }
 
 /* 컨트롤 */
 .ic-traffic   { --svg-ic: url('/img/icons/traffic-cone.svg'); }
@@ -36,11 +33,4 @@
 .ic-night     { --svg-ic: url('/img/icons/moon.svg'); }
 .ic-search    { --svg-ic: url('/img/icons/search.svg'); }
 
-/* 주변탐색 그리드: .kb-icon 박스(35px·체크 시 배경/색 변경)의 기존 규칙을 눌러 마스크 아이콘으로 대체.
-   본 파일을 map.html에서 마지막에 로드하므로 동일 특이도 충돌은 소스 순서로 이긴다 */
-.kb-checkbox-item .kb-icon.svg-ic,
-.kb-hidden-checkbox:checked + .kb-checkbox-item .kb-icon.svg-ic {
-    width: 26px;
-    height: 26px;
-    background-color: currentColor;
-}
+/* 주변탐색 그리드는 .kb-icon 박스 안에 컬러 img(.cat-ic-grid)를 flex 중앙정렬로 넣는다 */
