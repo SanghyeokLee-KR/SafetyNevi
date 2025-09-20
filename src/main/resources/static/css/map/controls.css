@@ -16,10 +16,22 @@ body.dark-mode .kb-filter-btn.active { background-color: #337cf4; border-color: 
 
 .kb-map-floating-btn { position: absolute; top: 12px; left: 15px; width: 40px; height: 40px; background: #fff; color: #333; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; z-index: 10001; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
 
+/* 지도 도구 토글 (모바일에서만 노출, 컨트롤 접기/펼치기) */
+.kb-tools-toggle { display: none; position: absolute; bottom: 130px; right: 15px; z-index: 21; width: 48px; height: 48px; border-radius: 50%; background: #337cf4; color: #fff; border: none; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(0,0,0,0.25); cursor: pointer; }
+.kb-tools-toggle.active { background: #003668; }
+.kb-tools-toggle .svg-ic { width: 22px; height: 22px; }
+
 @media (max-width: 768px) {
-    /* 폰: 라벨 숨기고 아이콘만 남겨 9개 버튼이 세로로 화면을 침범하지 않게 압축 */
-    .kb-map-controls { bottom: 130px; gap: 6px; }
+    /* 폰: 컨트롤 9개를 '도구' 토글(FAB) 뒤로 접는다. 탭하면 펼쳐짐 */
+    .kb-tools-toggle { display: flex; }
+    .kb-map-controls { display: none; bottom: 190px; gap: 6px; }
+    .kb-map-controls.kb-tools-open { display: flex; }
     .kb-ctrl-label { display: none; }
     .kb-control-btn { width: 42px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; }
     .kb-control-btn .ctrl-ic { width: 22px; height: 22px; vertical-align: 0; }
+
+    /* 필터바: 칩 살짝 작게 + 오른쪽 페이드로 '옆에 더 있음' 힌트 */
+    .kb-filter-btn { padding: 6px 11px; font-size: 12px; }
+    .kb-filter-btn .cat-ic { width: 16px; height: 16px; }
+    .kb-map-filters { -webkit-mask-image: linear-gradient(to right, #000 86%, transparent); mask-image: linear-gradient(to right, #000 86%, transparent); }
 }

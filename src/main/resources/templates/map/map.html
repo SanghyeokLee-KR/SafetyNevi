@@ -81,6 +81,19 @@
         <button id="btn-mode-dark" class="kb-control-btn" title="다크 모드 전환" aria-label="다크 모드 전환"><img class="ctrl-ic" src="/img/icons/ctrl/night.svg" alt=""><span class="kb-ctrl-label">야간</span></button>
     </div>
 
+    <!-- 지도 도구 토글 (모바일에서 컨트롤 접기/펼치기) -->
+    <button id="btn-tools-toggle" class="kb-tools-toggle" aria-label="지도 도구 열기"><span class="svg-ic ic-tools"></span></button>
+    <script>
+        (function () {
+            var t = document.getElementById('btn-tools-toggle');
+            var c = document.querySelector('.kb-map-controls');
+            if (t && c) t.addEventListener('click', function () {
+                c.classList.toggle('kb-tools-open');
+                t.classList.toggle('active');
+            });
+        })();
+    </script>
+
     <!-- 사이드바 열기 버튼 -->
     <div id="btn-sidebar-open" class="kb-map-floating-btn" role="button" tabindex="0" aria-label="메뉴 열기">≡</div>
 
