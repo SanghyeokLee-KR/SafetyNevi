@@ -4,66 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>안전네비 - 로그인</title>
-
-    <link rel="stylesheet" as="style" crossorigin
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
-
+    <link rel="stylesheet" href="/css/tokens.css">
+    <link rel="stylesheet" href="/css/components.css">
     <link rel="stylesheet" href="/css/member/login/login.css">
-
-    <!-- 🌟 파비콘 추가: /img/logo/favicon.png 및 /img/logo/favicon.ico 🌟 -->
     <link rel="icon" type="image/png" href="/img/logo/favicon.png">
-    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
 </head>
-<body>
-
-<div class="kb-login-container">
-    <div class="kb-login-card">
-
-        <div class="kb-title-container">
+<body class="sn-body">
+<div class="auth-wrap">
+    <div class="sn-card auth-card">
+        <div class="auth-brand">
             <img src="/img/logo/200px-안전네비_로고.png" alt="안전네비 로고">
-            <h1 class="kb-title-text">안전네비</h1>
+            <h1>안전네비</h1>
         </div>
+        <p class="auth-lead">안녕하세요!<br>서비스 이용을 위해 로그인해주세요.</p>
 
-        <h2 class="kb-login-title">
-            안녕하세요!<br>서비스 이용을 위해 로그인해주세요.
-        </h2>
+        <form class="auth-form" th:action="@{/login}" method="post">
+            <div th:if="${param.error}" class="sn-alert sn-alert--danger">아이디 또는 비밀번호가 일치하지 않습니다.</div>
+            <div th:if="${param.locked}" class="sn-alert sn-alert--danger">로그인 시도가 많아 계정이 잠시 잠겼습니다. 잠시 후 다시 시도해주세요.</div>
+            <div th:if="${param.logout}" class="sn-alert sn-alert--safe">로그아웃 되었습니다.</div>
 
-        <form class="kb-login-form" th:action="@{/login}" method="post">
-
-            <div th:if="${param.error}" class="kb-alert-msg error">
-                아이디 또는 비밀번호가 일치하지 않습니다.
+            <div class="sn-field">
+                <label for="username" class="sn-label">아이디</label>
+                <input type="text" id="username" name="username" class="sn-input" placeholder="아이디를 입력하세요" required>
             </div>
-            <div th:if="${param.locked}" class="kb-alert-msg error">
-                로그인 시도가 많아 계정이 잠시 잠겼습니다. 잠시 후 다시 시도해주세요.
-            </div>
-            <div th:if="${param.logout}" class="kb-alert-msg success">
-                로그아웃 되었습니다.
-            </div>
-
-            <div class="kb-form-group">
-                <label for="username" class="kb-form-label">아이디</label>
-                <input type="text" id="username" name="username" class="kb-form-input"
-                       placeholder="아이디를 입력하세요" required>
+            <div class="sn-field">
+                <label for="password" class="sn-label">비밀번호</label>
+                <input type="password" id="password" name="password" class="sn-input" placeholder="비밀번호를 입력하세요" required>
             </div>
 
-            <div class="kb-form-group">
-                <label for="password" class="kb-form-label">비밀번호</label>
-                <input type="password" id="password" name="password" class="kb-form-input"
-                       placeholder="비밀번호를 입력하세요" required>
-            </div>
+            <button type="submit" class="sn-btn sn-btn--primary sn-btn--block sn-btn--lg">로그인</button>
 
-            <button type="submit" class="kb-login-button">
-                로그인
-            </button>
-
-            <div class="kb-utility-links">
-                <a href="/findAccount" class="kb-link">아이디/비밀번호 찾기</a>
-                <span class="kb-divider">|</span>
-                <a href="/signup" class="kb-link kb-signup-link">회원가입</a>
+            <div class="auth-links">
+                <a href="/findAccount" class="sn-link sn-link--muted">아이디/비밀번호 찾기</a>
+                <span class="auth-sep">·</span>
+                <a href="/signup" class="sn-link">회원가입</a>
             </div>
         </form>
     </div>
 </div>
-
 </body>
 </html>

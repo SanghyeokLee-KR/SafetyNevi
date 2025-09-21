@@ -1,0 +1,125 @@
+/* ============================================================
+   SafetyNevi 공통 컴포넌트 — tokens.css 위에서 동작
+   sn- 프리픽스 (기존 kb-와 분리). 전 화면 재사용.
+   ============================================================ */
+
+/* --- 기본 --- */
+*, *::before, *::after { box-sizing: border-box; }
+.sn-body {
+    margin: 0; font-family: var(--font); background: var(--bg); color: var(--text);
+    -webkit-font-smoothing: antialiased; line-height: 1.55;
+    letter-spacing: -0.01em;
+}
+
+/* --- 타이포 --- */
+.sn-display { font-size: 28px; font-weight: 800; line-height: 1.25; }
+.sn-h1 { font-size: 24px; font-weight: 700; line-height: 1.3; }
+.sn-h2 { font-size: 20px; font-weight: 700; }
+.sn-h3 { font-size: 18px; font-weight: 600; }
+.sn-muted { color: var(--text-muted); }
+.sn-subtle { color: var(--text-subtle); }
+
+/* --- 버튼 --- */
+.sn-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 44px; padding: 0 18px; border-radius: var(--r-md);
+    font-family: var(--font); font-size: 15px; font-weight: 600; line-height: 1;
+    border: 1px solid transparent; cursor: pointer; text-decoration: none;
+    transition: background var(--dur) var(--ease), transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+    white-space: nowrap;
+}
+.sn-btn:active { transform: translateY(1px); }
+.sn-btn:focus-visible { outline: none; box-shadow: var(--ring); }
+.sn-btn--primary { background: var(--primary); color: var(--primary-on); }
+.sn-btn--primary:hover { background: var(--primary-strong); }
+.sn-btn--secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
+.sn-btn--secondary:hover { background: var(--surface-2); }
+.sn-btn--ghost { background: transparent; color: var(--text-muted); }
+.sn-btn--ghost:hover { background: var(--surface-2); color: var(--text); }
+.sn-btn--danger { background: var(--danger); color: #fff; }
+.sn-btn--danger:hover { filter: brightness(.95); }
+.sn-btn--block { width: 100%; display: flex; }
+.sn-btn--lg { min-height: 52px; font-size: 16px; border-radius: var(--r-md); }
+.sn-btn--sm { min-height: 36px; padding: 0 12px; font-size: 13px; }
+.sn-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* --- 입력 --- */
+.sn-field { margin-bottom: 16px; }
+.sn-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 7px; }
+.sn-input, .sn-select, .sn-textarea {
+    width: 100%; min-height: 48px; padding: 12px 14px;
+    border: 1px solid var(--border); border-radius: var(--r-md);
+    background: var(--surface); color: var(--text);
+    font-family: var(--font); font-size: 15px; line-height: 1.4;
+    transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.sn-textarea { min-height: 110px; resize: vertical; }
+.sn-input::placeholder, .sn-textarea::placeholder { color: var(--text-subtle); }
+.sn-input:focus, .sn-select:focus, .sn-textarea:focus {
+    outline: none; border-color: var(--primary); box-shadow: var(--ring);
+}
+.sn-input--error { border-color: var(--danger); }
+
+/* --- 카드 --- */
+.sn-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-lg); box-shadow: var(--e1); padding: 24px;
+}
+.sn-card--flat { box-shadow: none; }
+
+/* --- 알림 (시맨틱) --- */
+.sn-alert {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 12px 14px; border-radius: var(--r-md); font-size: 14px; font-weight: 500;
+    border: 1px solid transparent;
+}
+.sn-alert--danger { background: var(--danger-soft); color: #B42318; border-color: #FECDCA; }
+.sn-alert--warning { background: var(--warning-soft); color: #B54708; border-color: #FEDF89; }
+.sn-alert--safe { background: var(--safe-soft); color: #067647; border-color: #ABEFC6; }
+.sn-alert--info { background: var(--info-soft); color: var(--primary-strong); border-color: var(--primary-softer); }
+
+/* --- 뱃지 / 상태 칩 --- */
+.sn-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: var(--r-pill);
+    font-size: 12px; font-weight: 700; line-height: 1.5;
+}
+.sn-badge--danger { background: var(--danger-soft); color: #B42318; }
+.sn-badge--warning { background: var(--warning-soft); color: #B54708; }
+.sn-badge--safe { background: var(--safe-soft); color: #067647; }
+.sn-badge--neutral { background: var(--surface-2); color: var(--text-muted); }
+
+/* --- 칩 (필터/선택) --- */
+.sn-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    min-height: 38px; padding: 0 14px; border-radius: var(--r-pill);
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: all var(--dur) var(--ease); flex-shrink: 0;
+}
+.sn-chip:hover { background: var(--surface-2); }
+.sn-chip.is-active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.sn-chip__dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* --- 리스트 행 --- */
+.sn-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: var(--r-lg);
+    transition: all var(--dur) var(--ease);
+}
+.sn-row:hover { border-color: var(--primary); box-shadow: var(--e1); }
+.sn-row__icon {
+    width: 40px; height: 40px; border-radius: var(--r-md); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--primary-soft); color: var(--primary);
+}
+.sn-row__body { flex: 1; min-width: 0; }
+.sn-row__title { font-size: 15px; font-weight: 600; color: var(--text); }
+.sn-row__desc { font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* --- 보조 --- */
+.sn-divider { height: 1px; background: var(--border); border: 0; margin: 16px 0; }
+.sn-link { color: var(--primary); text-decoration: none; font-weight: 600; }
+.sn-link:hover { text-decoration: underline; }
+.sn-stack { display: flex; flex-direction: column; }

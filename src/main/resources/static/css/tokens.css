@@ -1,0 +1,78 @@
+/* ============================================================
+   SafetyNevi 디자인 토큰 — 단일 진실 공급원
+   색·타이포·간격·반경·그림자·모션. 모든 화면은 이 변수만 쓴다.
+   ============================================================ */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+:root {
+    /* Brand (신뢰형 딥 블루) */
+    --primary: #2563EB;
+    --primary-strong: #1D4ED8;
+    --primary-soft: #EFF4FF;
+    --primary-softer: #DBE7FF;
+    --primary-on: #FFFFFF;
+
+    /* Semantic — 재난/안전 */
+    --danger: #E5484D;      --danger-soft: #FEF1F1;
+    --warning: #F59E0B;     --warning-soft: #FEF6E7;
+    --safe: #16A34A;        --safe-soft: #ECFDF3;
+    --info: #2563EB;        --info-soft: #EFF4FF;
+
+    /* 시설 카테고리 액센트 (점·칩·마커에만) */
+    --cat-all: #2563EB;
+    --cat-shelter: #16A34A;
+    --cat-health: #E5484D;
+    --cat-police: #1D4ED8;
+    --cat-fire: #EA580C;
+    --cat-etc: #64748B;
+
+    /* Neutral (slate) */
+    --gray-50: #F8FAFC;  --gray-100: #F1F5F9; --gray-200: #E6EAF1;
+    --gray-300: #CBD5E1; --gray-400: #94A3B8; --gray-500: #64748B;
+    --gray-600: #475569; --gray-700: #334155; --gray-800: #1E293B; --gray-900: #0F172A;
+
+    /* Surface & Text */
+    --bg: #F4F6FA;
+    --surface: #FFFFFF;
+    --surface-2: #F1F5F9;
+    --border: #E6EAF1;
+    --text: #0F172A;
+    --text-muted: #5B6676;
+    --text-subtle: #94A3B8;
+    --text-on: #FFFFFF;
+
+    /* Typography */
+    --font: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+
+    /* Radius */
+    --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px; --r-pill: 999px;
+
+    /* Elevation (절제) */
+    --e1: 0 1px 2px rgba(15,23,42,.06), 0 1px 3px rgba(15,23,42,.05);
+    --e2: 0 6px 16px rgba(15,23,42,.08);
+    --e3: 0 -6px 28px rgba(15,23,42,.12);
+    --ring: 0 0 0 3px rgba(37,99,235,.20);
+
+    /* Motion */
+    --ease: cubic-bezier(.2,0,0,1);
+    --dur: 160ms;
+    --dur-lg: 240ms;
+}
+
+/* 다크모드 — 야간 대피 상황 대비. body.dark-mode 또는 [data-theme=dark] */
+[data-theme="dark"], body.dark-mode {
+    --bg: #0B1220;
+    --surface: #151C2C;
+    --surface-2: #1E2940;
+    --border: #28324A;
+    --text: #EAF0FA;
+    --text-muted: #9AA7BD;
+    --text-subtle: #6B7894;
+    --primary-soft: #16233F;
+    --primary-softer: #1B2C4E;
+    --gray-50: #131A28; --gray-100: #1A2336; --gray-200: #28324A;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root { --dur: 0ms; --dur-lg: 0ms; }
+}
