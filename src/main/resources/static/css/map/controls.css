@@ -21,16 +21,35 @@ body.dark-mode .kb-filter-btn.active { background-color: #337cf4; border-color: 
 .kb-tools-toggle.active { background: #003668; }
 .kb-tools-toggle .svg-ic { width: 22px; height: 22px; }
 
-@media (max-width: 768px) {
-    /* 폰: 컨트롤 9개를 '도구' 토글(FAB) 뒤로 접는다. 탭하면 펼쳐짐 */
-    .kb-tools-toggle { display: flex; }
-    .kb-map-controls { display: none; bottom: 190px; gap: 6px; }
-    .kb-map-controls.kb-tools-open { display: flex; }
-    .kb-ctrl-label { display: none; }
-    .kb-control-btn { width: 42px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; }
-    .kb-control-btn .ctrl-ic { width: 22px; height: 22px; vertical-align: 0; }
+/* 바텀시트 머리(핸들·제목)·배경 — 모바일에서 시트 열릴 때만 노출 */
+.kb-tools-sheet-head { display: none; flex-direction: column; gap: 8px; padding-bottom: 4px; cursor: pointer; }
+.kb-sheet-handle { width: 40px; height: 4px; border-radius: 2px; background: #d5d5d5; align-self: center; }
+.kb-sheet-title { font-size: 14px; font-weight: 700; color: #333; }
+.kb-tools-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 21; }
+.kb-tools-backdrop.show { display: block; }
 
-    /* 필터바: 칩 살짝 작게 + 오른쪽 페이드로 '옆에 더 있음' 힌트 */
+@media (max-width: 768px) {
+    .kb-tools-toggle { display: flex; }
+
+    /* 컨트롤: 닫힘=숨김 / 열림=하단 바텀시트(라벨 리스트, 길면 스크롤) → 화면 높이와 무관 */
+    .kb-map-controls { display: none; }
+    .kb-map-controls.kb-tools-open {
+        display: flex; flex-direction: column; gap: 8px;
+        position: fixed; left: 0; right: 0; bottom: 0; top: auto; width: 100%;
+        background: #fff; border-radius: 18px 18px 0 0;
+        padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+        box-shadow: 0 -4px 24px rgba(0,0,0,0.2);
+        max-height: 68vh; overflow-y: auto; z-index: 22;
+    }
+    .kb-map-controls.kb-tools-open .kb-tools-sheet-head { display: flex; }
+    .kb-map-controls.kb-tools-open .kb-control-btn {
+        width: 100%; height: 48px; justify-content: flex-start;
+        padding: 0 14px; border-radius: 12px; font-size: 14px;
+    }
+    .kb-map-controls.kb-tools-open .kb-ctrl-label { display: inline; margin-left: 0; }
+    .kb-map-controls.kb-tools-open .ctrl-ic { width: 22px; height: 22px; margin-right: 12px; }
+
+    /* 필터바: 칩 작게 + 오른쪽 페이드(스크롤 피크) */
     .kb-filter-btn { padding: 6px 11px; font-size: 12px; }
     .kb-filter-btn .cat-ic { width: 16px; height: 16px; }
     .kb-map-filters { -webkit-mask-image: linear-gradient(to right, #000 86%, transparent); mask-image: linear-gradient(to right, #000 86%, transparent); }

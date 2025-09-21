@@ -63,8 +63,9 @@
         <button class="kb-filter-btn" data-type="etc"><img class="cat-ic" src="/img/icons/cat/etc.svg" alt=""> 기타</button>
     </div>
 
-    <!-- 지도 컨트롤 (우측 하단) -->
+    <!-- 지도 컨트롤 (데스크톱: 우측 플로팅 / 모바일: 도구 FAB → 바텀시트) -->
     <div class="kb-map-controls">
+        <div class="kb-tools-sheet-head"><span class="kb-sheet-handle"></span><span class="kb-sheet-title">지도 도구</span></div>
         <button id="btn-mode-traffic" class="kb-control-btn" title="실시간 교통정보" aria-label="실시간 교통정보"><img class="ctrl-ic" src="/img/icons/ctrl/traffic.svg" alt=""><span class="kb-ctrl-label">교통</span></button>
         <button id="btn-mode-cctv" class="kb-control-btn" title="지형도 확인" aria-label="지형도"><img class="ctrl-ic" src="/img/icons/ctrl/terrain.svg" alt=""><span class="kb-ctrl-label">지형</span></button>
         <button id="btn-mode-skyview" class="kb-control-btn" title="위성지도" aria-label="위성지도"><img class="ctrl-ic" src="/img/icons/ctrl/satellite.svg" alt=""><span class="kb-ctrl-label">위성</span></button>
@@ -81,16 +82,23 @@
         <button id="btn-mode-dark" class="kb-control-btn" title="다크 모드 전환" aria-label="다크 모드 전환"><img class="ctrl-ic" src="/img/icons/ctrl/night.svg" alt=""><span class="kb-ctrl-label">야간</span></button>
     </div>
 
-    <!-- 지도 도구 토글 (모바일에서 컨트롤 접기/펼치기) -->
+    <!-- 지도 도구 FAB + 바텀시트 배경 (모바일) -->
+    <div class="kb-tools-backdrop" aria-hidden="true"></div>
     <button id="btn-tools-toggle" class="kb-tools-toggle" aria-label="지도 도구 열기"><span class="svg-ic ic-tools"></span></button>
     <script>
         (function () {
             var t = document.getElementById('btn-tools-toggle');
             var c = document.querySelector('.kb-map-controls');
-            if (t && c) t.addEventListener('click', function () {
-                c.classList.toggle('kb-tools-open');
-                t.classList.toggle('active');
-            });
+            var b = document.querySelector('.kb-tools-backdrop');
+            var head = c ? c.querySelector('.kb-tools-sheet-head') : null;
+            function setOpen(open) {
+                c.classList.toggle('kb-tools-open', open);
+                t.classList.toggle('active', open);
+                if (b) b.classList.toggle('show', open);
+            }
+            if (t && c) t.addEventListener('click', function () { setOpen(!c.classList.contains('kb-tools-open')); });
+            if (b) b.addEventListener('click', function () { setOpen(false); });
+            if (head) head.addEventListener('click', function () { setOpen(false); });
         })();
     </script>
 
