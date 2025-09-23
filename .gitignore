@@ -49,3 +49,13 @@ application-*.properties
 !application-example.properties
 # 테스트 설정은 더미값이라 커밋 (위 application.properties 무시 예외)
 !src/test/resources/application.properties
+
+# ======================
+# Frontend (TypeScript)
+# ======================
+node_modules/
+*.tsbuildinfo
+# 컴파일 검증용 임시 산출물
+/build-tscheck/
+/build-tscheck2/
+/tsc-out*.txt
