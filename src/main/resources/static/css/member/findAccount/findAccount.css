@@ -1,88 +1,56 @@
-/* 공통 변수 */
-:root {
-    --primary-color: #337cf4;
-    --primary-hover: #2864c6;
-    --bg-color: #f0f4f8;
-    --text-color: #333333;
-    --gray-border: #e1e5e9;
-    --success-color: #28a745; /* 성공 색상 */
-    --error-color: #dc3545;   /* 에러 색상 */
-}
-
-html, body {
-    width: 100%; height: 100%; margin: 0; padding: 0;
-    font-family: 'Pretendard', sans-serif;
-    background-color: var(--bg-color);
-    display: flex; justify-content: center; align-items: center;
-}
+/* 비밀번호 찾기 — tokens/components 위에서. kb- 클래스/ID/스텝은 JS가 잡으므로 유지, 스타일만 토큰화 */
+html, body { height: 100%; margin: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
 
 .kb-login-container {
-    width: 100%; max-width: 480px; padding: 20px; box-sizing: border-box;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
 }
-
 .kb-login-card {
-    background-color: #ffffff; border-radius: 20px; padding: 50px 40px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-    text-align: center; display: flex; flex-direction: column; align-items: center;
+    width: 100%; max-width: 420px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-xl); box-shadow: var(--e2); padding: 40px 32px;
+    box-sizing: border-box;
 }
+.kb-title-container { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 16px; }
+.kb-title-container img { width: 52px; height: auto; }
+.kb-title-text { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin: 0; color: var(--text); }
 
-.kb-title-container {
-    display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 20px;
-}
-.kb-title-container img { width: 60px; height: auto; }
-.kb-title-text { font-size: 24px; font-weight: 800; color: var(--text-color); margin: 0; }
-.kb-login-title { font-size: 20px; font-weight: 700; color: #333; margin-bottom: 20px; }
+.kb-login-title { font-size: 18px; font-weight: 700; text-align: center; margin: 0 0 6px; color: var(--text); }
+.kb-desc-text { font-size: 14px; color: var(--text-muted); text-align: center; margin: 0 0 24px; line-height: 1.5; }
 
-.kb-desc-text { font-size: 14px; color: #666; margin-bottom: 20px; word-break: keep-all; }
-.hidden-step { display: none !important; }
-
-.kb-question-box {
-    width: 100%; padding: 15px; border-radius: 10px;
-    background-color: #f1f8ff; color: var(--primary-color);
-    font-weight: 700; font-size: 15px; margin-bottom: 20px;
-    border: 1px solid #dbeafe; box-sizing: border-box;
-}
-
-.kb-form-group { width: 100%; margin-bottom: 20px; text-align: left; position: relative; }
-.kb-form-label { display: block; font-size: 14px; font-weight: 600; color: #555; margin-bottom: 8px; margin-left: 4px; }
-
+.kb-form-group { margin-bottom: 16px; }
+.kb-form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 7px; }
 .kb-form-input {
-    width: 100%; height: 50px; padding: 0 15px;
-    border: 1px solid var(--gray-border); border-radius: 10px;
-    font-size: 15px; background-color: #fdfdfd; box-sizing: border-box;
-    transition: all 0.2s ease;
+    width: 100%; min-height: 48px; padding: 12px 14px; box-sizing: border-box;
+    border: 1px solid var(--border); border-radius: var(--r-md);
+    background: var(--surface); color: var(--text); font-family: var(--font); font-size: 15px;
+    transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
-.kb-form-input:focus {
-    outline: none; border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(51, 124, 244, 0.15);
-}
-
-/* 🌟 유효성 검사 스타일 (회원가입과 동일하게 적용) */
-.kb-form-input.valid {
-    border-color: var(--success-color);
-    /* 체크 아이콘 SVG */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2328a745' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 15px center;
-    background-size: 20px;
-}
-.kb-form-input.invalid { border-color: var(--error-color); background-color: #fff5f5; }
-
-.kb-input-msg { font-size: 12px; margin-top: 5px; margin-left: 5px; display: none; }
-.kb-input-msg.error { display: block; color: var(--error-color); }
-.kb-input-msg.success { display: block; color: var(--success-color); }
+.kb-form-input::placeholder { color: var(--text-subtle); }
+.kb-form-input:focus { outline: none; border-color: var(--primary); box-shadow: var(--ring); }
 
 .kb-login-button {
-    width: 100%; height: 56px; background-color: var(--primary-color);
-    color: white; border: none; border-radius: 12px;
-    font-size: 18px; font-weight: 700; cursor: pointer;
-    transition: all 0.3s; box-shadow: 0 10px 20px rgba(51, 124, 244, 0.3);
+    width: 100%; min-height: 52px; margin-top: 8px;
+    background: var(--primary); color: #fff; border: none; border-radius: var(--r-md);
+    font-family: var(--font); font-size: 16px; font-weight: 700; cursor: pointer;
+    transition: background var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
-.kb-login-button:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
+.kb-login-button:hover { background: var(--primary-strong); }
+.kb-login-button:active { transform: translateY(1px); }
 
-.kb-utility-links { margin-top: 25px; font-size: 14px; }
-.kb-link { color: #888; text-decoration: none; }
-.kb-link:hover { color: var(--primary-color); font-weight: 600; }
+.kb-question-box {
+    background: var(--primary-soft); color: var(--primary-strong);
+    border: 1px solid var(--primary-softer); border-radius: var(--r-md);
+    padding: 14px 16px; font-size: 15px; font-weight: 600; text-align: center; margin-bottom: 16px;
+}
+.kb-input-msg { font-size: 12px; margin: 6px 2px 0; color: var(--danger); }
 
-.fade-in { animation: fadeIn 0.5s ease-in-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.kb-utility-links { display: flex; justify-content: center; margin-top: 22px; font-size: 14px; }
+.kb-link { color: var(--text-muted); text-decoration: none; font-weight: 500; }
+.kb-link:hover { color: var(--primary); }
+
+.hidden-step { display: none; }
+.fade-in { animation: snFade var(--dur-lg) var(--ease); }
+@keyframes snFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 480px) { .kb-login-card { padding: 32px 22px; } }
