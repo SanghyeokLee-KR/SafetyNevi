@@ -1,5 +1,5 @@
-// 회원 강제 탈퇴 처리
-function deleteMember(userId) {
+// 회원 강제 탈퇴 처리 (HTML onclick에서 호출하는 전역 함수 — export 하지 않음)
+function deleteMember(userId: string): void {
     if (!confirm(`[${userId}] 회원을 정말 강제 탈퇴시키겠습니까?\n(작성한 게시글, 댓글 등 모든 데이터가 영구 삭제됩니다)`)) {
         return;
     }

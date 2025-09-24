@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Toast UI
     const Toast = {
-        show: (msg, isError = false) => {
+        show: (msg: string, isError = false): void => {
             let t = document.getElementById('admin-toast');
             if (!t) {
                 t = document.createElement('div');
@@ -11,56 +11,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 Object.assign(t.style, {
                     position: 'fixed', left: '50%', bottom: '40px', transform: 'translateX(-50%)',
                     padding: '10px 16px', borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-                    zIndex: 99999, fontSize: '13px', transition: 'opacity 0.3s', color: '#fff'
+                    zIndex: '99999', fontSize: '13px', transition: 'opacity 0.3s', color: '#fff'
                 });
                 document.body.appendChild(t);
             }
             t.innerText = msg;
             t.style.background = isError ? '#dc2626' : '#0f172a';
             t.style.opacity = '1';
-            setTimeout(() => t.style.opacity = '0', 2200);
+            setTimeout(() => { t!.style.opacity = '0'; }, 2200);
         }
     };
 
-    const escapeHtml = (str) => {
+    const ENTITIES: Record<string, string> = {
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;", "/": "&#x2F;"
+    };
+    const escapeHtml = (str: unknown): string => {
         if (!str) return "";
-        return String(str).replace(/[&<>"'`=/]/g, s => ({
-            "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;", "/": "&#x2F;"
-        }[s]));
+        return String(str).replace(/[&<>"'`=/]/g, s => ENTITIES[s] ?? s);
     };
 
     // Modal Logic
     const modal = document.getElementById('postModal');
     const modalContent = document.getElementById('modal-content');
 
-    const closeModal = () => { if(modal) modal.style.display = 'none'; };
+    const closeModal = (): void => { if (modal) modal.style.display = 'none'; };
 
     document.getElementById('btn-modal-close')?.addEventListener('click', closeModal);
     modal?.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
     });
 
-    const openPostModal = async (boardId) => {
-        if (!modal || !modalContent) return;
-
-        modal.style.display = 'flex';
-        modalContent.innerHTML = `<div style="color:#6b7280; padding:20px;">데이터를 불러오는 중...</div>`;
-
-        try {
-            const res = await fetch(`/api/admin/board/${boardId}`);
-            if (!res.ok) throw new Error("게시글 로드 실패");
-
-            const data = await res.json();
-            renderModalContent(data);
-        } catch (e) {
-            modalContent.innerHTML = `<div style="color:#dc2626; padding:20px;">불러오기 실패: ${e.message}</div>`;
-            Toast.show("게시글 정보를 가져오지 못했습니다.", true);
-        }
-    };
-
-    const renderModalContent = (b) => {
+    const renderModalContent = (b: any): void => {
+        if (!modalContent) return;
         const imageHtml = b.imageUrl ? `<img src="${escapeHtml(b.imageUrl)}" style="max-width:100%; margin-top:10px; border-radius:4px;">` : '';
-        const locHtml = b.locationType ? `<div class="meta" style="margin-top:5px; color:#666; font-size:12px;">📍 위치유형: ${escapeHtml(b.locationType)}</div>` : '';
+        const locHtml = b.locationType ? `<div class="meta" style="margin-top:5px; color:#666; font-size:12px;">위치유형: ${escapeHtml(b.locationType)}</div>` : '';
 
         modalContent.innerHTML = `
             <div>
@@ -76,11 +60,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `;
-        document.getElementById('internal-close-btn').addEventListener('click', closeModal);
+        document.getElementById('internal-close-btn')?.addEventListener('click', closeModal);
+    };
+
+    const openPostModal = async (boardId: string): Promise<void> => {
+        if (!modal || !modalContent) return;
+
+        modal.style.display = 'flex';
+        modalContent.innerHTML = `<div style="color:#6b7280; padding:20px;">데이터를 불러오는 중...</div>`;
+
+        try {
+            const res = await fetch(`/api/admin/board/${boardId}`);
+            if (!res.ok) throw new Error("게시글 로드 실패");
+
+            const data = await res.json();
+            renderModalContent(data);
+        } catch (e) {
+            const msg = e instanceof Error ? e.message : "알 수 없는 오류";
+            modalContent.innerHTML = `<div style="color:#dc2626; padding:20px;">불러오기 실패: ${msg}</div>`;
+            Toast.show("게시글 정보를 가져오지 못했습니다.", true);
+        }
     };
 
     // Update Status
-    const updateStatus = async (reportId, newStatus) => {
+    const updateStatus = async (reportId: string, newStatus: string): Promise<void> => {
         if (!confirm("상태를 변경하시겠습니까?")) return;
 
         try {
@@ -103,17 +106,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const reportTable = document.querySelector('.kb-table-reports');
 
     reportTable?.addEventListener('click', (e) => {
-        const target = e.target;
+        const target = e.target as HTMLElement | null;
+        if (!target) return;
 
         if (target.classList.contains('btn-view-post')) {
             const id = target.dataset.id;
-            openPostModal(id);
+            if (id) openPostModal(id);
         }
 
         if (target.classList.contains('btn-update-status')) {
             const id = target.dataset.id;
             const status = target.dataset.status;
-            updateStatus(id, status);
+            if (id && status) updateStatus(id, status);
         }
     });
 });
