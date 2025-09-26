@@ -4,23 +4,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Kakao Map & Geocoder
     const geocoder = new kakao.maps.services.Geocoder();
     const mapElements = {
-        address: document.getElementById('address'),
-        areaName: document.getElementById('areaName'),
-        areaDisplay: document.getElementById('areaName-display'),
-        lat: document.getElementById('lat'),
-        lon: document.getElementById('lon')
+        address: document.getElementById('address') as HTMLInputElement,
+        areaName: document.getElementById('areaName') as HTMLInputElement,
+        areaDisplay: document.getElementById('areaName-display') as HTMLInputElement,
+        lat: document.getElementById('lat') as HTMLInputElement,
+        lon: document.getElementById('lon') as HTMLInputElement
     };
 
     document.getElementById('search-address-btn')?.addEventListener('click', () => {
         new daum.Postcode({
-            oncomplete: (data) => {
+            oncomplete: (data: any) => {
                 const sigungu = data.sigungu || data.address.split(' ')[1] || "지역명 미상";
 
                 mapElements.address.value = data.address;
                 mapElements.areaName.value = sigungu;
                 mapElements.areaDisplay.value = sigungu;
 
-                geocoder.addressSearch(data.address, (result, status) => {
+                geocoder.addressSearch(data.address, (result: any, status: any) => {
                     if (status === kakao.maps.services.Status.OK) {
                         mapElements.lat.value = result[0].y;
                         mapElements.lon.value = result[0].x;
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load Active Disasters
     const tbody = document.getElementById('disaster-list-body');
 
-    const loadActiveDisasters = async () => {
+    const loadActiveDisasters = async (): Promise<void> => {
         if (!tbody) return;
 
         try {
@@ -45,12 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (list.length === 0) {
                 tbody.innerHTML = `
                     <tr><td colspan="5" style="text-align:center; padding:40px; color:#94a3b8;">
-                        현재 발령된 재난이 없습니다. ✅
+                        현재 발령된 재난이 없습니다.
                     </td></tr>`;
                 return;
             }
 
-            list.forEach(item => {
+            list.forEach((item: any) => {
                 const isFire = item.disasterType.includes('fire');
                 const badgeColor = isFire ? '#ef4444' : '#3b82f6';
                 const locationTxt = item.areaName
@@ -76,22 +76,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Terminate Disaster
     tbody?.addEventListener('click', async (e) => {
-        if (!e.target.classList.contains('btn-terminate')) return;
+        const target = e.target as HTMLElement;
+        if (!target.classList.contains('btn-terminate')) return;
 
-        const id = e.target.dataset.id;
+        const id = target.dataset.id;
         if (!confirm("해당 재난 상황을 종료하시겠습니까?")) return;
 
         try {
             const res = await fetch(`/api/admin/disaster/${id}`, { method: 'DELETE' });
             if (res.ok) loadActiveDisasters();
             else alert("종료 처리에 실패했습니다.");
-        } catch (e) {
+        } catch {
             alert("서버 통신 오류가 발생했습니다.");
         }
     });
 
     // Simulator
-    const requestSimulate = async (url, payload) => {
+    const requestSimulate = async (url: string, payload: Record<string, string>): Promise<void> => {
         try {
             const params = new URLSearchParams(payload).toString();
             const res = await fetch(`${url}?${params}`, { method: 'POST' });
@@ -114,9 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         requestSimulate('/api/admin/simulate', {
             lat, lon,
-            type: document.getElementById('type-circle').value,
-            radius: document.getElementById('radius').value,
-            durationMinutes: document.getElementById('duration-circle').value
+            type: (document.getElementById('type-circle') as HTMLInputElement).value,
+            radius: (document.getElementById('radius') as HTMLInputElement).value,
+            durationMinutes: (document.getElementById('duration-circle') as HTMLInputElement).value
         });
     });
 
@@ -127,8 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         requestSimulate('/api/admin/simulate-area', {
             areaName: area,
-            type: document.getElementById('type-area').value,
-            durationMinutes: document.getElementById('duration-area').value
+            type: (document.getElementById('type-area') as HTMLInputElement).value,
+            durationMinutes: (document.getElementById('duration-area') as HTMLInputElement).value
         });
     });
 });
