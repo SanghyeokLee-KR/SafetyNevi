@@ -55,6 +55,6 @@ public class DisasterMessageController {
         model.addAttribute("selectedArea", area);
         model.addAttribute("selectedType", disasterType);
 
-        return "disasterMessage";
+        return "disaster/disasterMessage";
     }
 }

@@ -10,12 +10,12 @@ public class AuthController {
 
     @GetMapping("/disasterGuide")
     public String disasterGuide() {
-        return "resources-templates/disasterGuide";
+        return "disaster/disasterGuide";
     }
 
     @GetMapping("/shelterDetail")
     public String shelterDetail() {
-        return "resources-templates/shelterDetail";
+        return "map/shelterDetail";
     }
 
 }
