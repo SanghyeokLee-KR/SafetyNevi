@@ -6,12 +6,12 @@
 .kb-form-input, .kb-select-input {
     width: 100%; height: 50px; padding: 0 15px;
     border: 1px solid var(--gray-border); border-radius: 10px;
-    font-size: 15px; color: #333; background-color: #fdfdfd;
+    font-size: 15px; color: var(--text); background-color: var(--surface);
     box-sizing: border-box; transition: all 0.2s ease;
 }
 .kb-form-input:focus, .kb-select-input:focus {
-    outline: none; border-color: var(--primary-color); background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(51, 124, 244, 0.15);
+    outline: none; border-color: var(--primary); background-color: var(--surface);
+    box-shadow: var(--ring);
 }
 /* 유효성 검사 아이콘 */
 .kb-form-input.valid {
@@ -37,9 +37,9 @@
 .kb-signup-button {
     width: 100%; height: 56px; background-color: var(--primary-color); color: white;
     border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer;
-    transition: all 0.3s; box-shadow: 0 10px 20px rgba(51, 124, 244, 0.3);
+    transition: all 0.3s; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
 }
-.kb-signup-button:hover { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 15px 25px rgba(51, 124, 244, 0.4); }
+.kb-signup-button:hover { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3); }
 .kb-signup-button:disabled { background-color: var(--disabled-bg); color: var(--disabled-text); cursor: not-allowed; box-shadow: none; transform: none; }
 
 /* 체크박스 */
@@ -115,7 +115,7 @@
     font-size: 18px;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 10px 20px rgba(51, 124, 244, 0.3);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
     transition: all 0.2s;
 }
 .kb-btn-next:hover {

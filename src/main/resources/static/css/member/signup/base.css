@@ -1,16 +1,17 @@
+/* 회원가입 base — 기존 로컬 변수를 디자인 토큰으로 remap (components·modal까지 새 브랜드색으로 정렬) */
 :root {
-    --primary-color: #337cf4;
-    --primary-hover: #2864c6;
-    --bg-color: #f0f4f8;
-    --text-color: #333333;
-    --gray-border: #e1e5e9;
-    --gray-text: #888888;
-    --input-bg: #ffffff;
-    --disabled-bg: #d1d5db;
-    --disabled-text: #9ca3af;
-    --success-color: #28a745;
-    --error-color: #dc3545;
-    --warn-color: #ffc107;
+    --primary-color: var(--primary);
+    --primary-hover: var(--primary-strong);
+    --bg-color: var(--bg);
+    --text-color: var(--text);
+    --gray-border: var(--border);
+    --gray-text: var(--text-muted);
+    --input-bg: var(--surface);
+    --disabled-bg: var(--gray-200);
+    --disabled-text: var(--text-subtle);
+    --success-color: var(--safe);
+    --error-color: var(--danger);
+    --warn-color: var(--warning);
 }
 
 html, body {
@@ -18,29 +19,30 @@ html, body {
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
-    background-color: var(--bg-color);
+    font-family: var(--font);
+    background-color: var(--bg);
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: var(--text-color);
+    color: var(--text);
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
 }
 
 .kb-signup-container {
     width: 100%;
     max-width: 600px;
-    padding: 60px 20px;
+    padding: 56px 20px;
     margin: auto;
     box-sizing: border-box;
 }
 
 .kb-signup-card {
-    background-color: #ffffff;
-    border-radius: 20px;
-    padding: 50px 40px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    background-color: var(--surface);
+    border-radius: var(--r-xl);
+    padding: 44px 40px;
+    box-shadow: var(--e2);
+    border: 1px solid var(--border);
     width: 100%;
     box-sizing: border-box;
     display: flex;
@@ -55,14 +57,14 @@ html, body {
     gap: 10px;
     margin-bottom: 10px;
 }
-.kb-title-container img { width: 60px; height: auto; margin-bottom: 5px; }
-.kb-title-text { font-size: 28px; font-weight: 800; color: var(--text-color); margin: 0; }
+.kb-title-container img { width: 54px; height: auto; margin-bottom: 4px; }
+.kb-title-text { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: var(--text); margin: 0; }
 .kb-signup-title {
-    font-size: 16px; font-weight: 500; color: var(--gray-text);
-    margin-bottom: 40px; text-align: center;
+    font-size: 16px; font-weight: 500; color: var(--text-muted);
+    margin-bottom: 34px; text-align: center;
 }
 
 @media (max-width: 768px) {
-    .kb-signup-container { padding: 20px 15px; }
-    .kb-signup-card { padding: 30px 20px; }
+    .kb-signup-container { padding: 24px 15px; }
+    .kb-signup-card { padding: 30px 22px; }
 }

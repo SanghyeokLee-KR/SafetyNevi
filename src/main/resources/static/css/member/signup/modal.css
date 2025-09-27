@@ -23,7 +23,7 @@
     color: #333;
     margin-top: 20px;
     margin-bottom: 10px;
-    border-left: 4px solid #337cf4; /* 파란색 강조 선 */
+    border-left: 4px solid var(--primary);
     padding-left: 10px;
 }
 
