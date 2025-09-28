@@ -8,23 +8,23 @@ document.addEventListener('DOMContentLoaded', () => {
         password: /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
     };
 
-    const setMsg = (elem, isSuccess, text) => {
+    const setMsg = (elem: HTMLElement | null, isSuccess: boolean, text: string): void => {
         if (!elem) return;
         elem.className = isSuccess ? 'kb-val-msg success' : 'kb-val-msg error';
         elem.innerText = text;
     };
 
     // 내 정보 수정
-    const infoForm = document.getElementById('info-update-form');
-    const nickInput = document.getElementById('nickname');
-    const phoneInput = document.getElementById('phone');
+    const infoForm = document.getElementById('info-update-form') as HTMLFormElement | null;
+    const nickInput = document.getElementById('nickname') as HTMLInputElement;
+    const phoneInput = document.getElementById('phone') as HTMLInputElement;
 
-    nickInput?.addEventListener('input', function() {
+    nickInput?.addEventListener('input', function (this: HTMLInputElement) {
         const isValid = REGEX.nickname.test(this.value);
         setMsg(document.getElementById('nick-msg'), isValid, isValid ? "사용 가능" : "특수문자 제외 2~10자");
     });
 
-    phoneInput?.addEventListener('input', function() {
+    phoneInput?.addEventListener('input', function (this: HTMLInputElement) {
         this.value = this.value.replace(/[^0-9]/g, '');
         const isValid = REGEX.phone.test(this.value);
         setMsg(document.getElementById('phone-msg'), isValid, isValid ? "올바른 형식" : "010XXXXXXXX 형식");
@@ -33,20 +33,20 @@ document.addEventListener('DOMContentLoaded', () => {
     infoForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        if(!REGEX.nickname.test(nickInput.value)) { nickInput.focus(); return alert("닉네임을 확인해주세요."); }
-        if(!REGEX.phone.test(phoneInput.value)) { phoneInput.focus(); return alert("전화번호를 확인해주세요."); }
+        if (!REGEX.nickname.test(nickInput.value)) { nickInput.focus(); return alert("닉네임을 확인해주세요."); }
+        if (!REGEX.phone.test(phoneInput.value)) { phoneInput.focus(); return alert("전화번호를 확인해주세요."); }
 
         const data = {
             nickname: nickInput.value,
             phone: phoneInput.value,
-            address: document.getElementById('address').value,
-            detailAddress: document.getElementById('detailAddress').value
+            address: (document.getElementById('address') as HTMLInputElement).value,
+            detailAddress: (document.getElementById('detailAddress') as HTMLInputElement).value
         };
 
         try {
             const res = await fetch('/api/myinfo/update', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
             if (res.ok) alert("정보가 수정되었습니다.");
@@ -59,27 +59,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // 주소 검색
     document.getElementById('search-addr-btn')?.addEventListener('click', () => {
         new daum.Postcode({
-            oncomplete: (data) => {
-                document.getElementById('address').value = data.address;
-                document.getElementById('detailAddress').focus();
+            oncomplete: (data: any) => {
+                (document.getElementById('address') as HTMLInputElement).value = data.address;
+                document.getElementById('detailAddress')?.focus();
             }
         }).open();
     });
 
     // 비밀번호 변경
-    const pwForm = document.getElementById('pw-change-form');
-    const newPw = document.getElementById('new-pw');
-    const confirmPw = document.getElementById('confirm-pw');
+    const pwForm = document.getElementById('pw-change-form') as HTMLFormElement | null;
+    const newPw = document.getElementById('new-pw') as HTMLInputElement;
+    const confirmPw = document.getElementById('confirm-pw') as HTMLInputElement;
 
-    const checkPwMatch = () => {
+    const checkPwMatch = (): void => {
         const matchMsg = document.getElementById('pw-match-msg');
-        if (!confirmPw.value) { matchMsg.innerText = ''; return; }
+        if (!confirmPw.value) { if (matchMsg) matchMsg.innerText = ''; return; }
 
         const isMatch = newPw.value === confirmPw.value;
         setMsg(matchMsg, isMatch, isMatch ? "일치합니다." : "일치하지 않습니다.");
     };
 
-    newPw?.addEventListener('input', function() {
+    newPw?.addEventListener('input', function (this: HTMLInputElement) {
         const isValid = REGEX.password.test(this.value);
         setMsg(document.getElementById('pw-msg'), isValid, isValid ? "사용 가능" : "8자 이상, 대문자/숫자/특수문자 포함");
         checkPwMatch();
@@ -94,15 +94,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!REGEX.password.test(newPw.value)) return alert("비밀번호 형식이 올바르지 않습니다.");
 
         const data = {
-            currentPassword: document.getElementById('current-pw').value,
-            securityAnswer: document.getElementById('security-answer').value,
+            currentPassword: (document.getElementById('current-pw') as HTMLInputElement).value,
+            securityAnswer: (document.getElementById('security-answer') as HTMLInputElement).value,
             newPassword: newPw.value
         };
 
         try {
             const res = await fetch('/api/myinfo/change-pw', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
 
@@ -120,32 +120,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tokenInput = document.createElement('input');
                 tokenInput.type = 'hidden';
                 tokenInput.name = '_csrf';
-                tokenInput.value = csrfMeta.getAttribute('content');
+                tokenInput.value = csrfMeta.getAttribute('content') ?? '';
                 logoutForm.appendChild(tokenInput);
             }
             document.body.appendChild(logoutForm);
             logoutForm.submit();
 
         } catch (err) {
-            alert(err.message || "비밀번호 변경 실패");
+            alert((err instanceof Error ? err.message : '') || "비밀번호 변경 실패");
         }
     });
 
     // 문의하기 (Toggle View)
-    const inquiryForm = document.getElementById('inquiry-form');
+    const inquiryForm = document.getElementById('inquiry-form') as HTMLFormElement | null;
     const listView = document.getElementById('inquiry-view-list');
     const writeView = document.getElementById('inquiry-view-write');
 
-    document.querySelectorAll('.btn-toggle-view').forEach(btn => {
+    document.querySelectorAll<HTMLElement>('.btn-toggle-view').forEach(btn => {
         btn.addEventListener('click', () => {
             const mode = btn.dataset.mode;
             if (mode === 'write') {
-                listView.style.display = 'none';
-                writeView.style.display = 'block';
+                if (listView) listView.style.display = 'none';
+                if (writeView) writeView.style.display = 'block';
             } else {
-                writeView.style.display = 'none';
-                listView.style.display = 'block';
-                inquiryForm.reset();
+                if (writeView) writeView.style.display = 'none';
+                if (listView) listView.style.display = 'block';
+                inquiryForm?.reset();
             }
         });
     });
@@ -170,15 +170,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // 게시글 관리 (Event Delegation)
     const modal = document.getElementById('post-view-modal');
     const modalBody = document.getElementById('post-view-body');
-    const closeModal = () => { if(modal) modal.style.display = 'none'; };
+    const closeModal = (): void => { if (modal) modal.style.display = 'none'; };
 
     document.getElementById('btn-modal-close')?.addEventListener('click', closeModal);
 
     const boardList = document.querySelector('.kb-board-list');
 
     boardList?.addEventListener('click', async (e) => {
+        const targetEl = e.target as HTMLElement;
+
         // 삭제
-        const delBtn = e.target.closest('.btn-delete-post');
+        const delBtn = targetEl.closest('.btn-delete-post') as HTMLElement | null;
         if (delBtn) {
             e.stopPropagation();
             if (!confirm("정말로 삭제하시겠습니까?")) return;
@@ -192,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 상세보기
-        const item = e.target.closest('.kb-board-item');
+        const item = targetEl.closest('.kb-board-item') as HTMLElement | null;
         if (item) {
             const boardId = item.dataset.id;
             try {
@@ -205,13 +207,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    function renderPostModal(data) {
+    function renderPostModal(data: any): void {
         if (!modal || !modalBody) return;
 
         const badgeClass = data.category === '제보' ? 'badge-report' : (data.category === '질문' ? 'badge-qna' : 'badge-talk');
 
         const commentsHtml = data.comments?.length
-            ? data.comments.map(c =>
+            ? data.comments.map((c: any) =>
                 `<li class="kb-post-comment-item">
                     <span class="writer">${c.writer}</span>
                     <span>${c.content}</span>
@@ -226,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <h3 class="kb-post-title">${data.title}</h3>
             ${data.imageUrl ? `<img src="${data.imageUrl}" class="kb-post-img" alt="image">` : ''}
             <div class="kb-post-content">${data.content}</div>
-            
+
             <div class="kb-comments-section">
                 <h6>댓글 (${data.comments?.length || 0})</h6>
                 <ul class="kb-comment-list">${commentsHtml}</ul>
@@ -238,8 +240,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // 회원 탈퇴
     document.getElementById('withdrawal-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const agree = document.getElementById('withdrawal-agree');
-        const pw = document.getElementById('withdrawal-pw');
+        const agree = document.getElementById('withdrawal-agree') as HTMLInputElement;
+        const pw = document.getElementById('withdrawal-pw') as HTMLInputElement;
 
         if (!agree.checked) return alert("안내 사항에 동의해주세요.");
         if (!pw.value) return alert("비밀번호를 입력해주세요.");
