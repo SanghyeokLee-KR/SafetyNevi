@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // UI 상태 변경 헬퍼
-    const setStatus = (input, msgElem, isValid, message) => {
+    const setStatus = (input: HTMLElement, msgElem: HTMLElement | null, isValid: boolean, message: string): void => {
         if (!msgElem) return;
         msgElem.style.display = 'block';
         msgElem.innerText = message;
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // 공통 API 중복 확인 함수
-    async function checkDuplicate(url, input, msgElem, successMsg, failMsg) {
+    async function checkDuplicate(url: string, input: HTMLElement, msgElem: HTMLElement | null, successMsg: string, failMsg: string): Promise<void> {
         try {
             const res = await fetch(url);
             const data = await res.json();
@@ -32,15 +32,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 초기화 이벤트 등록
-    const resetListener = (input, msgElem) => {
+    const resetListener = (input: HTMLElement, msgElem: HTMLElement | null): void => {
         input?.addEventListener('input', () => {
             input.classList.remove('valid', 'invalid');
-            if(msgElem) msgElem.style.display = 'none';
+            if (msgElem) msgElem.style.display = 'none';
         });
     };
 
     /* 1. 아이디 체크 */
-    const idInput = document.getElementById('user_id');
+    const idInput = document.getElementById('user_id') as HTMLInputElement;
     const idMsg = document.getElementById('id-msg');
     resetListener(idInput, idMsg);
 
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* 2. 이메일 체크 */
-    const emailInput = document.getElementById('email');
+    const emailInput = document.getElementById('email') as HTMLInputElement;
     const emailMsg = document.getElementById('email-msg');
     resetListener(emailInput, emailMsg);
 
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* 3. 닉네임 체크 */
-    const nickInput = document.getElementById('nickname');
+    const nickInput = document.getElementById('nickname') as HTMLInputElement;
     const nickMsg = document.getElementById('nick-msg');
     resetListener(nickInput, nickMsg);
 
@@ -83,14 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* 4. 이름 체크 (API X, 정규식 O) */
-    const nameInput = document.getElementById('name');
+    const nameInput = document.getElementById('name') as HTMLInputElement;
     const nameMsg = document.getElementById('name-msg');
 
-    nameInput?.addEventListener('input', function() {
+    nameInput?.addEventListener('input', function (this: HTMLInputElement) {
         const val = this.value.trim();
-        if(!val) {
+        if (!val) {
             this.classList.remove('valid', 'invalid');
-            if(nameMsg) nameMsg.style.display = 'none';
+            if (nameMsg) nameMsg.style.display = 'none';
             return;
         }
         const isValid = /^[가-힣a-zA-Z]{2,20}$/.test(val);
@@ -98,16 +98,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* 5. 휴대전화 번호 체크 */
-    const phoneInput = document.getElementById('emergency_contact');
+    const phoneInput = document.getElementById('emergency_contact') as HTMLInputElement;
     const phoneMsg = document.getElementById('phone-msg');
 
-    phoneInput?.addEventListener('input', function() {
+    phoneInput?.addEventListener('input', function (this: HTMLInputElement) {
         this.value = this.value.replace(/[^0-9]/g, ''); // 숫자만 허용
         const val = this.value;
 
-        if(!val) {
+        if (!val) {
             this.classList.remove('valid', 'invalid');
-            if(phoneMsg) phoneMsg.style.display = 'none';
+            if (phoneMsg) phoneMsg.style.display = 'none';
             return;
         }
 
@@ -116,33 +116,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* 6. 비밀번호 로직 */
-    const pwInput = document.getElementById('password');
-    const pwConfirm = document.getElementById('password-confirm');
+    const pwInput = document.getElementById('password') as HTMLInputElement;
+    const pwConfirm = document.getElementById('password-confirm') as HTMLInputElement;
     const pwMatchMsg = document.getElementById('pw-match-msg');
     const pwBar = document.getElementById('pw-meter-bar');
 
     // 비밀번호 강도 시각화
-    const updateMeter = (val) => {
-        if(!pwBar) return;
-        if(!val) { pwBar.style.width = '0%'; return; }
+    const updateMeter = (val: string): void => {
+        if (!pwBar) return;
+        if (!val) { pwBar.style.width = '0%'; return; }
 
         let score = 0;
-        if(val.length >= 8) score++;
-        if(/[A-Za-z]/.test(val) && /[0-9]/.test(val)) score++;
-        if(/[^A-Za-z0-9]/.test(val)) score++;
+        if (val.length >= 8) score++;
+        if (/[A-Za-z]/.test(val) && /[0-9]/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
 
-        if(val.length < 8) {
+        if (val.length < 8) {
             pwBar.style.width = '20%'; pwBar.style.backgroundColor = '#dc3545';
-        } else if(score < 3) {
+        } else if (score < 3) {
             pwBar.style.width = '50%'; pwBar.style.backgroundColor = '#ffc107';
         } else {
             pwBar.style.width = '100%'; pwBar.style.backgroundColor = '#28a745';
         }
     };
 
-    const checkPwMatch = () => {
+    const checkPwMatch = (): void => {
         if (!pwConfirm || !pwConfirm.value) {
-            if(pwMatchMsg) pwMatchMsg.innerText = '';
+            if (pwMatchMsg) pwMatchMsg.innerText = '';
             pwConfirm?.classList.remove('valid', 'invalid');
             return;
         }
@@ -150,19 +150,19 @@ document.addEventListener('DOMContentLoaded', () => {
         setStatus(pwConfirm, pwMatchMsg, isMatch, isMatch ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.');
     };
 
-    pwInput?.addEventListener('input', function() {
+    pwInput?.addEventListener('input', function (this: HTMLInputElement) {
         const val = this.value;
         updateMeter(val);
 
         // 유효성: 8자 이상 + (영문/숫자/특수문자 중 2종 이상)
         let typeCnt = 0;
-        if(/[A-Za-z]/.test(val)) typeCnt++;
-        if(/[0-9]/.test(val)) typeCnt++;
-        if(/[^A-Za-z0-9]/.test(val)) typeCnt++;
+        if (/[A-Za-z]/.test(val)) typeCnt++;
+        if (/[0-9]/.test(val)) typeCnt++;
+        if (/[^A-Za-z0-9]/.test(val)) typeCnt++;
 
         const isValid = val.length >= 8 && typeCnt >= 2;
 
-        if(isValid) {
+        if (isValid) {
             this.classList.add('valid');
             this.classList.remove('invalid');
         } else {
