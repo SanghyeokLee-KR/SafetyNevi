@@ -1,10 +1,10 @@
 // 마이페이지 탭(메뉴) 전환 제어
 document.addEventListener('DOMContentLoaded', () => {
-    const menuItems = document.querySelectorAll('.kb-menu-item');
-    const sections = document.querySelectorAll('.kb-content-section');
+    const menuItems = document.querySelectorAll<HTMLElement>('.kb-menu-item');
+    const sections = document.querySelectorAll<HTMLElement>('.kb-content-section');
 
     // 탭 전환 함수
-    const switchTab = (targetId) => {
+    const switchTab = (targetId: string): void => {
         // 1. 모든 섹션 숨김 & 메뉴 비활성화
         sections.forEach(sec => sec.style.display = 'none');
         menuItems.forEach(item => item.classList.remove('kb-active'));
@@ -22,10 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             const target = item.getAttribute('data-target');
+            if (!target) return;
             switchTab(target);
 
             // URL 해시 변경 (새로고침 해도 탭 유지용)
-            history.replaceState(null, null, `#${target}`);
+            history.replaceState(null, '', `#${target}`);
         });
     });
 

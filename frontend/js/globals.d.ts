@@ -11,3 +11,8 @@ declare const jQuery: any;
 interface Window {
     [key: string]: any;
 }
+
+// csrf.ts가 XHR 인스턴스에 붙이는 내부 플래그
+interface XMLHttpRequest {
+    __csrfNeeded?: boolean;
+}

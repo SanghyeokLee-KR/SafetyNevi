@@ -13,7 +13,7 @@
     var SAFE = /^(GET|HEAD|OPTIONS|TRACE)$/i;
 
     // 외부 API로는 토큰을 보내지 않도록 같은 출처만 처리
-    function sameOrigin(url) {
+    function sameOrigin(url: string): boolean {
         try {
             return new URL(url, window.location.href).origin === window.location.origin;
         } catch (e) {
@@ -24,13 +24,13 @@
     // 1) fetch 래핑
     if (window.fetch) {
         var origFetch = window.fetch;
-        window.fetch = function (input, init) {
+        window.fetch = function (this: any, input: any, init?: RequestInit): Promise<Response> {
             init = init || {};
             var url = (typeof input === 'string') ? input : (input && input.url);
             var method = init.method || (input && input.method) || 'GET';
             if (!SAFE.test(method) && sameOrigin(url)) {
                 var headers = new Headers(init.headers || (input && input.headers) || {});
-                if (!headers.has(header)) headers.set(header, token);
+                if (!headers.has(header!)) headers.set(header!, token!);
                 init.headers = headers;
             }
             return origFetch.call(this, input, init);
@@ -40,16 +40,16 @@
     // 2) XMLHttpRequest 래핑 (jQuery, axios, 순수 XHR 모두 커버)
     if (window.XMLHttpRequest) {
         var origOpen = XMLHttpRequest.prototype.open;
-        XMLHttpRequest.prototype.open = function (method, url) {
+        XMLHttpRequest.prototype.open = function (this: XMLHttpRequest, method: string, url: string) {
             this.__csrfNeeded = !SAFE.test(method || 'GET') && sameOrigin(url);
-            return origOpen.apply(this, arguments);
-        };
+            return origOpen.apply(this, arguments as any);
+        } as any;
         var origSend = XMLHttpRequest.prototype.send;
-        XMLHttpRequest.prototype.send = function () {
+        XMLHttpRequest.prototype.send = function (this: XMLHttpRequest) {
             if (this.__csrfNeeded) {
-                try { this.setRequestHeader(header, token); } catch (e) {}
+                try { this.setRequestHeader(header!, token!); } catch (e) { /* noop */ }
             }
-            return origSend.apply(this, arguments);
-        };
+            return origSend.apply(this, arguments as any);
+        } as any;
     }
 })();

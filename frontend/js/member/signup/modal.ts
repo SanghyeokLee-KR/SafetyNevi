@@ -1,10 +1,15 @@
 // 약관 및 위치정보 동의 모달 제어
 document.addEventListener('DOMContentLoaded', () => {
 
+    interface ModalConfig {
+        modalId: string; checkboxId: string; openBtnId: string;
+        closeXId: string; closeNoId: string; closeYesId: string;
+    }
+
     // 모달 초기화 함수 (설정 객체 사용)
-    const initModal = (config) => {
+    const initModal = (config: ModalConfig): void => {
         const modal = document.getElementById(config.modalId);
-        const checkbox = document.getElementById(config.checkboxId);
+        const checkbox = document.getElementById(config.checkboxId) as HTMLInputElement | null;
         const openBtn = document.getElementById(config.openBtnId);
 
         if (!modal || !checkbox || !openBtn) return;
@@ -16,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Close Helper
-        const closeModal = () => { modal.style.display = 'none'; };
+        const closeModal = (): void => { modal.style.display = 'none'; };
 
         // X Button
         document.getElementById(config.closeXId)?.addEventListener('click', closeModal);

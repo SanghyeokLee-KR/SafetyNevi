@@ -1,10 +1,10 @@
 // Daum 우편번호 API 및 Kakao 지도 연동
 document.addEventListener('DOMContentLoaded', () => {
-    const mapContainer = document.getElementById('mini-map');
+    const mapContainer = document.getElementById('mini-map') as HTMLElement;
     const searchBtn = document.getElementById('search-address-btn');
 
-    let map = null;
-    let marker = null;
+    let map: any = null;
+    let marker: any = null;
 
     if (!searchBtn) return;
 
@@ -16,23 +16,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         new daum.Postcode({
-            oncomplete: function (data) {
+            oncomplete: function (data: any) {
                 // 1. 주소 및 관할구역 입력
-                document.getElementById('address').value = data.address;
+                (document.getElementById('address') as HTMLInputElement).value = data.address;
                 // '구' 단위 추출 (없으면 공백 기준 두 번째 단어)
                 const sigungu = data.sigungu || data.address.split(' ')[1];
-                document.getElementById('areaName').value = sigungu;
+                (document.getElementById('areaName') as HTMLInputElement).value = sigungu;
 
                 // 2. 주소 -> 좌표 변환 (Geocoding)
                 const geocoder = new kakao.maps.services.Geocoder();
-                geocoder.addressSearch(data.address, (result, status) => {
+                geocoder.addressSearch(data.address, (result: any, status: any) => {
                     if (status !== kakao.maps.services.Status.OK) return;
 
                     const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
                     // Hidden input에 좌표 저장
-                    document.getElementById('lat').value = result[0].y;
-                    document.getElementById('lon').value = result[0].x;
+                    (document.getElementById('lat') as HTMLInputElement).value = result[0].y;
+                    (document.getElementById('lon') as HTMLInputElement).value = result[0].x;
 
                     // 3. 미니맵 표시 및 마커 이동
                     mapContainer.style.display = 'block';

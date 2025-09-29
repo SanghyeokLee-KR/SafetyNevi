@@ -1,7 +1,7 @@
 // 계정 찾기 프로세스
 document.addEventListener('DOMContentLoaded', () => {
 
-    const QUESTIONS = {
+    const QUESTIONS: Record<number, string> = {
         1: "인생 좌우명?",
         2: "보물 1호?",
         3: "기억에 남는 선생님?",
@@ -12,11 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUserId = '';
 
     // DOM Elements
-    const step1 = document.getElementById('step-1');
-    const step2 = document.getElementById('step-2');
-    const step3 = document.getElementById('step-3');
+    const step1 = document.getElementById('step-1') as HTMLElement;
+    const step2 = document.getElementById('step-2') as HTMLElement;
+    const step3 = document.getElementById('step-3') as HTMLElement;
 
-    const nextStep = (curr, next) => {
+    const nextStep = (curr: HTMLElement, next: HTMLElement): void => {
         curr.classList.add('hidden-step');
         next.classList.remove('hidden-step');
         next.classList.add('fade-in');
@@ -24,15 +24,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Step 1: 아이디/이메일 조회
     document.getElementById('btn-step1')?.addEventListener('click', async () => {
-        const userId = document.getElementById('find_id').value;
-        const email = document.getElementById('find_email').value;
+        const userId = (document.getElementById('find_id') as HTMLInputElement).value;
+        const email = (document.getElementById('find_email') as HTMLInputElement).value;
 
         if (!userId || !email) return alert("정보를 모두 입력해주세요.");
 
         try {
             const res = await fetch('/api/find/question', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId, email })
             });
 
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             currentUserId = userId;
 
-            document.getElementById('question-display').innerText = `Q. ${QUESTIONS[data.question]}`;
+            (document.getElementById('question-display') as HTMLElement).innerText = `Q. ${QUESTIONS[data.question]}`;
             nextStep(step1, step2);
 
         } catch (e) {
@@ -51,13 +51,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Step 2: 본인확인 질문 검증
     document.getElementById('btn-step2')?.addEventListener('click', async () => {
-        const answer = document.getElementById('find_answer').value;
+        const answer = (document.getElementById('find_answer') as HTMLInputElement).value;
         if (!answer) return alert("답변을 입력해주세요.");
 
         try {
             const res = await fetch('/api/find/verify', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: currentUserId, answer })
             });
 
@@ -72,15 +72,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Step 3: 비밀번호 재설정
-    const newPwInput = document.getElementById('new_pw');
-    const confirmPwInput = document.getElementById('new_pw_confirm');
-    const matchMsg = document.getElementById('pw-match-msg');
+    const newPwInput = document.getElementById('new_pw') as HTMLInputElement;
+    const confirmPwInput = document.getElementById('new_pw_confirm') as HTMLInputElement;
+    const matchMsg = document.getElementById('pw-match-msg') as HTMLElement;
 
-    const isValidPassword = (pw) => {
+    const isValidPassword = (pw: string): boolean => {
         return /^(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(pw);
     };
 
-    const checkMatch = () => {
+    const checkMatch = (): void => {
         const pw = newPwInput.value;
         const confirm = confirmPwInput.value;
 
@@ -117,13 +117,13 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch('/api/find/reset', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: currentUserId, password: pw })
             });
 
             if (!res.ok) throw new Error("Reset Failed");
 
-            alert("비밀번호가 성공적으로 변경되었습니다. 🎉\n로그인 페이지로 이동합니다.");
+            alert("비밀번호가 성공적으로 변경되었습니다.\n로그인 페이지로 이동합니다.");
             window.location.href = "/login";
 
         } catch (e) {
