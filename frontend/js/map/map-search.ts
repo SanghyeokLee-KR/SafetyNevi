@@ -6,12 +6,12 @@ import { updateSidebar } from './map-ui.js';
 
 export function setupSearchLogic() {
     const toggleBtn = document.getElementById('btn-search-toggle');
-    const closeBtn = document.getElementById('btn-search-close');
+    const closeBtn = document.getElementById('btn-search-close') as HTMLElement;
     const searchPanel = document.getElementById('kb-search-panel');
-    const searchInput = document.getElementById('kb-search-input');
-    const searchExecBtn = document.getElementById('btn-search-exec');
-    const resultList = document.getElementById('kb-search-results');
-    const recentArea = document.getElementById('kb-recent-area');
+    const searchInput = document.getElementById('kb-search-input') as HTMLInputElement;
+    const searchExecBtn = document.getElementById('btn-search-exec') as HTMLElement;
+    const resultList = document.getElementById('kb-search-results') as HTMLElement;
+    const recentArea = document.getElementById('kb-recent-area') as HTMLElement;
     const recentClearBtn = document.getElementById('btn-recent-clear');
 
     if (!toggleBtn || !searchPanel) return;
@@ -75,8 +75,8 @@ export function setupSearchLogic() {
 
     // 최근 검색어 표시
     function showRecentSearches() {
-        const history = JSON.parse(localStorage.getItem('safety_recent_search')) || [];
-        const listEl = document.getElementById('kb-recent-list');
+        const history = JSON.parse(localStorage.getItem('safety_recent_search') || '[]') || [];
+        const listEl = document.getElementById('kb-recent-list') as HTMLElement;
 
         if (history.length === 0) {
             recentArea.style.display = 'none';
@@ -90,12 +90,12 @@ export function setupSearchLogic() {
             li.innerHTML = `<span>🕒 ${item}</span> <span class="btn-recent-del">✕</span>`;
 
             li.addEventListener('click', (e) => {
-                if(e.target.classList.contains('btn-recent-del')) return;
+                if((e.target as HTMLElement).classList.contains('btn-recent-del')) return;
                 searchInput.value = item;
                 executeSearch();
             });
 
-            li.querySelector('.btn-recent-del').addEventListener('click', (e) => {
+            li.querySelector('.btn-recent-del')?.addEventListener('click', (e) => {
                 e.stopPropagation();
                 deleteKeyword(item);
             });
@@ -108,7 +108,7 @@ export function setupSearchLogic() {
 
     // 키워드 저장 (중복 제거, 최대 5개)
     function saveKeyword(keyword) {
-        let history = JSON.parse(localStorage.getItem('safety_recent_search')) || [];
+        let history = JSON.parse(localStorage.getItem('safety_recent_search') || '[]') || [];
         history = history.filter(k => k !== keyword);
         history.unshift(keyword);
         if (history.length > 5) history.pop();
@@ -117,7 +117,7 @@ export function setupSearchLogic() {
 
     // 키워드 삭제
     function deleteKeyword(keyword) {
-        let history = JSON.parse(localStorage.getItem('safety_recent_search')) || [];
+        let history = JSON.parse(localStorage.getItem('safety_recent_search') || '[]') || [];
         history = history.filter(k => k !== keyword);
         localStorage.setItem('safety_recent_search', JSON.stringify(history));
         showRecentSearches();

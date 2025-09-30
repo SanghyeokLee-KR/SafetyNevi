@@ -79,18 +79,18 @@ async function fetchWeatherAndAddress(lat, lon) {
 }
 
 // 날씨 UI 업데이트
-function updateWeatherUI(data) {
-    const addrEl = document.querySelector('#current-address');
+function updateWeatherUI(data: any) {
+    const addrEl = document.querySelector<HTMLElement>('#current-address');
     if (addrEl) addrEl.innerText = data.address || "주소정보 없음";
 
-    const tempEl = document.querySelector('#current-temp');
+    const tempEl = document.querySelector<HTMLElement>('#current-temp');
     const temp = data.temp;
     if (tempEl) tempEl.innerText = (temp && temp !== 'N/A') ? `${temp}°` : '';
 
-    const weatherStatusEl = document.querySelector('#weather-status');
+    const weatherStatusEl = document.querySelector<HTMLElement>('#weather-status');
     if (weatherStatusEl) weatherStatusEl.innerText = data.weatherStatus || "";
 
-    const weatherIconEl = document.querySelector('#weather-icon');
+    const weatherIconEl = document.querySelector<HTMLImageElement>('#weather-icon');
     if (weatherIconEl && data.weatherStatus) {
         const status = data.weatherStatus;
         let iconSrc = 'default.png';

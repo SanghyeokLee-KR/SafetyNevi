@@ -3,13 +3,13 @@
  */
 import { map } from './map-core.js';
 
-let disasterMarkerImages = {};
-let zoneGraphics = new Map();   // 재난 id -> 해당 구역의 그래픽(원/폴리곤/마커) 배열
-let sigunguGeoJson = null;
+let disasterMarkerImages: Record<string, any> = {};
+let zoneGraphics = new Map<any, any[]>();   // 재난 id -> 해당 구역의 그래픽(원/폴리곤/마커) 배열
+let sigunguGeoJson: any = null;
 let isModalShowing = false;
 let alertedIds = new Set();     // 경보 모달을 이미 띄운 재난 id
 
-const disasterNames = {
+const disasterNames: Record<string, string> = {
     'fire': '🔥 화재/산불', 'missile': '🚀 미사일/공습', 'lightning': '⚡ 낙뢰',
     'quake': '🌋 지진', 'typhoon': '🌀 태풍', 'heatwave': '☀️ 폭염',
     'heavyrain': '🌧️ 호우/장마', 'tsunami': '🌊 해일', 'flood': '🌊 홍수',
