@@ -96,7 +96,7 @@ function renderMyPlacesAndMarkers() {
         homeText.innerText = home.address;
         createMarker(home.latitude, home.longitude, MARKER_IMGS.HOME, '집');
         document.getElementById('btn-set-home').parentElement.onclick = (e) => {
-            if (!e.target.classList.contains('kb-place-action')) moveToPlace(home.latitude, home.longitude);
+            if (!(e.target as HTMLElement).classList.contains('kb-place-action')) moveToPlace(home.latitude, home.longitude);
         };
     }
 
@@ -105,7 +105,7 @@ function renderMyPlacesAndMarkers() {
         compText.innerText = company.address;
         createMarker(company.latitude, company.longitude, MARKER_IMGS.COMPANY, '회사');
         document.getElementById('btn-set-company').parentElement.onclick = (e) => {
-            if (!e.target.classList.contains('kb-place-action')) moveToPlace(company.latitude, company.longitude);
+            if (!(e.target as HTMLElement).classList.contains('kb-place-action')) moveToPlace(company.latitude, company.longitude);
         };
     }
 
@@ -124,9 +124,9 @@ function renderMyPlacesAndMarkers() {
                     <button class="btn-delete-fav" data-id="${fav.id}">🗑️</button>
                 `;
                 item.addEventListener('click', (e) => {
-                    if (!e.target.classList.contains('btn-delete-fav')) moveToPlace(fav.latitude, fav.longitude);
+                    if (!(e.target as HTMLElement).classList.contains('btn-delete-fav')) moveToPlace(fav.latitude, fav.longitude);
                 });
-                item.querySelector('.btn-delete-fav').onclick = (e) => {
+                (item.querySelector('.btn-delete-fav') as HTMLElement).onclick = (e) => {
                     e.stopPropagation();
                     deleteFavorite(fav.id);
                 };
@@ -178,7 +178,7 @@ function renderFamilies(families) {
             </div>
         `;
 
-        item.querySelector('.btn-sms').onclick = () => {
+        (item.querySelector('.btn-sms') as HTMLElement).onclick = () => {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(pos => {
                     const lat = pos.coords.latitude.toFixed(4);
@@ -189,15 +189,15 @@ function renderFamilies(families) {
             } else alert("위치 정보를 가져올 수 없습니다.");
         };
 
-        item.querySelector('.btn-del-fam').onclick = () => deleteFamily(fam.id);
+        (item.querySelector('.btn-del-fam') as HTMLElement).onclick = () => deleteFamily(fam.id);
         list.appendChild(item);
     });
 }
 
 // 가족 추가
 export async function addFamily() {
-    const name = document.getElementById('fam-name').value;
-    const phone = document.getElementById('fam-phone').value;
+    const name = (document.getElementById('fam-name') as HTMLInputElement).value;
+    const phone = (document.getElementById('fam-phone') as HTMLInputElement).value;
 
     if (!name || !phone) {
         alert("이름과 전화번호를 입력해주세요.");
@@ -214,8 +214,8 @@ export async function addFamily() {
         if (res.ok) {
             alert("등록되었습니다.");
             document.getElementById('family-modal').style.display = 'none';
-            document.getElementById('fam-name').value = '';
-            document.getElementById('fam-phone').value = '';
+            (document.getElementById('fam-name') as HTMLInputElement).value = '';
+            (document.getElementById('fam-phone') as HTMLInputElement).value = '';
             loadFamilies();
         } else alert("로그인 필요");
     } catch (e) { console.error(e); }
