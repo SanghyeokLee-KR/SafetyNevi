@@ -19,8 +19,8 @@ let simulationMarker = null;
 let simulationInterval = null;
 
 export function setupRouteLogic() {
-    const startInput = document.querySelector('.kb-route-input-wrap .kb-route-line:nth-child(1) input');
-    const endInput = document.querySelector('.kb-route-input-wrap .kb-route-line:nth-child(2) input');
+    const startInput = document.querySelector<HTMLInputElement>('.kb-route-input-wrap .kb-route-line:nth-child(1) input');
+    const endInput = document.querySelector<HTMLInputElement>('.kb-route-input-wrap .kb-route-line:nth-child(2) input');
     const swapBtn = document.querySelector('.kb-swap-button');
     const clearBtn = document.querySelector('.kb-clear-button');
 
@@ -108,7 +108,7 @@ function setPoint(type, lat, lon, name) {
 }
 
 // 경로 검색 실행 및 결과 표시
-async function executeRouteSearch() {
+async function executeRouteSearch(_refit?: boolean) {
     if (!startPoint.lat || !endPoint.lat) return;
 
     toggleLoading(true, "경로 계산 중...");
@@ -131,7 +131,7 @@ async function executeRouteSearch() {
             modeLabel = "🚗 차량";
         } else {
             const speed = SPEEDS[currentMode];
-            durationMin = Math.ceil((distanceKm / speed) * 60);
+            durationMin = Math.ceil((parseFloat(distanceKm) / speed) * 60);
 
             if (currentMode === 'bus') modeLabel = "🚌 대중교통(예상)";
             else if (currentMode === 'walk') modeLabel = "🚶 도보";
@@ -255,7 +255,7 @@ function drawPathOnMap(data) {
 export function setRouteDestination(name, lat, lon) {
     endPoint = { lat: lat, lon: lon, name: name };
 
-    const endInput = document.querySelector('.kb-route-input-wrap .kb-route-line:nth-child(2) input');
+    const endInput = document.querySelector<HTMLInputElement>('.kb-route-input-wrap .kb-route-line:nth-child(2) input');
     if(endInput) endInput.value = name;
 
     if (navigator.geolocation) {
@@ -265,7 +265,7 @@ export function setRouteDestination(name, lat, lon) {
                 lon: pos.coords.longitude,
                 name: "내 위치"
             };
-            const startInput = document.querySelector('.kb-route-input-wrap .kb-route-line:nth-child(1) input');
+            const startInput = document.querySelector<HTMLInputElement>('.kb-route-input-wrap .kb-route-line:nth-child(1) input');
             if(startInput) startInput.value = "내 위치";
 
             executeRouteSearch();
