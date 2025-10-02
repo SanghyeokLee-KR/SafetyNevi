@@ -4,8 +4,8 @@
 import { map, clusterer } from './map-core.js';
 import { updateSidebar, showToast } from './map-ui.js';
 
-let markerImages = {};
-let currentOverlay = null;
+let markerImages: Record<string, any> = {};
+let currentOverlay: any = null;
 
 // 마커 이미지 리소스 초기화
 export function setupMarkerImages() {
@@ -214,7 +214,7 @@ function calculateSafetyScore(facilities) {
     });
     score = Math.min(score, 99);
 
-    if(valEl) valEl.innerText = score;
+    if(valEl) valEl.innerText = String(score);
 
     if(gradeEl) {
         let color, text;
