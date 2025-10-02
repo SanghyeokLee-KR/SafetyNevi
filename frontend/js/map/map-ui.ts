@@ -46,8 +46,8 @@ export function setupCheckboxLogic() {
     const allCheckbox = document.getElementById('kb-explore-all');
     const targetCheckboxes = document.querySelectorAll('.kb-target-checkbox');
     if (allCheckbox) {
-        allCheckbox.addEventListener('change', function () {
-            targetCheckboxes.forEach(checkbox => checkbox.checked = this.checked);
+        allCheckbox.addEventListener('change', function (this: HTMLInputElement) {
+            targetCheckboxes.forEach(checkbox => (checkbox as HTMLInputElement).checked = this.checked);
             updateMarkers();
         });
     }
@@ -87,11 +87,11 @@ export function openReportModal(type, id, name, user = null) {
     const targetText = document.getElementById('report-target-text');
     const blockOption = document.getElementById('report-block-option');
 
-    document.getElementById('report-type').value = type;
-    document.getElementById('report-id').value = id ?? "";
-    document.getElementById('report-user').value = user || "";
-    document.getElementById('report-desc').value = "";
-    document.getElementById('chk-block-user').checked = false;
+    (document.getElementById('report-type') as HTMLInputElement).value = type;
+    (document.getElementById('report-id') as HTMLInputElement).value = id ?? "";
+    (document.getElementById('report-user') as HTMLInputElement).value = user || "";
+    (document.getElementById('report-desc') as HTMLInputElement).value = "";
+    (document.getElementById('chk-block-user') as HTMLInputElement).checked = false;
 
     if (type === 'FACILITY') {
         targetText.innerText = `대상: ${name} (시설 정보 오류 신고)`;
@@ -106,12 +106,12 @@ window.openReportModal = openReportModal;
 
 // 신고 전송 요청
 export async function submitReport() {
-    const type = document.getElementById('report-type').value;
-    const id = document.getElementById('report-id').value || null;
-    const reason = document.getElementById('report-reason').value;
-    const desc = document.getElementById('report-desc').value;
-    const isBlock = document.getElementById('chk-block-user').checked;
-    const targetUser = document.getElementById('report-user').value;
+    const type = (document.getElementById('report-type') as HTMLInputElement).value;
+    const id = (document.getElementById('report-id') as HTMLInputElement).value || null;
+    const reason = (document.getElementById('report-reason') as HTMLInputElement).value;
+    const desc = (document.getElementById('report-desc') as HTMLInputElement).value;
+    const isBlock = (document.getElementById('chk-block-user') as HTMLInputElement).checked;
+    const targetUser = (document.getElementById('report-user') as HTMLInputElement).value;
 
     if (!reason) {
         alert("신고 사유를 선택해주세요.");
@@ -164,7 +164,7 @@ export function updateSidebar(data) {
     const wrap = document.querySelector('.kb-wrap');
     if (wrap) wrap.classList.remove('kb-sidebar-hidden');
 
-    const filters = document.querySelector('.kb-map-filters');
+    const filters = document.querySelector<HTMLElement>('.kb-map-filters');
     if(filters) filters.style.display = 'none';
 
     const detailPanel = document.getElementById('kb-detail-content');
@@ -251,7 +251,7 @@ export function updateSidebar(data) {
         routeBtn.innerHTML = '🚗 길찾기 (바로 안내)';
         routeBtn.onclick = function() {
             if (data.latitude && data.longitude) {
-                const routeTabBtn = document.querySelector('.kb-tab-button[data-tab="route"]');
+                const routeTabBtn = document.querySelector<HTMLElement>('.kb-tab-button[data-tab="route"]');
                 if(routeTabBtn) routeTabBtn.click();
                 setRouteDestination(data.name, data.latitude, data.longitude);
             } else alert("위치 정보 없음");
@@ -287,7 +287,7 @@ function openRoadview(lat, lng) {
 window.openRoadview = openRoadview;
 
 export function toggleLoading(show, message = "처리 중...") {
-    let overlay = document.querySelector('.kb-loading-overlay');
+    let overlay = document.querySelector<HTMLElement>('.kb-loading-overlay');
     if (!overlay) {
         overlay = document.createElement('div');
         overlay.className = 'kb-loading-overlay';
@@ -295,7 +295,7 @@ export function toggleLoading(show, message = "처리 중...") {
         document.body.appendChild(overlay);
     }
     if (show) {
-        overlay.querySelector('.kb-loading-text').innerText = message;
+        (overlay.querySelector('.kb-loading-text') as HTMLElement).innerText = message;
         overlay.style.display = 'flex';
     } else {
         overlay.style.display = 'none';
@@ -303,7 +303,7 @@ export function toggleLoading(show, message = "처리 중...") {
 }
 
 export function showToast(message, isError = false) {
-    let toast = document.querySelector('.kb-toast');
+    let toast = document.querySelector<HTMLElement>('.kb-toast');
     if (!toast) {
         toast = document.createElement('div');
         toast.className = 'kb-toast';
@@ -319,7 +319,7 @@ export function setupGlobalUI() {
     const wrap = document.querySelector('.kb-wrap');
     const closeBtn = document.querySelector('.kb-menu-icon');
     const openBtn = document.getElementById('btn-sidebar-open');
-    const filters = document.querySelector('.kb-map-filters');
+    const filters = document.querySelector<HTMLElement>('.kb-map-filters');
     const filterBtns = document.querySelectorAll('.kb-filter-btn');
 
     function updateFilterVisibility() {
@@ -352,7 +352,7 @@ export function setupGlobalUI() {
                 const isNowActive = !btn.classList.contains('active');
                 filterBtns.forEach(b => isNowActive ? b.classList.add('active') : b.classList.remove('active'));
 
-                const allCheckbox = document.getElementById('kb-explore-all');
+                const allCheckbox = document.getElementById('kb-explore-all') as HTMLInputElement;
                 if(allCheckbox) {
                     allCheckbox.checked = isNowActive;
                     allCheckbox.dispatchEvent(new Event('change'));
@@ -360,7 +360,7 @@ export function setupGlobalUI() {
             } else {
                 btn.classList.toggle('active');
                 const isActive = btn.classList.contains('active');
-                const targetCheckbox = document.querySelector(`.kb-target-checkbox[data-type="${type}"]`);
+                const targetCheckbox = document.querySelector<HTMLInputElement>(`.kb-target-checkbox[data-type="${type}"]`);
                 if(targetCheckbox) {
                     targetCheckbox.checked = isActive;
                     targetCheckbox.dispatchEvent(new Event('change'));
