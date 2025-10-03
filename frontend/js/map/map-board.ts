@@ -63,7 +63,7 @@ export function setupBoardLogic() {
     // 이미지 뷰어 닫기 처리
     const imgModal = document.getElementById('image-view-modal');
     if(imgModal) {
-        imgModal.onclick = (e) => { if(e.target === imgModal || e.target.classList.contains('image-view-close')) imgModal.style.display = "none"; };
+        imgModal.onclick = (e) => { if(e.target === imgModal || (e.target as HTMLElement).classList.contains('image-view-close')) imgModal.style.display = "none"; };
     }
 
     connectWebSocket();
@@ -101,7 +101,7 @@ function connectWebSocket() {
         // 댓글 알림
         stompClient.subscribe('/topic/board/comment', (msg) => {
             const data = JSON.parse(msg.body);
-            const overlay = document.querySelector('.board-overlay');
+            const overlay = document.querySelector<HTMLElement>('.board-overlay');
             if (overlay && overlay.dataset.boardId == data.boardId) {
                 appendRealtimeComment(data.comment, data.parentId, data.boardId);
             }
@@ -124,10 +124,10 @@ function openWriteModal(lat, lng, type) {
     const modal = document.getElementById('board-modal');
     modal.style.display = 'block';
 
-    document.getElementById('board-lat').value = lat;
-    document.getElementById('board-lon').value = lng;
-    document.getElementById('board-location-type').value = type;
-    document.getElementById('board-image').value = '';
+    (document.getElementById('board-lat') as HTMLInputElement).value = lat;
+    (document.getElementById('board-lon') as HTMLInputElement).value = lng;
+    (document.getElementById('board-location-type') as HTMLInputElement).value = type;
+    (document.getElementById('board-image') as HTMLInputElement).value = '';
 }
 
 // 작성 모드 종료
@@ -145,13 +145,13 @@ function disableWriteMode() {
 // 게시글 등록
 export async function saveBoard() {
     const form = {
-        title: document.getElementById('board-title').value,
-        content: document.getElementById('board-content').value,
-        category: document.getElementById('board-category').value,
-        lat: document.getElementById('board-lat').value,
-        lon: document.getElementById('board-lon').value,
-        type: document.getElementById('board-location-type').value,
-        image: document.getElementById('board-image').files[0]
+        title: (document.getElementById('board-title') as HTMLInputElement).value,
+        content: (document.getElementById('board-content') as HTMLInputElement).value,
+        category: (document.getElementById('board-category') as HTMLInputElement).value,
+        lat: (document.getElementById('board-lat') as HTMLInputElement).value,
+        lon: (document.getElementById('board-lon') as HTMLInputElement).value,
+        type: (document.getElementById('board-location-type') as HTMLInputElement).value,
+        image: (document.getElementById('board-image') as HTMLInputElement).files[0]
     };
 
     if(!form.title || !form.content) { alert("내용을 입력해주세요."); return; }
@@ -169,9 +169,9 @@ export async function saveBoard() {
         const res = await fetch('/api/board', { method: 'POST', body: formData });
         if(res.ok) {
             showToast("게시글 등록 완료");
-            document.getElementById('board-title').value = '';
-            document.getElementById('board-content').value = '';
-            document.getElementById('board-image').value = '';
+            (document.getElementById('board-title') as HTMLInputElement).value = '';
+            (document.getElementById('board-content') as HTMLInputElement).value = '';
+            (document.getElementById('board-image') as HTMLInputElement).value = '';
             disableWriteMode();
         } else {
             showToast("로그인이 필요합니다", true);
@@ -280,19 +280,19 @@ export function showBoardOverlay(marker, data) {
 
     // 이벤트 바인딩
     if (data.imageUrl) {
-        content.querySelector('.board-image-thumbnail').onclick = () => {
-            document.getElementById('full-image').src = data.imageUrl;
+        (content.querySelector('.board-image-thumbnail') as HTMLElement).onclick = () => {
+            (document.getElementById('full-image') as HTMLImageElement).src = data.imageUrl;
             document.getElementById('image-view-modal').style.display = "flex";
         };
     }
-    content.querySelector('.board-close').onclick = () => overlay.setMap(null);
+    (content.querySelector('.board-close') as HTMLElement).onclick = () => overlay.setMap(null);
 
     if (!data.canDelete) {
-        const reportBtn = content.querySelector(`#btn-report-${data.id}`);
+        const reportBtn = content.querySelector<HTMLElement>(`#btn-report-${data.id}`);
         if(reportBtn) reportBtn.onclick = () => openReportModal('BOARD', data.id, data.title, data.writer);
     }
 
-    content.querySelector('.like-btn').onclick = async () => {
+    (content.querySelector('.like-btn') as HTMLElement).onclick = async () => {
         const res = await fetch(`/api/board/${data.id}/like`, { method: 'POST' });
         if(!res.ok) showToast("로그인 필요", true);
     };
@@ -347,7 +347,7 @@ window.expandComments = function(btn) {
 // 댓글 작성
 window.submitComment = async function(boardId, parentId) {
     const inputId = parentId ? `reply-input-${parentId}` : `comment-input-${boardId}`;
-    const input = document.getElementById(inputId);
+    const input = document.getElementById(inputId) as HTMLInputElement;
     if(!input.value) return;
 
     const payload = { content: input.value, parentId: parentId };
@@ -393,7 +393,7 @@ function appendRealtimeComment(comment, parentId, boardId) {
     }
 
     const cnt = document.getElementById(`comment-count-${boardId}`);
-    if(cnt) cnt.innerText = parseInt(cnt.innerText) + 1;
+    if(cnt) cnt.innerText = String(parseInt(cnt.innerText) + 1);
 }
 
 // 답글 폼 토글
@@ -402,7 +402,7 @@ window.toggleReplyForm = function(cid) {
     if(box.style.display === 'block') {
         box.style.display = 'none';
     } else {
-        const boardId = box.closest('.board-overlay').dataset.boardId;
+        const boardId = (box.closest('.board-overlay') as HTMLElement).dataset.boardId;
         box.innerHTML = `
             <div class="reply-form">
                 <input type="text" class="reply-input" placeholder="답글 작성..." id="reply-input-${cid}">
