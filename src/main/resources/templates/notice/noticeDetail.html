@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>공지사항 상세</title>
+    <link rel="stylesheet" href="/css/base/tokens.css"/>
     <link rel="stylesheet" href="/css/notice/noticeDetail.css"/>
 
     <link rel="icon" type="image/png" href="/img/logo/favicon.png">
@@ -29,15 +30,15 @@
 
                 <span class="kb-status-badge status-notice"
                       th:if="${notice.type == 'EMERGENCY'}"
-                      style="background-color: #dc3545; color: white;">긴급</span>
+                      style="background-color: var(--danger); color: var(--text-on);">긴급</span>
 
                 <span class="kb-status-badge status-notice"
                       th:if="${notice.type == 'IMPORTANT'}"
-                      style="background-color: #ff9800; color: white;">중요</span>
+                      style="background-color: var(--warning); color: var(--text-on);">중요</span>
 
                 <span class="kb-status-badge status-notice"
                       th:if="${notice.type == 'GENERAL'}"
-                      style="background-color: #6c757d; color: white;">공지</span>
+                      style="background-color: var(--gray-500); color: var(--text-on);">공지</span>
 
                 <span class="kb-info-item">작성자: <span th:text="${notice.writerName}">관리자</span></span>
                 <span class="kb-info-item">작성일: <span th:text="${#temporals.format(notice.createdDate, 'yyyy.MM.dd HH:mm')}">2025.11.20</span></span>

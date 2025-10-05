@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>공지사항</title>
+    <link rel="stylesheet" href="/css/base/tokens.css"/>
     <link rel="stylesheet" href="/css/notice/notice.css"/>
     <link rel="icon" type="image/png" href="/img/logo/favicon.png">
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
@@ -53,8 +54,8 @@
                     <td class="col-title">
                         <a th:href="@{/noticeDetail(id=${notice.id})}" style="display: block;">
 
-                            <span th:if="${notice.type == 'EMERGENCY'}" style="color: red; font-weight: bold;">[긴급]</span>
-                            <span th:if="${notice.type == 'IMPORTANT'}" style="color: #ff9800; font-weight: bold;">[중요]</span>
+                            <span th:if="${notice.type == 'EMERGENCY'}" style="color: var(--danger); font-weight: bold;">[긴급]</span>
+                            <span th:if="${notice.type == 'IMPORTANT'}" style="color: var(--warning); font-weight: bold;">[중요]</span>
 
                             <span th:text="${notice.title}">제목입니다</span>
                         </a>
