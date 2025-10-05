@@ -12,7 +12,7 @@
     border-bottom: 1px dashed #e2e8f0; display: flex; align-items: center; gap: 8px;
 }
 .btn-block { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 700; color: #fff; cursor: pointer; margin-top: 10px; }
-.btn-primary-block { background: #337cf4; }
-.btn-primary-block:hover { background: #2563eb; }
+.btn-primary-block { background: var(--primary); }
+.btn-primary-block:hover { background: var(--primary-strong); }
 .btn-danger-block { background: #ef4444; }
 .btn-danger-block:hover { background: #dc2626; }

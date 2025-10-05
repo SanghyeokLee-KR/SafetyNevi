@@ -1,23 +1,23 @@
-/* /css/admin/layout.css */
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+/* /css/admin/layout.css — 디자인 토큰 기반 (로컬 변수는 토큰으로 리매핑) */
+@import url("/css/base/tokens.css");
 
 :root {
     --sidebar-width: 260px;
     --header-height: 60px;
-    --primary-color: #337cf4;
-    --primary-dark: #2563eb;
-    --bg-color: #f1f5f9;
-    --sidebar-bg: #1e293b;
-    --sidebar-text: #94a3b8;
-    --text-dark: #1e293b;
-    --text-gray: #64748b;
-    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --transition: all 0.3s ease;
+    --primary-color: var(--primary);
+    --primary-dark: var(--primary-strong);
+    --bg-color: var(--bg);
+    --sidebar-bg: var(--gray-800);
+    --sidebar-text: var(--gray-400);
+    --text-dark: var(--text);
+    --text-gray: var(--text-muted);
+    --card-shadow: var(--e1);
+    --transition: all var(--dur) var(--ease);
 }
 
 body {
     margin: 0; padding: 0;
-    font-family: 'Pretendard', sans-serif;
+    font-family: var(--font);
     background-color: var(--bg-color);
     display: flex; min-height: 100vh;
     color: var(--text-dark);
@@ -41,7 +41,7 @@ body {
 .menu-item:hover { background-color: rgba(255,255,255,0.05); color: #fff; transform: translateX(5px); }
 .menu-item.active {
     background-color: var(--primary-color); color: #fff; font-weight: 600;
-    box-shadow: 0 4px 12px rgba(51, 124, 244, 0.3);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 .menu-item .icon { margin-right: 12px; width: 20px; text-align: center; font-size: 18px; }
 

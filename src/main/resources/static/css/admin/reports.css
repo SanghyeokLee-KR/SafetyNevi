@@ -124,14 +124,14 @@
 
 .page-btn:hover, .page-num:hover {
     background-color: #f1f5f9;
-    color: #337cf4;
+    color: var(--primary);
     border-color: #cbd5e1;
 }
 
 .page-num.active {
-    background-color: #337cf4;
+    background-color: var(--primary);
     color: #fff;
-    border-color: #337cf4;
+    border-color: var(--primary);
     font-weight: 700;
 }
 

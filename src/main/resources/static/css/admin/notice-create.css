@@ -1,6 +1,6 @@
 /* --- 메인 액션 버튼 (공지 작성) --- */
 .btn-main-action {
-    background: var(--primary-color); /* #337cf4 */
+    background: var(--primary-color);
     color: #fff;
     border: none;
     padding: 14px 28px;
@@ -11,14 +11,14 @@
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    box-shadow: 0 4px 10px rgba(51, 124, 244, 0.3);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
     transition: all 0.3s ease;
 }
 
 .btn-main-action:hover {
     background: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(51, 124, 244, 0.4);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
 }
 
 .btn-main-action span.icon {
