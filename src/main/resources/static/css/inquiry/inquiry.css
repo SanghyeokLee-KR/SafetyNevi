@@ -1,11 +1,14 @@
+@import url("/css/base/tokens.css");
+
 /* 기본 설정 (프로젝트 스타일 통일) */
 html, body {
     width: 100%;
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
-    background-color: #f7f9fc; /* 배경색 통일 */
+    font-family: var(--font);
+    background-color: var(--bg); /* 배경색 통일 */
+    color: var(--text);
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -104,7 +107,7 @@ html, body {
 }
 
 .kb-board-table th {
-    border-top: 2px solid #337cf4; /* 👈 메인 컬러 강조 */
+    border-top: 2px solid var(--primary); /* 👈 메인 컬러 강조 */
     border-bottom: 1px solid #ccc;
     font-weight: 700;
     background-color: #fbfbfb;
@@ -131,13 +134,13 @@ html, body {
 }
 
 .status-done {
-    background-color: #28a745;
+    background-color: var(--safe);
 }
 .status-processing {
-    background-color: #337cf4;
+    background-color: var(--primary);
 }
 .status-new {
-    background-color: #ff5e57;
+    background-color: var(--danger);
 }
 
 
@@ -153,7 +156,7 @@ html, body {
 
 .col-title a:hover {
     text-decoration: underline;
-    color: #337cf4;
+    color: var(--primary);
 }
 
 /* 페이지네이션 */
@@ -179,8 +182,8 @@ html, body {
 }
 
 .page-btn.active {
-    background-color: #337cf4;
-    border-color: #337cf4;
+    background-color: var(--primary);
+    border-color: var(--primary);
     color: white;
     font-weight: bold;
 }
@@ -192,7 +195,7 @@ html, body {
 
 /* 글쓰기 버튼 (문의하기) 스타일은 유지 */
 .kb-write-btn {
-    background-color: #337cf4;
+    background-color: var(--primary);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -201,11 +204,11 @@ html, body {
     border-radius: 8px;
     transition: background-color 0.2s, box-shadow 0.2s;
     font-weight: 600;
-    box-shadow: 0 4px 10px rgba(51, 124, 244, 0.3);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
 }
 
 .kb-write-btn:hover {
-    background-color: #1a65d6;
+    background-color: var(--primary-strong);
 }
 
 /* ⚠️ 검색바 (kb-search-bar, search-select, search-input, search-btn) 스타일 제거 ⚠️ */

@@ -1,11 +1,14 @@
+@import url("/css/base/tokens.css");
+
 /* 기본 설정 (프로젝트 스타일 통일) */
 html, body {
     width: 100%;
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
-    background-color: #f7f9fc;
+    font-family: var(--font);
+    background-color: var(--bg);
+    color: var(--text);
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -35,7 +38,7 @@ html, body {
 
 /* --- 공통 헤더 스타일 --- */
 .kb-header {
-    border-bottom: 2px solid #337cf4; /* 메인 컬러 강조선 */
+    border-bottom: 2px solid var(--primary); /* 메인 컬러 강조선 */
     padding-bottom: 15px;
     margin-bottom: 30px;
     text-align: center;
@@ -97,13 +100,13 @@ html, body {
 }
 
 .status-done { /* 답변 완료 */
-    background-color: #28a745;
+    background-color: var(--safe);
 }
 .status-processing { /* 처리 중 */
-    background-color: #337cf4;
+    background-color: var(--primary);
 }
 .status-new { /* 미확인 */
-    background-color: #ff5e57;
+    background-color: var(--danger);
 }
 
 /* --- 2. 문의 내용 --- */
@@ -136,7 +139,7 @@ html, body {
     justify-content: space-between;
     align-items: center;
     font-size: 14px;
-    color: #337cf4;
+    color: var(--primary);
     text-decoration: none;
 }
 
@@ -152,8 +155,8 @@ html, body {
 
 /* --- 3. 관리자 답변 영역 --- */
 .kb-admin-response {
-    background-color: #e6f0ff; /* 연한 파란색 배경 */
-    border-left: 5px solid #337cf4; /* 파란색 강조선 */
+    background-color: var(--primary-soft); /* 연한 파란색 배경 */
+    border-left: 5px solid var(--primary); /* 파란색 강조선 */
     padding: 20px;
     margin-top: 20px;
     border-radius: 0 8px 8px 0;
@@ -223,7 +226,6 @@ html, body {
     }
 }
 
-/* 제미나이와 기미나이가 같이 수정한 css >0<b */
 /* 하단 버튼 영역 정렬 */
 .kb-action-footer {
     margin-top: 40px;
@@ -266,21 +268,21 @@ html, body {
 /* 수정 버튼 (파란색) */
 .kb-btn-edit {
     background-color: #fff;
-    border: 1px solid #007bff;
-    color: #007bff;
+    border: 1px solid var(--primary);
+    color: var(--primary);
 }
 .kb-btn-edit:hover {
-    background-color: #007bff;
+    background-color: var(--primary);
     color: #fff;
 }
 
 /* 삭제 버튼 (빨간색) */
 .kb-btn-delete {
     background-color: #fff;
-    border: 1px solid #dc3545;
-    color: #dc3545;
+    border: 1px solid var(--danger);
+    color: var(--danger);
 }
 .kb-btn-delete:hover {
-    background-color: #dc3545;
+    background-color: var(--danger);
     color: #fff;
 }

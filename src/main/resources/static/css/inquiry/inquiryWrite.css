@@ -1,10 +1,12 @@
+@import url("/css/base/tokens.css");
+
 /* 기본 설정 */
 html, body {
-    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
-    background-color: #f7f9fc; /* 프로젝트 배경색 통일 */
+    font-family: var(--font);
+    background-color: var(--bg); /* 프로젝트 배경색 통일 */
     margin: 0;
     padding: 0;
-    color: #333;
+    color: var(--text);
 }
 
 .kb-write-container {
@@ -21,7 +23,7 @@ html, body {
 .kb-header {
     margin-bottom: 30px;
     padding-bottom: 15px;
-    border-bottom: 2px solid #337cf4; /* 파란색 강조선 */
+    border-bottom: 2px solid var(--primary); /* 파란색 강조선 */
 }
 
 .kb-main-title {
@@ -67,8 +69,8 @@ html, body {
 }
 
 .kb-form-input:focus {
-    border-color: #337cf4;
-    box-shadow: 0 0 0 3px rgba(51, 124, 244, 0.2);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
 /* 내용 작성 영역 (Textarea) */
@@ -86,9 +88,9 @@ html, body {
 }
 
 .kb-file-select-btn {
-    background-color: #f0f5fd; /* 연한 파란색 배경 */
-    color: #337cf4;
-    border: 1px solid #337cf4;
+    background-color: var(--primary-soft); /* 연한 파란색 배경 */
+    color: var(--primary);
+    border: 1px solid var(--primary);
     padding: 8px 15px;
     border-radius: 8px;
     font-size: 14px;
@@ -98,7 +100,7 @@ html, body {
 }
 
 .kb-file-select-btn:hover {
-    background-color: #e6f0ff;
+    background-color: var(--primary-softer);
 }
 
 .kb-file-display {
@@ -145,15 +147,15 @@ html, body {
 }
 
 .kb-btn-submit {
-    background-color: #337cf4; /* 메인 컬러 적용 */
+    background-color: var(--primary); /* 메인 컬러 적용 */
     color: white;
     border: none;
-    box-shadow: 0 4px 10px rgba(51, 124, 244, 0.4);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
 }
 
 .kb-btn-submit:hover {
-    background-color: #1a65d6;
-    box-shadow: 0 6px 15px rgba(51, 124, 244, 0.5);
+    background-color: var(--primary-strong);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.5);
 }
 
 /* 좁은 화면 대응 */
