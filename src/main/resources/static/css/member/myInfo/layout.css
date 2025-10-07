@@ -1,14 +1,16 @@
-/* layout.css */
+/* layout.css — 디자인 토큰 기반 */
+@import url("/css/base/tokens.css");
+
 :root {
-    --bg-color: #f7f9fc;
+    --bg-color: var(--bg);
     --sidebar-width: 240px;
 }
 
 html, body {
     height: 100%; margin: 0;
-    font-family: 'Pretendard', sans-serif;
+    font-family: var(--font);
     background-color: var(--bg-color);
-    color: #1f2937;
+    color: var(--text);
 }
 
 .kb-page-wrap {

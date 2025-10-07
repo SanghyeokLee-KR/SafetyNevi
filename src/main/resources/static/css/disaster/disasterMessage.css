@@ -1,12 +1,14 @@
+@import url("/css/base/tokens.css");
+
 /* 초기화 */
 * { box-sizing: border-box; }
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
-    background-color: #f7f9fc;
-    color: #333;
+    font-family: var(--font);
+    background-color: var(--bg);
+    color: var(--text);
 }
 
 /* 전체 래퍼 (Footer 하단 고정용) */
@@ -18,7 +20,7 @@ html, body {
 
 /* 헤더 */
 .app-header {
-    background-color: #f7f9fc;
+    background-color: var(--bg);
     padding: 20px 0;
     text-align: center;
 }
@@ -105,11 +107,11 @@ html, body {
     margin-right: 8px;
     flex-shrink: 0; /* 뱃지가 찌그러지지 않게 */
 }
-.badge-blue { background-color: #007bff; }
-.badge-red { background-color: #dc3545; }
+.badge-blue { background-color: var(--primary); }
+.badge-red { background-color: var(--danger); }
 .badge-skyblue { background-color: #87CEEB; color: #333; }
 .badge-yellow { background-color: #FFD700; color: #333; }
-.badge-green { background-color: #28a745; }
+.badge-green { background-color: var(--safe); }
 .badge-gray { background-color: #6c757d; }
 
 /* 지역 및 날짜 정보 */
