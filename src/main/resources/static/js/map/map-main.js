@@ -11,35 +11,30 @@ import { setupSearchLogic } from './map-search.js';
 import { setupRouteLogic } from './map-route.js';
 import { setupMyPlaceLogic } from './map-myplace.js';
 import { setupBoardLogic } from './map-board.js';
-
 document.addEventListener('DOMContentLoaded', async () => {
-
     // 1. 지도 엔진 및 리소스 초기화
     try {
         initMap();
         setupMarkerImages();
         setupDisasterMarkerImages();
-    } catch (e) {
+    }
+    catch (e) {
         console.error("Map initialization failed:", e);
         return;
     }
-
     // 2. UI 및 이벤트 핸들러 설정
     setupTabNavigation();
     setupCheckboxLogic();
     setupDetailViewEvents();
     setupGlobalUI();
-
     // 3. 주요 기능 로직 바인딩
     setupSearchLogic();
     setupRouteLogic();
     setupMyPlaceLogic();
     setupBoardLogic();
-
     // 4. 지도 이벤트 리스너 및 초기 데이터 로드
     setupMapEventListeners();
     loadCurrentLocationAndWeather();
-
     // 5. 재난 데이터 초기 로드 + WebSocket 실시간 수신 (10초 폴링 대신 푸시)
     loadDisasterZones();
     connectDisasterSocket();

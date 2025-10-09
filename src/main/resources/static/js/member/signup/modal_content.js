@@ -39,7 +39,6 @@ const TERMS_OF_SERVICE = `
     <h3>제 7 조 (분쟁 해결)</h3>
     <p>본 약관과 관련한 분쟁이 발생할 경우 회사와 이용자는 상호 협의하여 해결하되, 협의가 되지 않을 경우 관련 법령에 따라 관할 법원에 소송을 제기할 수 있습니다.</p>
 `;
-
 const LOCATION_TERMS = `
     <h3>제 1 조 (목적)</h3>
     <p>본 약관은 <strong>안전네비</strong>가 제공하는 위치기반 서비스와 관련하여 회사와 개인위치정보주체와의 권리, 의무 및 책임사항을 규정합니다.</p>
@@ -64,12 +63,12 @@ const LOCATION_TERMS = `
     <h3>제 6 조 (권리의 행사 및 책임)</h3>
     <p>이용자는 자신의 위치정보에 대한 열람·정정·삭제를 요청할 수 있으며, 회사는 관련 법령에 따라 지체 없이 조치합니다.</p>
 `;
-
 // 페이지 로드 시 약관 주입
 document.addEventListener('DOMContentLoaded', () => {
     const termsBody = document.getElementById('terms-content');
     const locationBody = document.getElementById('location-content');
-
-    if (termsBody) termsBody.innerHTML = TERMS_OF_SERVICE;
-    if (locationBody) locationBody.innerHTML = LOCATION_TERMS;
+    if (termsBody)
+        termsBody.innerHTML = TERMS_OF_SERVICE;
+    if (locationBody)
+        locationBody.innerHTML = LOCATION_TERMS;
 });

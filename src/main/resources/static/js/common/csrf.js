@@ -4,23 +4,22 @@
 (function () {
     var tokenMeta = document.querySelector('meta[name="_csrf"]');
     var headerMeta = document.querySelector('meta[name="_csrf_header"]');
-    if (!tokenMeta || !headerMeta) return;
-
+    if (!tokenMeta || !headerMeta)
+        return;
     var token = tokenMeta.getAttribute('content');
     var header = headerMeta.getAttribute('content');
-    if (!token || !header) return;
-
+    if (!token || !header)
+        return;
     var SAFE = /^(GET|HEAD|OPTIONS|TRACE)$/i;
-
     // 외부 API로는 토큰을 보내지 않도록 같은 출처만 처리
     function sameOrigin(url) {
         try {
             return new URL(url, window.location.href).origin === window.location.origin;
-        } catch (e) {
+        }
+        catch (e) {
             return true; // 상대 경로 등 파싱 불가 시 같은 출처로 간주
         }
     }
-
     // 1) fetch 래핑
     if (window.fetch) {
         var origFetch = window.fetch;
@@ -30,13 +29,13 @@
             var method = init.method || (input && input.method) || 'GET';
             if (!SAFE.test(method) && sameOrigin(url)) {
                 var headers = new Headers(init.headers || (input && input.headers) || {});
-                if (!headers.has(header)) headers.set(header, token);
+                if (!headers.has(header))
+                    headers.set(header, token);
                 init.headers = headers;
             }
             return origFetch.call(this, input, init);
         };
     }
-
     // 2) XMLHttpRequest 래핑 (jQuery, axios, 순수 XHR 모두 커버)
     if (window.XMLHttpRequest) {
         var origOpen = XMLHttpRequest.prototype.open;
@@ -47,7 +46,10 @@
         var origSend = XMLHttpRequest.prototype.send;
         XMLHttpRequest.prototype.send = function () {
             if (this.__csrfNeeded) {
-                try { this.setRequestHeader(header, token); } catch (e) {}
+                try {
+                    this.setRequestHeader(header, token);
+                }
+                catch (e) { /* noop */ }
             }
             return origSend.apply(this, arguments);
         };
