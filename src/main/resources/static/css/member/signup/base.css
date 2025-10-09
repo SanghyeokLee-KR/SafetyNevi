@@ -1,17 +1,20 @@
 /* 회원가입 base — 기존 로컬 변수를 디자인 토큰으로 remap (components·modal까지 새 브랜드색으로 정렬) */
+/* HTML <link> 누락(템플릿 stale)에도 견디도록 토큰을 CSS에서 직접 적재 */
+@import url("/css/base/tokens.css");
+
 :root {
-    --primary-color: var(--primary);
-    --primary-hover: var(--primary-strong);
-    --bg-color: var(--bg);
-    --text-color: var(--text);
-    --gray-border: var(--border);
-    --gray-text: var(--text-muted);
-    --input-bg: var(--surface);
-    --disabled-bg: var(--gray-200);
-    --disabled-text: var(--text-subtle);
-    --success-color: var(--safe);
-    --error-color: var(--danger);
-    --warn-color: var(--warning);
+    --primary-color: var(--primary, #2563EB);
+    --primary-hover: var(--primary-strong, #1D4ED8);
+    --bg-color: var(--bg, #F4F6FA);
+    --text-color: var(--text, #0F172A);
+    --gray-border: var(--border, #E6EAF1);
+    --gray-text: var(--text-muted, #5B6676);
+    --input-bg: var(--surface, #FFFFFF);
+    --disabled-bg: var(--gray-200, #E6EAF1);
+    --disabled-text: var(--text-subtle, #94A3B8);
+    --success-color: var(--safe, #16A34A);
+    --error-color: var(--danger, #E5484D);
+    --warn-color: var(--warning, #F59E0B);
 }
 
 html, body {

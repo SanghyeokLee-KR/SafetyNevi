@@ -1,3 +1,5 @@
+@import url("/css/base/tokens.css");
+@import url("/css/base/components.css");
 /* 비밀번호 찾기 — tokens/components 위에서. kb- 클래스/ID/스텝은 JS가 잡으므로 유지, 스타일만 토큰화 */
 html, body { height: 100%; margin: 0; }
 body { font-family: var(--font); background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
