@@ -4,7 +4,7 @@
     "module": "ES2022",
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
-    "rootDir": "frontend/js",
+    "rootDir": "frontend/src",
     "outDir": "src/main/resources/static/js",
     "strict": false,
     "noImplicitAny": false,
@@ -15,5 +15,5 @@
     "sourceMap": false,
     "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
-  "include": ["frontend/js/**/*.ts"]
+  "include": ["frontend/src/**/*.ts"]
 }

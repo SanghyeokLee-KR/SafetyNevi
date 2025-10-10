@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.6'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.github.node-gradle.node' version '7.1.0'
 }
 
 group = 'com.inha.pro'
@@ -57,4 +58,23 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// 프론트엔드(TypeScript) 빌드: frontend/src/*.ts -> static/js (gradle 빌드에 자동 포함)
+node {
+    version = '24.16.0'
+    download = true
+}
+
+tasks.register('buildFrontend', com.github.gradle.node.npm.task.NpmTask) {
+    dependsOn tasks.named('npmInstall')
+    args = ['run', 'build']
+    inputs.dir('frontend/src')
+    inputs.file('package.json')
+    inputs.file('tsconfig.json')
+    outputs.dir('src/main/resources/static/js')
+}
+
+tasks.named('processResources') {
+    dependsOn 'buildFrontend'
 }

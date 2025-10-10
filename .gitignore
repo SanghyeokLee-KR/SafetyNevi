@@ -59,3 +59,6 @@ node_modules/
 /build-tscheck/
 /build-tscheck2/
 /tsc-out*.txt
+
+# 빌드 산출물 — frontend/src/*.ts 에서 gradle(buildFrontend)·npm 이 생성. 소스만 커밋
+/src/main/resources/static/js/
