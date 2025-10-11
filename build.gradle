@@ -75,6 +75,14 @@ tasks.register('buildFrontend', com.github.gradle.node.npm.task.NpmTask) {
     outputs.dir('src/main/resources/static/js')
 }
 
-tasks.named('processResources') {
+// 프론트 빌드는 실행(bootRun)·패키징(bootJar)에만 연결 — 단위테스트는 프론트 빌드 없이 돌게
+tasks.named('bootJar') { dependsOn 'buildFrontend' }
+tasks.named('processResources') { mustRunAfter 'buildFrontend' }
+
+// 로컬 h2 실행용: bootRun 클래스패스에만 H2 주입 (운영 jar 는 깨끗 + build.gradle 플립 불필요)
+configurations { localH2 }
+dependencies { localH2 'com.h2database:h2' }
+tasks.named('bootRun') {
     dependsOn 'buildFrontend'
+    classpath += configurations.localH2
 }

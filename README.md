@@ -194,7 +194,7 @@
 | :--- | :--- |
 | **Backend** | Java 21, Spring Boot 3.5.6, Spring Security, JPA |
 | **AI Server** | Python 3.10, FastAPI, Scikit-learn, Pandas, Joblib |
-| **Frontend** | JavaScript (ES6+), Thymeleaf, HTML5, CSS3 |
+| **Frontend** | TypeScript, Thymeleaf, HTML5, CSS3 |
 | **Web Server** | Nginx (Reverse Proxy & Static File Serving) |
 | **Database** | Oracle Database 21c XE (via Docker) |
 | **External API** | Kakao Map/Mobility API, Public Data Portal, Naver Search |
@@ -211,3 +211,25 @@ pip install fastapi uvicorn scikit-learn pandas oracledb joblib
 # AI 서버 실행 (Port: 8000)
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
+
+### 2. Main Server (Spring Boot)
+
+**요구사항:** Java 21
+
+**1) 설정 파일 준비** — 실제 키가 담긴 설정은 보안상 git에 포함되지 않습니다. 예시 파일을 복사해 채워주세요.
+
+```bash
+cp src/main/resources/application-example.properties src/main/resources/application.properties
+# Kakao API 키, DB 접속 정보 등 입력
+```
+
+**2) 로컬 실행** — H2 인메모리 DB로 Oracle 없이 바로 실행됩니다.
+
+```bash
+./gradlew bootRun --args='--spring.profiles.active=h2'
+```
+
+* 접속: `http://localhost:9090`
+* 테스트 계정: `admin / admin1234` (관리자), `test / test1234` (일반) — 시작 시 자동 생성
+
+> **프론트엔드는 자동으로 빌드됩니다.** TypeScript 소스(`frontend/src/*.ts`)는 `gradlew bootRun`·`build` 시 `static/js`로 자동 컴파일됩니다 (Node는 최초 1회 자동 다운로드). JS를 수정할 땐 `frontend/src`를 편집하고, `static/js`는 빌드 산출물이라 직접 건드리지 않습니다.

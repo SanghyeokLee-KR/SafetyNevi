@@ -75,7 +75,7 @@ async function saveSpecialPlace(type, address, lat, lon) {
 async function loadMyPlaces() {
     try {
         const response = await fetch('/api/map/my-places');
-        if (response.ok) {
+        if (response.ok && (response.headers.get('content-type') || '').includes('application/json')) {
             myPlaces = await response.json();
             renderMyPlacesAndMarkers();
         }
@@ -144,7 +144,7 @@ async function loadFamilies() {
 
     try {
         const res = await fetch('/api/map/family');
-        if (res.ok) {
+        if (res.ok && (res.headers.get('content-type') || '').includes('application/json')) {
             const families = await res.json();
             renderFamilies(families);
         } else {
@@ -236,7 +236,7 @@ async function loadMyPosts() {
 
     try {
         const res = await fetch('/api/board/my');
-        if (res.ok) {
+        if (res.ok && (res.headers.get('content-type') || '').includes('application/json')) {
             const posts = await res.json();
             renderMyPosts(posts);
         } else {
