@@ -16,6 +16,8 @@ public class DisasterMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dmid;
 
+    private Long sn; // 공식 긴급재난문자 API 일련번호 (중복 방지용 자연키)
+
     private String disasterType; // 재난 상황
     private String area; // 지역
     private String sentDate; // 날짜

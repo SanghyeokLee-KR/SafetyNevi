@@ -11,7 +11,9 @@ import java.util.List;
 @Repository
 public interface DisasterMessageRepository extends JpaRepository<DisasterMessage, Long>, JpaSpecificationExecutor<DisasterMessage> {
 
-    // 크롤링 서비스에서 중복 검사를 위해 사용하는 메소드 (이건 유지)
+    // 공식 API 일련번호(SN) 기준 중복 검사
+    boolean existsBySn(Long sn);
+
     DisasterMessage findTopByOrderByDmidDesc();
 
     // '발송지역' 드롭다운 메뉴를 채우기 위한 메소드 (이것을 추가)
