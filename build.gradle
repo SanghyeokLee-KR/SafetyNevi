@@ -69,10 +69,8 @@ node {
 tasks.register('buildFrontend', com.github.gradle.node.npm.task.NpmTask) {
     dependsOn tasks.named('npmInstall')
     args = ['run', 'build']
-    inputs.dir('frontend/src')
-    inputs.file('package.json')
-    inputs.file('tsconfig.json')
-    outputs.dir('src/main/resources/static/js')
+    // 주의: 산출물이 src 안(static/js)이라 outputs.dir 로 선언하면 gradle이 다른 태스크 실행 때
+    // 이 디렉터리를 stale 출력으로 보고 삭제해버린다. 그래서 inputs/outputs 미선언(매번 tsc 실행).
 }
 
 // 프론트 빌드는 실행(bootRun)·패키징(bootJar)에만 연결 — 단위테스트는 프론트 빌드 없이 돌게
