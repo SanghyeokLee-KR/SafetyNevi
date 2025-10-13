@@ -54,6 +54,10 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    // 모니터링/헬스체크 (Actuator) + Prometheus 메트릭 노출
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {

@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -37,6 +38,10 @@ public class SecurityConfig {
         http
                 // CSRF 보호 활성화 (WebSocket 핸드셰이크/SockJS 폴백은 제외)
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/ws/**"))
+                // 보안 응답 헤더 (nosniff·X-Frame-Options·HSTS 는 Spring 기본 유지 + Referrer-Policy 추가)
+                .headers(headers -> headers
+                        .referrerPolicy(referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
+                )
                 .authorizeHttpRequests(auth -> auth
                         // 정적 리소스 허용
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
@@ -54,6 +59,10 @@ public class SecurityConfig {
 
                         // 관리자 전용
                         .requestMatchers("/admin/**", "/api/admin/**", "/dashboardChart").hasRole("ADMIN")
+
+                        // Actuator: health는 공개(로드밸런서·업타임 체크), 나머지(prometheus/info)는 관리자
+                        .requestMatchers("/actuator/health/**").permitAll()
+                        .requestMatchers("/actuator/**").hasRole("ADMIN")
 
                         // 그 외 요청은 인증 필요
                         .anyRequest().authenticated()
