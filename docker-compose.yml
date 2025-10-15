@@ -1,0 +1,30 @@
+# 서버 배포용 — CI가 GHCR에 push한 이미지를 pull해서 실행한다.
+#   배포: docker compose pull && docker compose up -d
+#
+# 운영 설정(DB 접속정보·API 키 등 시크릿)은 이미지에 넣지 않고,
+# 서버에 둔 application-prod.properties 를 컨테이너에 마운트해서 주입한다.
+
+services:
+  app:
+    image: ghcr.io/sanghyeoklee-kr/safetynevi:latest
+    container_name: safetynevi
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_CONFIG_ADDITIONAL_LOCATION: file:/app/config/
+    volumes:
+      # 서버에 운영 설정 파일을 두고 마운트 (DB·카카오·기상청·재난문자 키 등)
+      - ./application-prod.properties:/app/config/application-prod.properties:ro
+      # 업로드 파일 영속화 (file.upload.* 경로를 /app/uploads 로 맞출 것)
+      - uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  uploads:

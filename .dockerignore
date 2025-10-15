@@ -1,0 +1,17 @@
+# 빌드 산출물/캐시 (이미지 빌드 시 컨테이너 안에서 새로 빌드)
+build/
+.gradle/
+node_modules/
+logs/
+
+# VCS / IDE / 문서
+.git/
+.github/
+.idea/
+*.iml
+*.md
+
+# 실제 시크릿이 든 로컬 설정은 이미지에 넣지 않음 (런타임에 마운트/ENV로 주입)
+src/main/resources/application.properties
+src/main/resources/application-h2.properties
+src/main/resources/application-prod.properties
