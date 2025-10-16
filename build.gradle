@@ -58,6 +58,10 @@ dependencies {
     // 모니터링/헬스체크 (Actuator) + Prometheus 메트릭 노출
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
+    // 캐시 (Caffeine 인메모리) — 외부 API/DB 반복조회 절감
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.github.ben-manes.caffeine:caffeine'
 }
 
 tasks.named('test') {

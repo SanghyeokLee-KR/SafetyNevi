@@ -1,6 +1,8 @@
 package com.inha.pro.safetynevi.service.map;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.inha.pro.safetynevi.dto.map.WeatherDto;
 import com.inha.pro.safetynevi.util.map.GpsConverter;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -28,6 +31,13 @@ public class WeatherService {
     private final GpsConverter gpsConverter;
     private final WebClient webClient = WebClient.create();
 
+    // 기상청 날씨는 격자(nx,ny)+관측시각 단위라, 같은 동네 사용자끼리 캐시를 공유해 API 호출을 줄인다.
+    // (주소는 좌표별로 더 세밀해서 캐시하지 않고 매번 카카오로 조회)
+    private final Cache<String, Map<String, String>> weatherCache = Caffeine.newBuilder()
+            .expireAfterWrite(Duration.ofMinutes(15))
+            .maximumSize(2000)
+            .build();
+
     @Value("${api.kma.serviceKey}")
     private String kmaServiceKey;
 
@@ -40,12 +50,21 @@ public class WeatherService {
                 .onErrorReturn("주소 정보 없음");
 
         GpsConverter.LatXLngY grid = gpsConverter.convertGpsToGrid(lat, lon);
-        Mono<Map<String, String>> weatherMono = getKmaWeather(grid.x, grid.y)
-                .map(this::parseKmaWeather)
-                .onErrorResume(e -> {
-                    log.warn("기상청 날씨 조회 실패: {}", e.getMessage());
-                    return Mono.just(Map.<String, String>of());
-                });
+        LocalDateTime base = LocalDateTime.now().minusMinutes(30);
+        String baseDate = base.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String baseTime = base.format(DateTimeFormatter.ofPattern("HH00"));
+        String cacheKey = grid.x + ":" + grid.y + ":" + baseDate + baseTime;
+
+        Map<String, String> cachedWeather = weatherCache.getIfPresent(cacheKey);
+        Mono<Map<String, String>> weatherMono = (cachedWeather != null)
+                ? Mono.just(cachedWeather)
+                : getKmaWeather(grid.x, grid.y, baseDate, baseTime)
+                        .map(this::parseKmaWeather)
+                        .doOnNext(weather -> { if (!weather.isEmpty()) weatherCache.put(cacheKey, weather); })
+                        .onErrorResume(e -> {
+                            log.warn("기상청 날씨 조회 실패: {}", e.getMessage());
+                            return Mono.just(Map.<String, String>of());
+                        });
 
         return Mono.zip(addressMono, weatherMono)
                 .map(tuple -> {
@@ -80,11 +99,7 @@ public class WeatherService {
                 });
     }
 
-    private Mono<JsonNode> getKmaWeather(int nx, int ny) {
-        LocalDateTime now = LocalDateTime.now().minusMinutes(30);
-        String baseDate = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String baseTime = now.format(DateTimeFormatter.ofPattern("HH00"));
-
+    private Mono<JsonNode> getKmaWeather(int nx, int ny, String baseDate, String baseTime) {
         String url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst" +
                 "?serviceKey=" + kmaServiceKey +
                 "&pageNo=1&numOfRows=10&dataType=JSON" +
