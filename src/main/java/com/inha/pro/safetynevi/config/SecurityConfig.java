@@ -38,9 +38,21 @@ public class SecurityConfig {
         http
                 // CSRF 보호 활성화 (WebSocket 핸드셰이크/SockJS 폴백은 제외)
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/ws/**"))
-                // 보안 응답 헤더 (nosniff·X-Frame-Options·HSTS 는 Spring 기본 유지 + Referrer-Policy 추가)
+                // 보안 응답 헤더 (nosniff·X-Frame-Options·HSTS 는 Spring 기본 유지 + Referrer-Policy·CSP 추가)
                 .headers(headers -> headers
                         .referrerPolicy(referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
+                        // CSP: 외부 리소스를 허용목록으로 제한 (카카오 지도/주소검색, SockJS, Pretendard, 유튜브 등).
+                        // 호스트는 스킴 없이 적어 로컬(http)·운영(https) 모두 동작하게 한다.
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(
+                                "default-src 'self'; " +
+                                "script-src 'self' 'unsafe-inline' 'unsafe-eval' dapi.kakao.com *.daumcdn.net cdnjs.cloudflare.com cdn.jsdelivr.net code.jquery.com; " +
+                                "style-src 'self' 'unsafe-inline' cdn.jsdelivr.net; " +
+                                "font-src 'self' data: cdn.jsdelivr.net; " +
+                                "img-src 'self' data: blob: http: https:; " +
+                                "connect-src 'self' dapi.kakao.com *.daumcdn.net *.kakao.com; " +
+                                "frame-src 'self' www.youtube.com *.daumcdn.net; " +
+                                "object-src 'none'; base-uri 'self'; form-action 'self'"
+                        ))
                 )
                 .authorizeHttpRequests(auth -> auth
                         // 정적 리소스 허용
