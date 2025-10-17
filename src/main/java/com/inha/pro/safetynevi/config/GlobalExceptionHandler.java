@@ -6,10 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -64,6 +66,20 @@ public class GlobalExceptionHandler {
                 .body(Map.of(
                         "error", "BAD_REQUEST",
                         "message", e.getMessage()
+                ));
+    }
+
+    // @Valid 검증 실패 (400) — 필드별 메시지로 반환 (없으면 catch-all 로 500 나던 것 교정)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleValidation(MethodArgumentNotValidException e) {
+        Map<String, String> fieldErrors = new HashMap<>();
+        e.getBindingResult().getFieldErrors()
+                .forEach(err -> fieldErrors.put(err.getField(), err.getDefaultMessage()));
+        log.warn("Validation failed: {}", fieldErrors);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                        "error", "VALIDATION_FAILED",
+                        "messages", fieldErrors
                 ));
     }
 

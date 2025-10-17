@@ -209,7 +209,7 @@ async function loadBoards() {
                 addBoardMarker(board);
             }
         });
-    } catch(e) {}
+    } catch(e) { console.error(e); }
 }
 
 // 게시글 마커 추가
