@@ -36,6 +36,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # gha 레이어 캐시(cache-to type=gha)는 기본 docker 드라이버가 아니라 buildx 컨테이너 드라이버가 필요
+      - name: Buildx 설정
+        uses: docker/setup-buildx-action@v3
       - name: 이미지 이름 소문자화
         run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
       - name: GHCR 로그인
