@@ -62,7 +62,18 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
+      # 서버 시크릿(SSH_HOST)이 없으면 배포를 건너뛴다 (서버 세팅 전엔 실패 대신 스킵)
+      - name: 서버 시크릿 설정 여부 확인
+        id: gate
+        run: |
+          if [ -n "${{ secrets.SSH_HOST }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::SSH_HOST 시크릿이 없어 배포를 건너뜁니다 (서버 세팅 전이라 정상)"
+          fi
       - name: SSH 배포 (서버에서 pull + 재시작)
+        if: steps.gate.outputs.ready == 'true'
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.SSH_HOST }}
