@@ -1,4 +1,4 @@
-# 서버 배포용 — CI가 GHCR에 push한 이미지를 pull해서 실행한다.
+# 서버 배포용 — CI가 GHCR에 push한 이미지를 pull해서 Redis·Kafka와 함께 실행한다.
 #   배포: docker compose pull && docker compose up -d
 #
 # 운영 설정(DB 접속정보·API 키 등 시크릿)은 이미지에 넣지 않고,
@@ -9,22 +9,72 @@ services:
     image: ghcr.io/sanghyeoklee-kr/safetynevi:latest
     container_name: safetynevi
     restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     ports:
       - "9090:9090"
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/app/config/
+      # 연결 호스트는 compose 서비스명으로 주입(설정파일보다 우선) — 누락돼도 안전하게
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: "6379"
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     volumes:
-      # 서버에 운영 설정 파일을 두고 마운트 (DB·카카오·기상청·재난문자 키 등)
       - ./application-prod.properties:/app/config/application-prod.properties:ro
-      # 업로드 파일 영속화 (file.upload.* 경로를 /app/uploads 로 맞출 것)
       - uploads:/app/uploads
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 40s
+      start_period: 60s
+
+  # 분산 캐시 · 세션 저장소 · 레이트리밋 카운터
+  redis:
+    image: redis:7-alpine
+    container_name: safetynevi-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # 재난 이벤트 스트리밍 (KRaft 단일 노드 — Zookeeper 불필요)
+  kafka:
+    image: apache/kafka:3.8.1
+    container_name: safetynevi-kafka
+    restart: unless-stopped
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
 volumes:
   uploads:
+  redis-data:
+  kafka-data:

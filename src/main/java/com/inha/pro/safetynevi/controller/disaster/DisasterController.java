@@ -21,8 +21,7 @@ public class DisasterController {
 
     @GetMapping("/api/disaster-zones")
     public List<DisasterZoneResponse> getActiveDisasterZones() {
-        return disasterService.findActiveDisasters().stream()
-                .map(DisasterZoneResponse::from)
-                .toList();
+        // 캐시된 DTO 목록을 그대로 반환 (운영은 Redis, 로컬은 Caffeine)
+        return disasterService.getActiveDisasterZones();
     }
 }

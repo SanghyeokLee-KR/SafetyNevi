@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.time.Duration;
 
@@ -20,6 +21,7 @@ import java.time.Duration;
 public class CacheConfig {
 
     @Bean
+    @Profile("!prod")   // 운영(prod)은 RedisConfig 의 Redis 분산 캐시를 쓴다
     public CacheManager cacheManager() {
         CaffeineCacheManager manager = new CaffeineCacheManager("activeDisasters");
         manager.setCaffeine(Caffeine.newBuilder()

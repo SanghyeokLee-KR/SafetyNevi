@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 public class DisasterService {
 
     private final DisasterZoneRepository disasterZoneRepository;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final DisasterBroadcaster broadcaster;   // 로컬=직접 WebSocket, 운영=Kafka 경유
 
     // 1. 원형 재난 생성
     @CacheEvict(value = "activeDisasters", allEntries = true)
@@ -40,7 +39,7 @@ public class DisasterService {
 
         DisasterZone saved = disasterZoneRepository.save(zone);
         log.info("원형 재난 생성: {}", saved);
-        messagingTemplate.convertAndSend("/topic/disaster/new", DisasterZoneResponse.from(saved));
+        broadcaster.broadcastNew(DisasterZoneResponse.from(saved));
         return saved;
     }
 
@@ -56,7 +55,7 @@ public class DisasterService {
 
         DisasterZone saved = disasterZoneRepository.save(zone);
         log.info("지역 재난 생성: {}", saved);
-        messagingTemplate.convertAndSend("/topic/disaster/new", DisasterZoneResponse.from(saved));
+        broadcaster.broadcastNew(DisasterZoneResponse.from(saved));
         return saved;
     }
 
@@ -67,7 +66,7 @@ public class DisasterService {
                 .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 재난 정보가 없습니다: " + id));
 
         disasterZoneRepository.delete(zone);
-        messagingTemplate.convertAndSend("/topic/disaster/delete", id);
+        broadcaster.broadcastDelete(id);
         log.info("재난 삭제 완료: id={}", id);
     }
 
@@ -77,13 +76,14 @@ public class DisasterService {
         return disasterZoneRepository.findAll();
     }
 
-    // 5. 현재 활성화된 재난만 조회 (지도 로드마다 호출 → 30초 캐시, 생성/삭제 시 무효화)
+    // 5. 현재 활성화된 재난만 조회 (지도 로드마다 호출 → 캐시, 생성/삭제 시 무효화). 캐시 직렬화 위해 DTO 반환.
     @Cacheable("activeDisasters")
     @Transactional(readOnly = true)
-    public List<DisasterZone> findActiveDisasters() {
+    public List<DisasterZoneResponse> getActiveDisasterZones() {
         Instant now = Instant.now();
         return disasterZoneRepository.findAll().stream()
                 .filter(zone -> zone.getExpiryTime() != null && zone.getExpiryTime().isAfter(now))
+                .map(DisasterZoneResponse::from)
                 .collect(Collectors.toList());
     }
 

@@ -4,10 +4,12 @@ import com.inha.pro.safetynevi.entity.calamity.DisasterZone;
 import lombok.Builder;
 import lombok.Getter;
 
-/** 재난 구역 응답 DTO (발령/만료 시각 등 내부 필드 제외) */
+import java.io.Serializable;
+
+/** 재난 구역 응답 DTO (발령/만료 시각 등 내부 필드 제외). Redis 분산 캐시 대상이라 Serializable. */
 @Getter
 @Builder
-public class DisasterZoneResponse {
+public class DisasterZoneResponse implements Serializable {
 
     private final Long id;
     private final String disasterType;
