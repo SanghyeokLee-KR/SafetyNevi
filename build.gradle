@@ -59,11 +59,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 
-    // 캐시 (Caffeine 인메모리, 로컬·비운영) — 외부 API/DB 반복조회 절감
+    // 캐시 (Caffeine, 로컬용)
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'com.github.ben-manes.caffeine:caffeine'
 
-    // 운영(HA) 인프라 — Redis(분산캐시·세션·레이트리밋) + Kafka(재난 이벤트 파이프라인). prod 프로파일에서만 활성.
+    // 운영용 - Redis(캐시·세션·레이트리밋) + Kafka(재난 이벤트). prod 에서만 씀
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.session:spring-session-data-redis'
     implementation 'org.springframework.kafka:spring-kafka'

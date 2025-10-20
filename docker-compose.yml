@@ -1,8 +1,6 @@
-# 서버 배포용 — CI가 GHCR에 push한 이미지를 pull해서 Redis·Kafka와 함께 실행한다.
+# 서버 배포용. CI가 GHCR에 올린 이미지 pull해서 redis·kafka 랑 같이 띄운다.
 #   배포: docker compose pull && docker compose up -d
-#
-# 운영 설정(DB 접속정보·API 키 등 시크릿)은 이미지에 넣지 않고,
-# 서버에 둔 application-prod.properties 를 컨테이너에 마운트해서 주입한다.
+# DB·API키 같은 시크릿은 이미지에 안 넣고, 서버에 둔 application-prod.properties 를 마운트해서 넣음.
 
 services:
   app:
@@ -19,7 +17,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SPRING_CONFIG_ADDITIONAL_LOCATION: file:/app/config/
-      # 연결 호스트는 compose 서비스명으로 주입(설정파일보다 우선) — 누락돼도 안전하게
+      # 호스트는 서비스명으로 박아둠 (설정파일에 빠져도 되게)
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: "6379"
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
@@ -33,7 +31,7 @@ services:
       retries: 3
       start_period: 60s
 
-  # 분산 캐시 · 세션 저장소 · 레이트리밋 카운터
+  # 캐시 · 세션 · 레이트리밋
   redis:
     image: redis:7-alpine
     container_name: safetynevi-redis
@@ -47,7 +45,7 @@ services:
       timeout: 3s
       retries: 5
 
-  # 재난 이벤트 스트리밍 (KRaft 단일 노드 — Zookeeper 불필요)
+  # 재난 이벤트용. KRaft 모드라 주키퍼 없이 단일 노드로
   kafka:
     image: apache/kafka:3.8.1
     container_name: safetynevi-kafka

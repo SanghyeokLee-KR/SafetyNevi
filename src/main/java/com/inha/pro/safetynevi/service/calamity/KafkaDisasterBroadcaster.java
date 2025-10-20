@@ -8,10 +8,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-/**
- * 운영(HA): 재난 이벤트를 Kafka 토픽에 발행한다.
- * 발행만 하고(fire-and-forget), 실제 클라이언트 전파는 각 인스턴스의 DisasterEventListener가 소비해 처리한다.
- */
+// 운영용. 재난 생기면 카프카에 던지고 끝. 받아서 뿌리는건 DisasterEventListener 가 함
 @Slf4j
 @Profile("prod")
 @Component

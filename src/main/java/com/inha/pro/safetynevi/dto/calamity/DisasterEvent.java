@@ -1,9 +1,7 @@
 package com.inha.pro.safetynevi.dto.calamity;
 
-/**
- * Kafka 재난 이벤트. 중첩 DTO 대신 평면 record 라 JSON 직렬화/역직렬화가 안정적이다.
- * action: "NEW"(발생) | "DELETE"(삭제)
- */
+// 카프카로 주고받는 재난 이벤트. DTO 통째로 넣으면 역직렬화가 까다로워서 필드 펼친 record 로 둔다.
+// action: NEW / DELETE
 public record DisasterEvent(
         String action,
         Long id,
@@ -22,7 +20,7 @@ public record DisasterEvent(
         return new DisasterEvent("DELETE", id, null, null, null, null, null);
     }
 
-    /** 소비 측에서 WebSocket으로 보낼 응답 DTO로 복원 */
+    // 받는 쪽에서 다시 응답 DTO 로
     public DisasterZoneResponse toZone() {
         return DisasterZoneResponse.builder()
                 .id(id)

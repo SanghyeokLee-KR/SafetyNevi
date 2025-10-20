@@ -31,8 +31,7 @@ public class WeatherService {
     private final GpsConverter gpsConverter;
     private final WebClient webClient = WebClient.create();
 
-    // 기상청 날씨는 격자(nx,ny)+관측시각 단위라, 같은 동네 사용자끼리 캐시를 공유해 API 호출을 줄인다.
-    // (주소는 좌표별로 더 세밀해서 캐시하지 않고 매번 카카오로 조회)
+    // 기상청 날씨는 격자+관측시각 단위라 같은 동네면 캐시 공유해서 호출 줄임 (주소는 더 세밀해서 캐시 안함)
     private final Cache<String, Map<String, String>> weatherCache = Caffeine.newBuilder()
             .expireAfterWrite(Duration.ofMinutes(15))
             .maximumSize(2000)

@@ -10,19 +10,16 @@ import org.springframework.context.annotation.Profile;
 
 import java.time.Duration;
 
-/**
- * 캐시 설정 (Caffeine 인메모리, 단일 인스턴스).
- * - activeDisasters: 활성 재난구역 목록. 지도 로드마다 조회되므로 캐시한다.
- *   재난 생성/삭제 때 무효화(@CacheEvict)하고, 시간 만료는 30초 TTL 로 흡수한다.
- * (날씨 KMA 캐시는 reactive 흐름이라 WeatherService 안에서 Caffeine 을 직접 쓴다)
- */
+// 로컬 캐시 = Caffeine. 운영은 RedisConfig 가 대신함
+// (날씨 캐시는 reactive 라 WeatherService 안에서 따로 Caffeine 씀)
 @Configuration
 @EnableCaching
 public class CacheConfig {
 
     @Bean
-    @Profile("!prod")   // 운영(prod)은 RedisConfig 의 Redis 분산 캐시를 쓴다
+    @Profile("!prod")
     public CacheManager cacheManager() {
+        // activeDisasters: 지도 뜰 때마다 부르는거라 30초 캐싱
         CaffeineCacheManager manager = new CaffeineCacheManager("activeDisasters");
         manager.setCaffeine(Caffeine.newBuilder()
                 .expireAfterWrite(Duration.ofSeconds(30))

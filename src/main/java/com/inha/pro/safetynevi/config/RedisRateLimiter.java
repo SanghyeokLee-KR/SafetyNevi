@@ -8,10 +8,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
-/**
- * 운영(HA): Redis 고정 윈도우(1분) 카운터 — 여러 인스턴스가 카운트를 공유한다.
- * 분 단위 버킷 키에 INCR, 첫 증가 때만 TTL 1분 설정 → 만료는 Redis가 알아서(정리 불필요).
- */
+// 운영용. Redis 고정 윈도우 카운터라 인스턴스들이 카운트를 같이 본다.
+// 분 단위 키에 INCR 하고 처음 만들 때만 TTL 1분 — 만료는 Redis가 알아서 하니 따로 안 치워도 됨
 @Profile("prod")
 @Component
 @RequiredArgsConstructor

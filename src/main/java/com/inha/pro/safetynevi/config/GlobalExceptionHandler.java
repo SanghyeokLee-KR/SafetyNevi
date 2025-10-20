@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    // @Valid 검증 실패 (400) — 필드별 메시지로 반환 (없으면 catch-all 로 500 나던 것 교정)
+    // @Valid 터지면 400 + 필드별 메시지 (안 잡으면 밑에 catch-all 가서 500 남)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidation(MethodArgumentNotValidException e) {
         Map<String, String> fieldErrors = new HashMap<>();

@@ -41,8 +41,8 @@ public class SecurityConfig {
                 // 보안 응답 헤더 (nosniff·X-Frame-Options·HSTS 는 Spring 기본 유지 + Referrer-Policy·CSP 추가)
                 .headers(headers -> headers
                         .referrerPolicy(referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
-                        // CSP: 외부 리소스를 허용목록으로 제한 (카카오 지도/주소검색, SockJS, Pretendard, 유튜브 등).
-                        // 호스트는 스킴 없이 적어 로컬(http)·운영(https) 모두 동작하게 한다.
+                        // CSP: 외부 리소스 허용목록 (카카오 지도/주소, SockJS, Pretendard, 유튜브 등).
+                        // 호스트에 http/https 안 붙여서 로컬이랑 운영 둘 다 되게
                         .contentSecurityPolicy(csp -> csp.policyDirectives(
                                 "default-src 'self'; " +
                                 "script-src 'self' 'unsafe-inline' 'unsafe-eval' dapi.kakao.com *.daumcdn.net cdnjs.cloudflare.com cdn.jsdelivr.net code.jquery.com; " +

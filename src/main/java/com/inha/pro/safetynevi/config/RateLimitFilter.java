@@ -11,10 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-/**
- * 공개 API 남용 방지용 IP 단위 레이트리밋 필터.
- * 실제 카운팅은 RateLimiter 전략에 위임한다 — 비운영=인메모리, 운영=Redis(인스턴스 간 공유).
- */
+// /api/** 남용 막는 IP별 레이트리밋. 실제 카운팅은 RateLimiter 가 함 (로컬 인메모리 / 운영 Redis)
 @Slf4j
 @Component
 @RequiredArgsConstructor

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RateLimitFilterTest {
 
-    // 인메모리 레이트리미터(비운영 경로)에 한도를 주입해 필터를 만든다
+    // 인메모리 리미터에 한도 박아서 필터 만듦
     private RateLimitFilter filterWithLimit(int max) {
         InMemoryRateLimiter limiter = new InMemoryRateLimiter();
         ReflectionTestUtils.setField(limiter, "maxRequests", max);

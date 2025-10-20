@@ -8,11 +8,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
-/**
- * 운영(HA): Kafka 재난 이벤트를 소비해, 이 인스턴스에 연결된 WebSocket 클라이언트로 전파한다.
- * groupId 를 인스턴스마다 고유(UUID)하게 둬서 모든 인스턴스가 모든 이벤트를 받게 한다(fan-out).
- * (공유 그룹이면 한 인스턴스만 소비 → 그 인스턴스 클라이언트만 알림 받는 문제가 생긴다)
- */
+// 카프카에서 재난 이벤트 받아서 내 인스턴스에 붙은 클라이언트한테 웹소켓으로 뿌린다.
+// groupId 를 인스턴스마다 다르게(UUID) 줘야 모든 인스턴스가 다 받음.
+// 같은 그룹으로 묶으면 한 놈만 받아서 걔한테 붙은 사람만 알림 옴 (주의!)
 @Slf4j
 @Profile("prod")
 @Component
@@ -31,7 +29,7 @@ public class DisasterEventListener {
         } else if ("DELETE".equals(event.action())) {
             messagingTemplate.convertAndSend("/topic/disaster/delete", event.id());
         } else {
-            log.warn("알 수 없는 재난 이벤트 action: {}", event.action());
+            log.warn("이상한 재난 이벤트 action: {}", event.action());
         }
     }
 }

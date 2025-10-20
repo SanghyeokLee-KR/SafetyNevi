@@ -10,20 +10,17 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 import java.time.Duration;
 
-/**
- * 운영(prod): Redis 분산 캐시.
- * - 여러 인스턴스가 캐시를 공유한다(@Cacheable("activeDisasters") 가 사용).
- * - 값 직렬화는 기본 JDK 직렬화 — 캐시 대상 DTO(DisasterZoneResponse)는 Serializable.
- * - 세션은 spring-session-data-redis 오토컨피그가 처리하므로 별도 빈이 없다.
- */
+// 운영 캐시 = Redis (인스턴스끼리 공유). 직렬화는 기본 JDK 라 캐싱하는 DTO는 Serializable 로 해둠.
+// 세션은 spring-session-data-redis 가 알아서 잡아주니 여기 따로 없음.
 @Configuration
 @Profile("prod")
 public class RedisConfig {
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+        // activeDisasters 30초만, 어차피 재난 생기거나 지워지면 evict 됨
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(30));   // activeDisasters: 짧게, 생성/삭제 시 @CacheEvict 로 즉시 무효화
+                .entryTtl(Duration.ofSeconds(30));
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(config)
                 .build();
