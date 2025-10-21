@@ -10,9 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * 로컬(h2) 실행용 테스트 계정 시드. 운영 프로파일에서는 동작하지 않는다.
- */
+// 로컬(h2)에서만 테스트 계정 시드. 운영 프로파일에선 안 돎
 @Slf4j
 @Component
 @Profile("h2")

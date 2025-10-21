@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 개인화 지도 데이터 API (즐겨찾기, 안심 연락망)
- */
 @Slf4j
 @RestController
 @RequestMapping("/api/map")
@@ -24,7 +21,6 @@ public class MapApiController {
 
     private final MapService mapService;
 
-    // 내 장소 전체 조회
     @GetMapping("/my-places")
     public ResponseEntity<?> getMyPlaces(@AuthenticationPrincipal User user) {
         if (user == null) return ResponseEntity.status(401).build();
@@ -33,7 +29,7 @@ public class MapApiController {
         return ResponseEntity.ok(places);
     }
 
-    // 주요 장소(집/회사) 등록
+    // 집/회사 같은 주요 장소
     @PostMapping("/special-place")
     public ResponseEntity<?> saveSpecialPlace(@RequestBody Map<String, Object> payload, @AuthenticationPrincipal User user) {
         try {
@@ -48,7 +44,6 @@ public class MapApiController {
         } catch (Exception e) { return ResponseEntity.badRequest().build(); }
     }
 
-    // 즐겨찾기 추가
     @PostMapping("/favorite")
     public ResponseEntity<?> addFavorite(@RequestBody Map<String, Object> payload, @AuthenticationPrincipal User user) {
         try {
@@ -63,7 +58,6 @@ public class MapApiController {
         } catch (Exception e) { return ResponseEntity.badRequest().build(); }
     }
 
-    // 장소 삭제
     @DeleteMapping("/place/{id}")
     public ResponseEntity<?> deletePlace(@PathVariable Long id, @AuthenticationPrincipal User user) {
         if (user == null) return ResponseEntity.status(401).build();
@@ -71,8 +65,7 @@ public class MapApiController {
         return ResponseEntity.ok("deleted");
     }
 
-    // --- 가족/지인 연락처 관리 ---
-
+    // 여기부터 가족/지인 연락처
     @GetMapping("/family")
     public ResponseEntity<?> getFamilyList(@AuthenticationPrincipal User user) {
         if (user == null) return ResponseEntity.status(401).build();

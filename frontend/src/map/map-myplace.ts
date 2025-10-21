@@ -1,6 +1,4 @@
-/**
- * 내 장소(My Place) 및 가족 연락처 관리
- */
+// 내 장소(집/회사/즐겨찾기)와 가족 연락처 관리
 import { map } from './map-core.js';
 import { showToast } from './map-ui.js';
 import { showBoardOverlay } from './map-board.js';
@@ -45,7 +43,6 @@ export function setupMyPlaceLogic() {
     });
 }
 
-// 주소 검색 (Daum Postcode)
 function openAddressSearch(type) {
     new daum.Postcode({
         oncomplete: function (data) {
@@ -82,7 +79,6 @@ async function loadMyPlaces() {
     } catch (e) { console.error(e); }
 }
 
-// 내 장소 렌더링 및 마커 표시
 function renderMyPlacesAndMarkers() {
     myPlaceMarkers.forEach(marker => marker.setMap(null));
     myPlaceMarkers = [];
@@ -137,7 +133,6 @@ function renderMyPlacesAndMarkers() {
     }
 }
 
-// 가족 연락처 로드
 async function loadFamilies() {
     const list = document.getElementById('kb-family-list');
     list.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">로딩 중...</div>';
@@ -194,7 +189,6 @@ function renderFamilies(families) {
     });
 }
 
-// 가족 추가
 export async function addFamily() {
     const name = (document.getElementById('fam-name') as HTMLInputElement).value;
     const phone = (document.getElementById('fam-phone') as HTMLInputElement).value;
@@ -229,7 +223,6 @@ async function deleteFamily(id) {
     } catch (e) { console.error(e); }
 }
 
-// 내 게시글 조회
 async function loadMyPosts() {
     const container = document.getElementById('content-posts');
     container.innerHTML = '<div style="text-align:center; padding:40px 0; color:#999;">로딩 중...</div>';
@@ -295,7 +288,6 @@ function renderMyPosts(posts) {
     container.appendChild(listHtml);
 }
 
-// 마커 생성 헬퍼
 function createMarker(lat, lon, imageSrc, title) {
     if (!map) return;
     const marker = new kakao.maps.Marker({

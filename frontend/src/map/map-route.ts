@@ -1,6 +1,4 @@
-/**
- * 경로 탐색 및 모의 주행 (Route & Simulation)
- */
+// 경로 탐색, 안전 대피소 추천, 모의주행
 import { map } from './map-core.js';
 import { updateSidebar, toggleLoading, showToast } from './map-ui.js';
 
@@ -11,10 +9,9 @@ let startPoint = { lat: null, lon: null, name: null };
 let endPoint = { lat: null, lon: null, name: null };
 let currentMode = 'car';
 
-// 이동 수단별 평균 속도 (km/h)
+// 수단별 평균 속도(km/h). car=0 은 API duration을 그대로 쓴다는 표시
 const SPEEDS = { car: 0, bus: 20, walk: 4, bike: 15 };
 
-// 시뮬레이션 상태 변수
 let simulationMarker = null;
 let simulationInterval = null;
 
@@ -24,11 +21,9 @@ export function setupRouteLogic() {
     const swapBtn = document.querySelector('.kb-swap-button');
     const clearBtn = document.querySelector('.kb-clear-button');
 
-    // 검색 이벤트 (Enter Key)
     if(startInput) startInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchLocation(startInput.value, 'start'); });
     if(endInput) endInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchLocation(endInput.value, 'end'); });
 
-    // 초기화 버튼
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
             if(startInput) startInput.value = '';
@@ -47,7 +42,6 @@ export function setupRouteLogic() {
         });
     }
 
-    // 출발지-도착지 교환
     if (swapBtn) {
         swapBtn.addEventListener('click', () => {
             const tempPoint = { ...startPoint }; startPoint = { ...endPoint }; endPoint = tempPoint;
@@ -57,7 +51,6 @@ export function setupRouteLogic() {
         });
     }
 
-    // 이동 수단 선택
     const modeButtons = document.querySelectorAll('.kb-mode-button');
     modeButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -69,7 +62,7 @@ export function setupRouteLogic() {
         });
     });
 
-    // 안전 대피소 찾기 (이벤트 중복 방지)
+    // 노드를 복제·교체해 이전에 붙은 click 리스너를 싹 떼고 새로 단다 (중복 호출 방지)
     const safetyBtn = document.getElementById('btn-safety-search');
     if (safetyBtn) {
         const newBtn = safetyBtn.cloneNode(true);
@@ -78,7 +71,7 @@ export function setupRouteLogic() {
     }
 }
 
-// 주소/장소 검색 (Keyword -> Coordinate)
+// 주소로 먼저 찾고, 실패하면 키워드(장소명) 검색으로 폴백
 function searchLocation(keyword, type) {
     if (!keyword) return;
     toggleLoading(true, "위치 검색 중...");
@@ -107,7 +100,6 @@ function setPoint(type, lat, lon, name) {
     if (startPoint.lat && endPoint.lat) executeRouteSearch();
 }
 
-// 경로 검색 실행 및 결과 표시
 async function executeRouteSearch(_refit?: boolean) {
     if (!startPoint.lat || !endPoint.lat) return;
 
@@ -172,7 +164,6 @@ async function executeRouteSearch(_refit?: boolean) {
     }
 }
 
-// 모의주행 시뮬레이션
 function startRouteSimulation(roads) {
     stopSimulation();
 
@@ -198,7 +189,7 @@ function startRouteSimulation(roads) {
     });
 
     let idx = 0;
-    const step = Math.max(1, Math.floor(pathPoints.length / 300)); // 속도 조절
+    const step = Math.max(1, Math.floor(pathPoints.length / 300)); // 경로가 길어도 약 300프레임에 끝나도록
 
     simulationInterval = setInterval(() => {
         if (idx >= pathPoints.length) {
@@ -220,7 +211,6 @@ function stopSimulation() {
     if(simulationInterval) clearInterval(simulationInterval);
 }
 
-// 지도 경로 그리기 (Polyline)
 function drawPathOnMap(data) {
     currentPolylines.forEach(line => line.setMap(null));
     currentPolylines = [];
@@ -251,7 +241,6 @@ function drawPathOnMap(data) {
     map.setBounds(bounds);
 }
 
-// 목적지 설정 (외부 호출용)
 export function setRouteDestination(name, lat, lon) {
     endPoint = { lat: lat, lon: lon, name: name };
 
@@ -273,7 +262,6 @@ export function setRouteDestination(name, lat, lon) {
     }
 }
 
-// 내 주변 안전 대피소 찾기
 async function findSafeRoutes() {
     if (!navigator.geolocation) {
         showToast("GPS를 지원하지 않는 브라우저입니다.", true);
@@ -292,7 +280,7 @@ async function findSafeRoutes() {
             if(routes.length > 0) {
                 renderRouteResults(routes);
 
-                // 최적 경로 자동 표시
+                // 1순위 추천을 출발지-목적지로 잡아 바로 경로를 그려준다
                 const best = routes[0];
                 endPoint = { lat: best.latitude, lon: best.longitude, name: best.name };
                 startPoint = { lat: pos.coords.latitude, lon: pos.coords.longitude, name: "내 위치" };
@@ -317,7 +305,6 @@ async function findSafeRoutes() {
     });
 }
 
-// 추천 목록 렌더링
 function renderRouteResults(routes) {
     const resultList = document.getElementById('route-result-list');
     resultList.innerHTML = '';

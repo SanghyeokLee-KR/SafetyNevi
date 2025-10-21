@@ -5,10 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * 경로 추천 및 길찾기 결과 DTO
- * - 추천된 대피소 정보와 이동 소요 시간/거리 포함
- */
 @Data
 @Builder
 @NoArgsConstructor

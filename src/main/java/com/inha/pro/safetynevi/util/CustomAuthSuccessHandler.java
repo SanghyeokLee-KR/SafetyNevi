@@ -11,10 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-/**
- * 로그인 성공 핸들러
- * - 접속 로그(IP, Browser, ID) 저장 후 메인 페이지로 리다이렉트
- */
+// 로그인 성공하면 접속로그(IP/브라우저/ID) 남기고 메인으로
 @Component
 @RequiredArgsConstructor
 public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler {

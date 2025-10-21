@@ -30,22 +30,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InquiryService {
 
-    // Repository 이름이 InquiryListRepository라면 그걸로 유지하세요
     private final InquiryListRepository irepo;
     private final MemberRepository mrepo;
 
-    // application.properties의 C:/safety_uploads/inquiry 값을 가져옴
     @Value("${file.upload.inquiry}")
     private String uploadDir;
 
-    // 읽기 전용 트랜잭션 (성능 최적화)
     @Transactional(readOnly = true)
     public Page<InquiryDTO> getInquiryList(Pageable pageable) {
         Page<InquiryEntity> inquiryEntities = irepo.findAll(pageable);
         return inquiryEntities.map(InquiryDTO::toDto);
     }
 
-    // [신규] 내가 쓴 문의 내역 조회
     @Transactional(readOnly = true)
     public List<InquiryDTO> getMyInquiries(String userId) {
         List<InquiryEntity> entities = irepo.findAllByWriterIdOrderByCreatedDateDesc(userId);
@@ -70,7 +66,7 @@ public class InquiryService {
         MultipartFile file = dto.getFile();
         if (file != null && !file.isEmpty()) {
             try {
-                // 경로 조작(../) 방지: 정규화 후 파일명만 추출
+                // 경로조작(../) 막으려고 정규화 후 파일명만 추출
                 String originalFilename = StringUtils.getFilename(
                         StringUtils.cleanPath(file.getOriginalFilename() == null ? "file" : file.getOriginalFilename()));
                 String uuid = UUID.randomUUID().toString().substring(0, 8);
@@ -85,7 +81,7 @@ public class InquiryService {
                 Path filePath = uploadPath.resolve(savedFileName);
                 file.transferTo(filePath.toFile());
 
-                // DB에는 /upload/inquiry/ 접두사로 저장 (WebMvcConfig 매핑)
+                // 접두사는 WebMvcConfig 정적 리소스 매핑과 맞춘 것
                 dto.setImageUrl("/upload/inquiry/" + savedFileName);
 
             } catch (IOException e) {
@@ -127,9 +123,8 @@ public class InquiryService {
         String imageUrl = inquiry.getImageUrl();
         if (StringUtils.hasText(imageUrl)) {
             try {
-                // URL 접두사를 떼고 실제 파일명만 추출
                 String fileName = imageUrl.substring("/upload/inquiry/".length());
-
+                // 한글 파일명 깨지지 않게 디코딩
                 fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
 
                 Path filePath = Paths.get(uploadDir, fileName);
@@ -155,7 +150,7 @@ public class InquiryService {
         MultipartFile file = dto.getFile();
 
         if (file != null && !file.isEmpty()) {
-            // (1) 기존 파일 삭제
+            // 새 파일 올리면 기존 첨부는 지움
             if (StringUtils.hasText(inquiry.getImageUrl())) {
                 try {
                     String oldFileName = inquiry.getImageUrl().substring("/upload/inquiry/".length());
@@ -168,10 +163,9 @@ public class InquiryService {
                 }
             }
 
-            // (2) 새 파일 저장
             try {
                 String uuid = UUID.randomUUID().toString().substring(0, 8);
-                // 경로 조작(../) 방지: 정규화 후 파일명만 추출
+                // 경로조작(../) 막으려고 정규화 후 파일명만 추출
                 String originalFilename = StringUtils.getFilename(
                         StringUtils.cleanPath(file.getOriginalFilename() == null ? "file" : file.getOriginalFilename()));
                 String savedFileName = uuid + "_" + originalFilename;
@@ -198,7 +192,7 @@ public class InquiryService {
         );
     }
 
-    // [관리자용]
+    // 관리자 화면용 - 미답변 문의
     @Transactional(readOnly = true)
     public List<InquiryDTO> getUnansweredInquiries() {
         List<InquiryEntity> entities = irepo.findByStatusOrderByCreatedDateDesc(InquiryEntity.InquiryStatus.WAITING);

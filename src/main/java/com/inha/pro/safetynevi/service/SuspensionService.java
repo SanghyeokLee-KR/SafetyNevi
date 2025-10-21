@@ -7,16 +7,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-/**
- * 회원 이용 정지(Suspension) 관리 서비스
- */
 @Service
 @RequiredArgsConstructor
 public class SuspensionService {
 
     private final UserSuspensionRepository suspensionRepository;
 
-    // 회원 정지 처리
     public void suspendUser(String adminId, String targetUser, String reason, LocalDateTime endAt) {
         UserSuspension suspension = UserSuspension.builder()
                 .targetUserId(targetUser)
@@ -30,10 +26,9 @@ public class SuspensionService {
         suspensionRepository.save(suspension);
     }
 
-    // 현재 정지 상태인지 확인
     public boolean isSuspended(String userId) {
         LocalDateTime now = LocalDateTime.now();
-        // 현재 시간이 정지 기간(start ~ end) 내에 포함되는지 확인
+        // 지금 시각이 정지기간(start~end) 안이거나, endAt이 null(영구정지)이면 정지중
         return suspensionRepository.existsByTargetUserIdAndStartAtLessThanEqualAndEndAtAfterOrEndAtIsNull(
                 userId, now, now
         );

@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ShelterRepository extends JpaRepository<Shelter, Long> {
 
-    // [신규] '사용중'인 대피소만 검색 (대피소 체크박스용)
+    // '사용중'인 대피소만 (대피소 체크박스용)
     @Query("SELECT s FROM Shelter s WHERE " +
             "s.operatingStatus = '사용중' AND " +
             "s.latitude BETWEEN :swLat AND :neLat AND " +
@@ -23,7 +23,7 @@ public interface ShelterRepository extends JpaRepository<Shelter, Long> {
             Pageable pageable
     );
 
-    // [신규] '사용중'이 아닌 대피소만 검색 (기타 체크박스용)
+    // 사용중 아닌 대피소 (기타 체크박스용)
     @Query("SELECT s FROM Shelter s WHERE " +
             "s.operatingStatus IN ('사용중지', '일시중지') AND " +
             "s.latitude BETWEEN :swLat AND :neLat AND " +

@@ -19,10 +19,7 @@ import org.springframework.stereotype.Component;
 import java.io.InputStreamReader;
 import java.util.List;
 
-/**
- * 초기 데이터 적재 컴포넌트
- * - 애플리케이션 시작 시 CSV 파일을 읽어 DB에 초기 데이터를 저장함
- */
+// 시작할 때 CSV 읽어서 시설 데이터 한 번 적재
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -51,7 +48,6 @@ public class DataImporter implements CommandLineRunner {
         log.info("Data import completed successfully.");
     }
 
-    // 경찰서 데이터 로드
     private void importPoliceData(String filePath, String encoding) {
         log.info("Loading Police Data ({})", filePath);
         try {
@@ -80,7 +76,6 @@ public class DataImporter implements CommandLineRunner {
         }
     }
 
-    // 소방서 데이터 로드
     private void importFireStationData(String filePath, String encoding) {
         log.info("Loading FireStation Data ({})", filePath);
         try {
@@ -96,7 +91,6 @@ public class DataImporter implements CommandLineRunner {
                     station.setLatitude(parseDoubleDefault(row[5]));
                     station.setLongitude(parseDoubleDefault(row[6]));
 
-                    // 상세 정보 매핑 (전화번호, 유형)
                     station.setAddressInPhoneColumn(row[4]);
                     station.setSubType(row[7]);
 
@@ -110,7 +104,6 @@ public class DataImporter implements CommandLineRunner {
         }
     }
 
-    // 병원 데이터 로드
     private void importHospitalData(String filePath, String encoding) {
         log.info("Loading Hospital Data ({})", filePath);
         try {
@@ -143,7 +136,6 @@ public class DataImporter implements CommandLineRunner {
         }
     }
 
-    // 대피소 데이터 로드
     private void importShelterData(String filePath, String encoding) {
         log.info("Loading Shelter Data ({})", filePath);
         try {
@@ -173,8 +165,6 @@ public class DataImporter implements CommandLineRunner {
             log.error("Failed to import shelter data: ", e);
         }
     }
-
-    // --- Utilities ---
 
     private List<String[]> readCsvFile(String filePath, String encoding) throws Exception {
         ClassPathResource resource = new ClassPathResource(filePath);

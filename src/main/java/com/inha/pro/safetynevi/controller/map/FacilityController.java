@@ -8,9 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-/**
- * 시설물(Facility) 데이터 조회 API
- */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -19,7 +16,7 @@ public class FacilityController {
 
     private final FacilityService facilityService;
 
-    // 지도 영역(Bounds) 내 시설물 조회
+    // 지도에 보이는 영역 안의 시설만 조회
     @GetMapping
     public ResponseEntity<List<FacilityDto>> getFacilitiesInBounds(
             @RequestParam String type,
@@ -31,14 +28,12 @@ public class FacilityController {
         );
     }
 
-    // 시설 상세 정보 조회
     @GetMapping("/detail/{id}")
     public ResponseEntity<?> getFacilityDetail(@PathVariable Long id) {
         Object detailDto = facilityService.findDetailById(id);
         return (detailDto != null) ? ResponseEntity.ok(detailDto) : ResponseEntity.notFound().build();
     }
 
-    // 시설명 키워드 검색
     @GetMapping("/search")
     public ResponseEntity<List<FacilityDto>> searchFacilities(@RequestParam String keyword) {
         log.info("Search request: keyword={}", keyword);

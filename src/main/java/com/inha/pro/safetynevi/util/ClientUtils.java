@@ -2,13 +2,9 @@ package com.inha.pro.safetynevi.util;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-/**
- * 클라이언트 정보 추출 유틸리티
- * - IP 주소 및 User-Agent 파싱 기능 제공
- */
 public class ClientUtils {
 
-    // 실제 IP 주소 추출 (프록시/로드밸런서 환경 대응)
+    // 프록시/LB 뒤면 실제 IP가 헤더에 있어서 순서대로 훑음
     public static String getRemoteIP(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
         if (ip == null) ip = request.getHeader("Proxy-Client-IP");
@@ -17,14 +13,14 @@ public class ClientUtils {
         if (ip == null) ip = request.getHeader("HTTP_X_FORWARDED_FOR");
         if (ip == null) ip = request.getRemoteAddr();
 
-        // IPv6 로컬호스트 주소 변환
+        // IPv6 로컬호스트는 보기 좋게 127.0.0.1로
         if ("0:0:0:0:0:0:0:1".equals(ip)) {
             return "127.0.0.1";
         }
         return ip;
     }
 
-    // User-Agent 파싱 (OS / Browser)
+    // User-Agent에서 OS/브라우저 대충 뽑기
     public static String getBrowserInfo(String userAgent) {
         if (userAgent == null || userAgent.isEmpty()) return "Unknown";
 
@@ -42,7 +38,7 @@ public class ClientUtils {
         else if (userAgent.contains("Android")) os = "Android";
         else if (userAgent.contains("Linux")) os = "Linux";
 
-        // 브라우저 판별 (우선순위 중요)
+        // 순서 중요: Edge/Whale도 UA에 Chrome이 들어있어서 먼저 걸러야 함
         if (userAgent.contains("Edg")) browser = "Edge";
         else if (userAgent.contains("Whale")) browser = "Naver Whale";
         else if (userAgent.contains("Chrome")) browser = "Chrome";

@@ -14,28 +14,26 @@ import java.time.LocalDateTime;
 public class InquiryDTO {
 
     // --- 기본 정보 ---
-    private Long id;              // 문의 ID
-    private String title;         // 제목
-    private String content;       // 문의 내용
-    private String category;      // 카테고리 (예: 결제, 이용장애, 기타)
-    private String imageUrl;      // 첨부 이미지 URL
+    private Long id;
+    private String title;
+    private String content;
+    private String category;      // 예: 결제, 이용장애, 기타
+    private String imageUrl;
 
     // --- 작성자 정보 ---
-    private String writerId;        // 작성자 고유 ID (프로필 링크 등에 사용)
-    private String writerName;    // 작성자 닉네임/이름
+    private String writerId;      // 프로필 링크 등에 쓰는 고유 ID
+    private String writerName;
 
     // --- 상태 및 설정 ---
-    private String status;        // 답변 상태 (WAITING, COMPLETED 등)
-    private Integer isSecret;     // 비밀글 여부
-
-    // --- 답변 정보 (답변이 달린 경우 null이 아님) ---
-    private String answerContent; // 관리자 답변 내용
+    private String status;        // WAITING, COMPLETED 등
+    private Integer isSecret;
+    private String answerContent;
 
     // --- 시간 정보 ---
-    private LocalDateTime createdDate; // 작성일
-    private LocalDateTime answerDate;  // 답변일
+    private LocalDateTime createdDate;
+    private LocalDateTime answerDate;
 
-    // 파일 업로드를 받기 위한 필드 (DB 저장용 아님)
+    // 업로드 받는 용도, DB에는 안 들어감
     private MultipartFile file;
 
     public static InquiryDTO toDto(InquiryEntity entity) {

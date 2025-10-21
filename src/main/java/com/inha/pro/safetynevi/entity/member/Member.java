@@ -6,10 +6,6 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
-/**
- * 회원(Member) 엔티티
- * - 로그인 정보, 개인정보, 위치 설정 값 저장
- */
 @Entity
 @Table(name = "SAFETY_MEMBER")
 @Getter

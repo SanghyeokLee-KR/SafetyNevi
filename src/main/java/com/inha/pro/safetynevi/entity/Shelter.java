@@ -5,10 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * 대피소(Shelter) 상세 정보 엔티티
- * - Facility 상속
- */
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
@@ -19,14 +15,14 @@ import lombok.Setter;
 public class Shelter extends Facility {
 
     @Column(name = "OPERATING_STATUS", length = 100)
-    private String operatingStatus; // 운영 여부
+    private String operatingStatus;
 
     @Column(name = "AREA_M2")
-    private Double areaM2;          // 시설 면적
+    private Double areaM2; // 제곱미터
 
     @Column(name = "MAX_CAPACITY")
-    private Integer maxCapacity;    // 최대 수용 인원
+    private Integer maxCapacity;
 
     @Column(name = "LOCATION_TYPE", length = 100)
-    private String locationType;    // 시설 구분 (지하/지상 등)
+    private String locationType; // 지하/지상 등
 }

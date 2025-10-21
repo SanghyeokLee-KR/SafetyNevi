@@ -7,11 +7,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * 부트스트랩 관리자 계정 초기화
- * - 권한 판별을 username 하드코딩에서 ROLE 컬럼으로 옮기면서, 기존 'admin' 계정이
- *   권한을 잃지 않도록 시작 시 한 번 ROLE을 ADMIN으로 보정한다.
- */
+// 권한 판별을 username 하드코딩 -> ROLE 컬럼으로 옮기면서,
+// 기존 admin 계정이 권한 잃지 않게 시작할 때 ROLE 한 번 보정해줌
 @Slf4j
 @Component
 @RequiredArgsConstructor

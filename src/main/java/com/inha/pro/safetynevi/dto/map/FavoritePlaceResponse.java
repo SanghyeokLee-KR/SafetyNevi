@@ -4,7 +4,6 @@ import com.inha.pro.safetynevi.entity.map.FavoritePlace;
 import lombok.Builder;
 import lombok.Getter;
 
-/** 내 장소(즐겨찾기) 응답 DTO */
 @Getter
 @Builder
 public class FavoritePlaceResponse {

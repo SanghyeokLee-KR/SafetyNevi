@@ -1,6 +1,4 @@
-/**
- * 재난 구역 시각화 및 실시간 수신 (WebSocket)
- */
+// 재난 구역을 지도에 그리고 WebSocket으로 생성/삭제를 실시간 반영
 import { map } from './map-core.js';
 
 let disasterMarkerImages: Record<string, any> = {};
@@ -16,7 +14,6 @@ const disasterNames: Record<string, string> = {
     'snow': '❄️ 대설', 'coldwave': '🥶 한파', 'dust': '🌫️ 황사/미세먼지'
 };
 
-// 재난 마커 이미지 설정
 export function setupDisasterMarkerImages() {
     const size = new kakao.maps.Size(100, 100);
     const options = { offset: new kakao.maps.Point(50, 90) };
@@ -31,7 +28,7 @@ export function setupDisasterMarkerImages() {
     disasterMarkerImages.default = new kakao.maps.MarkerImage(path + 'etc.png', size, options);
 }
 
-// 최초 1회: 현재 활성 재난 구역을 모두 그린다
+// 최초 진입 시 현재 활성 재난 구역을 한 번에 그린다 (이후 갱신은 소켓이 담당)
 export async function loadDisasterZones() {
     try {
         const response = await fetch('/api/disaster-zones');
@@ -49,7 +46,7 @@ export async function loadDisasterZones() {
     }
 }
 
-// WebSocket으로 재난 생성/삭제를 실시간 수신 (10초 폴링 대체)
+// 폴링 대신 소켓으로 재난 생성/삭제 push를 받는다
 export function connectDisasterSocket() {
     const socket = new SockJS('/ws');
     const client = Stomp.over(socket);
@@ -89,7 +86,6 @@ function removeZone(id) {
     }
 }
 
-// 신규 재난 경보 모달
 function showDisasterAlert(zone) {
     if (!zone || alertedIds.has(zone.id) || isModalShowing) return;
 
@@ -117,7 +113,6 @@ function showDisasterAlert(zone) {
     }, 5000);
 }
 
-// 재난 유형별 스타일(색상)
 function getDisasterStyle(type) {
     const t = (type || "").toLowerCase();
     if (t.match(/fire|missile|heat|화재/)) return { fill: '#FF0000', stroke: '#FF0000' };
@@ -128,7 +123,6 @@ function getDisasterStyle(type) {
     return { fill: '#FFA500', stroke: '#FF8C00' };
 }
 
-// 재난 마커 이미지 매칭
 function getDisasterMarkerImage(type) {
     if (!type) return disasterMarkerImages.default;
     const t = type.toLowerCase();
@@ -138,7 +132,6 @@ function getDisasterMarkerImage(type) {
     return disasterMarkerImages.default;
 }
 
-// 원형 구역 그리기
 function drawCircleZone(zone, style, image, graphics) {
     const circle = new kakao.maps.Circle({
         center: new kakao.maps.LatLng(zone.latitude, zone.longitude),
@@ -151,7 +144,6 @@ function drawCircleZone(zone, style, image, graphics) {
     drawMarker(zone.latitude, zone.longitude, image, graphics);
 }
 
-// 마커 그리기 헬퍼
 function drawMarker(lat, lng, image, graphics) {
     const marker = new kakao.maps.Marker({
         position: new kakao.maps.LatLng(lat, lng), image: image, zIndex: 10
@@ -160,7 +152,6 @@ function drawMarker(lat, lng, image, graphics) {
     graphics.push(marker);
 }
 
-// 행정구역 폴리곤 그리기
 async function drawPolygonZone(areaName, style, markerImg, graphics) {
     try {
         if (!sigunguGeoJson) {
@@ -202,7 +193,6 @@ async function drawPolygonZone(areaName, style, markerImg, graphics) {
     }
 }
 
-// GeoJSON에서 행정구역 Feature 검색
 function findGeoJsonFeatures(areaName) {
     const nameParts = areaName.split(',').map(s => s.trim());
     const primary = nameParts[0];

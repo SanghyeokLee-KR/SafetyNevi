@@ -13,11 +13,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-/**
- * Spring Security 사용자 인증 서비스
- * - DB에서 사용자 정보를 조회하여 UserDetails 객체 반환
- * - 정지된 계정(Suspended) 로그인 차단 로직 포함
- */
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {

@@ -29,7 +29,7 @@ public class Inquiry {
     @Column(name = "STATUS", length = 20) // 예: "답변대기", "답변완료"
     private String status;
 
-    // 작성자 (Member와 N:1 관계)
+    // 작성자
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     @OnDelete(action = OnDeleteAction.CASCADE)

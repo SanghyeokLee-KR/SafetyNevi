@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
         closeXId: string; closeNoId: string; closeYesId: string;
     }
 
-    // 모달 초기화 함수 (설정 객체 사용)
     const initModal = (config: ModalConfig): void => {
         const modal = document.getElementById(config.modalId);
         const checkbox = document.getElementById(config.checkboxId) as HTMLInputElement | null;
@@ -14,27 +13,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!modal || !checkbox || !openBtn) return;
 
-        // Open
         openBtn.addEventListener('click', (e) => {
             e.preventDefault();
             modal.style.display = 'flex';
         });
 
-        // Close Helper
         const closeModal = (): void => { modal.style.display = 'none'; };
 
-        // X Button
         document.getElementById(config.closeXId)?.addEventListener('click', closeModal);
 
-        // '동의하지 않음' Button
         document.getElementById(config.closeNoId)?.addEventListener('click', (e) => {
             e.preventDefault();
             closeModal();
             checkbox.checked = false;
-            window.updateAgreementState?.(); // step.js의 상태 업데이트 호출
+            window.updateAgreementState?.(); // step.ts에 등록된 전역 상태 갱신 호출
         });
 
-        // '동의함' Button
         document.getElementById(config.closeYesId)?.addEventListener('click', (e) => {
             e.preventDefault();
             closeModal();

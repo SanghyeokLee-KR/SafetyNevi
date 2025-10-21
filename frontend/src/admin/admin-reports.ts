@@ -1,7 +1,6 @@
 // 관리자 신고 관리
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Toast UI
     const Toast = {
         show: (msg: string, isError = false): void => {
             let t = document.getElementById('admin-toast');
@@ -30,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return String(str).replace(/[&<>"'`=/]/g, s => ENTITIES[s] ?? s);
     };
 
-    // Modal Logic
     const modal = document.getElementById('postModal');
     const modalContent = document.getElementById('modal-content');
 
@@ -82,7 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Update Status
     const updateStatus = async (reportId: string, newStatus: string): Promise<void> => {
         if (!confirm("상태를 변경하시겠습니까?")) return;
 
@@ -102,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Event Delegation (Table)
     const reportTable = document.querySelector('.kb-table-reports');
 
     reportTable?.addEventListener('click', (e) => {

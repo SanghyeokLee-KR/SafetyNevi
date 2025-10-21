@@ -5,10 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * 병원(Hospital) 상세 정보 엔티티
- * - Facility 상속
- */
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)

@@ -23,7 +23,6 @@ public class DisasterMessageController {
     }
 
     @GetMapping("/disasterMessage")
-    // disasterType 파라미터를 다시 추가합니다.
     public String disasterMessages(Model model,
                                    @RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "전국") String area,
@@ -36,7 +35,6 @@ public class DisasterMessageController {
         if (!"전국".equals(area)) {
             spec = spec.and(DisasterMessageSpecs.likeArea(area));
         }
-        // disasterType 필터 조건을 추가합니다.
         if (!"전체".equals(disasterType)) {
             spec = spec.and(DisasterMessageSpecs.equalDisasterType(disasterType));
         }
@@ -50,7 +48,6 @@ public class DisasterMessageController {
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         model.addAttribute("areaPrefixes", disasterMessageRepository.findDistinctAreaPrefixes());
-        // disasterTypes 목록과 현재 선택된 값을 모델에 추가합니다.
         model.addAttribute("disasterTypes", disasterMessageRepository.findDistinctDisasterTypes());
         model.addAttribute("selectedArea", area);
         model.addAttribute("selectedType", disasterType);

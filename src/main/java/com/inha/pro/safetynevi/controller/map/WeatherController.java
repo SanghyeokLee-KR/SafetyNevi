@@ -8,9 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-/**
- * 날씨 정보 조회 API (WebClient/Reactive)
- */
 @RestController
 @RequiredArgsConstructor
 public class WeatherController {

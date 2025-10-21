@@ -1,6 +1,4 @@
-/**
- * 게시글 관리 (작성, 조회, 실시간 연동)
- */
+// 게시글 작성·조회 및 실시간(WebSocket) 연동
 import { map } from './map-core.js';
 import { showToast, toggleLoading, openReportModal } from './map-ui.js';
 
@@ -17,11 +15,9 @@ const BOARD_MARKERS = {
     'default': 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png'
 };
 
-// 게시글 로직 초기화
 export function setupBoardLogic() {
     const btnWrite = document.getElementById('btn-mode-write');
 
-    // 글쓰기 버튼 핸들러
     btnWrite?.addEventListener('click', () => {
         if(isWriteMode) {
             disableWriteMode();
@@ -30,7 +26,7 @@ export function setupBoardLogic() {
         document.getElementById('write-mode-modal').style.display = 'block';
     });
 
-    // 1. 현재 위치(GPS)로 작성
+    // 현재 위치(GPS)로 작성
     document.getElementById('btn-mode-gps').onclick = () => {
         document.getElementById('write-mode-modal').style.display = 'none';
         if (!navigator.geolocation) { showToast("GPS 사용 불가", true); return; }
@@ -45,7 +41,7 @@ export function setupBoardLogic() {
         });
     };
 
-    // 2. 지도 선택으로 작성
+    // 지도 클릭으로 위치 선택해서 작성
     document.getElementById('btn-mode-map').onclick = () => {
         document.getElementById('write-mode-modal').style.display = 'none';
         isWriteMode = true;
@@ -60,7 +56,6 @@ export function setupBoardLogic() {
         openWriteModal(e.latLng.getLat(), e.latLng.getLng(), 'MANUAL');
     });
 
-    // 이미지 뷰어 닫기 처리
     const imgModal = document.getElementById('image-view-modal');
     if(imgModal) {
         imgModal.onclick = (e) => { if(e.target === imgModal || (e.target as HTMLElement).classList.contains('image-view-close')) imgModal.style.display = "none"; };
@@ -69,7 +64,7 @@ export function setupBoardLogic() {
     connectWebSocket();
     loadBoards();
 
-    // 전역 함수 등록 (UI 이벤트 핸들링용)
+    // HTML onclick에서 부르는 전역 핸들러
     window.reloadBoardData = () => {
         if(currentOverlay) currentOverlay.setMap(null);
         loadBoards();
@@ -77,14 +72,12 @@ export function setupBoardLogic() {
     window.deleteBoardPost = deleteBoard;
 }
 
-// 웹소켓 연결 (실시간 알림 및 댓글 업데이트)
 function connectWebSocket() {
     const socket = new SockJS('/ws');
     stompClient = Stomp.over(socket);
-    stompClient.debug = null; // 디버그 로그 비활성화
+    stompClient.debug = null; // STOMP 콘솔 디버그 로그 끄기
 
     stompClient.connect({}, () => {
-        // 새 글 알림
         stompClient.subscribe('/topic/board/new', (msg) => {
             const newBoard = JSON.parse(msg.body);
             const blockedUsers = JSON.parse(localStorage.getItem('safety_blocked_users')) || [];
@@ -95,10 +88,8 @@ function connectWebSocket() {
             }
         });
 
-        // 삭제 알림
         stompClient.subscribe('/topic/board/delete', () => loadBoards());
 
-        // 댓글 알림
         stompClient.subscribe('/topic/board/comment', (msg) => {
             const data = JSON.parse(msg.body);
             const overlay = document.querySelector<HTMLElement>('.board-overlay');
@@ -107,7 +98,6 @@ function connectWebSocket() {
             }
         });
 
-        // 좋아요 업데이트
         stompClient.subscribe('/topic/board/like', (msg) => {
             const data = JSON.parse(msg.body);
             const el = document.getElementById(`like-count-${data.boardId}`);
@@ -116,7 +106,6 @@ function connectWebSocket() {
     });
 }
 
-// 작성 모달 열기
 function openWriteModal(lat, lng, type) {
     if(tempMarker) tempMarker.setMap(null);
     tempMarker = new kakao.maps.Marker({ position: new kakao.maps.LatLng(lat, lng), map: map });
@@ -130,7 +119,6 @@ function openWriteModal(lat, lng, type) {
     (document.getElementById('board-image') as HTMLInputElement).value = '';
 }
 
-// 작성 모드 종료
 function disableWriteMode() {
     isWriteMode = false;
     document.getElementById('btn-mode-write')?.classList.remove('active');
@@ -142,7 +130,6 @@ function disableWriteMode() {
     document.getElementById('write-mode-modal').style.display = 'none';
 }
 
-// 게시글 등록
 export async function saveBoard() {
     const form = {
         title: (document.getElementById('board-title') as HTMLInputElement).value,
@@ -179,7 +166,6 @@ export async function saveBoard() {
     } catch(e) { console.error(e); }
 }
 
-// 게시글 삭제
 async function deleteBoard(id) {
     if(!confirm("게시글을 삭제하시겠습니까?")) return;
     try {
@@ -193,7 +179,6 @@ async function deleteBoard(id) {
     } catch(e) { console.error(e); }
 }
 
-// 게시글 목록 로드
 async function loadBoards() {
     try {
         const res = await fetch('/api/board');
@@ -212,7 +197,6 @@ async function loadBoards() {
     } catch(e) { console.error(e); }
 }
 
-// 게시글 마커 추가
 function addBoardMarker(board) {
     const pos = new kakao.maps.LatLng(board.latitude, board.longitude);
     const imgSrc = BOARD_MARKERS[board.category] || BOARD_MARKERS.default;
@@ -226,14 +210,13 @@ function addBoardMarker(board) {
     boardMarkers.push(marker);
 }
 
-// 게시글 상세 오버레이 표시
 export function showBoardOverlay(marker, data) {
     if(currentOverlay) currentOverlay.setMap(null);
 
     const isGps = data.locationType === 'GPS';
     const imageHtml = data.imageUrl ? `<img src="${data.imageUrl}" class="board-image-thumbnail" alt="첨부 이미지">` : '';
 
-    // 버튼 생성 (삭제 또는 신고)
+    // 내 글이면 삭제, 남의 글이면 신고 버튼
     let actionBtn = '';
     if (data.canDelete) {
         actionBtn = `<span class="board-delete-btn" onclick="window.deleteBoardPost(${data.id})">🗑️</span>`;
@@ -278,7 +261,6 @@ export function showBoardOverlay(marker, data) {
         </div>
     `;
 
-    // 이벤트 바인딩
     if (data.imageUrl) {
         (content.querySelector('.board-image-thumbnail') as HTMLElement).onclick = () => {
             (document.getElementById('full-image') as HTMLImageElement).src = data.imageUrl;
@@ -303,7 +285,7 @@ export function showBoardOverlay(marker, data) {
     currentOverlay = overlay;
 }
 
-// 댓글 렌더링
+// limit > 0 이면 그 개수까지만 보여주고 나머지는 '더보기'로 접는다
 function renderComments(comments, limit = 0) {
     if (!comments || comments.length === 0) return '';
 
@@ -336,7 +318,6 @@ function renderComments(comments, limit = 0) {
     return html;
 }
 
-// 댓글 더보기
 window.expandComments = function(btn) {
     const overlay = btn.closest('.board-overlay');
     const data = JSON.parse(overlay.dataset.boardData);
@@ -344,7 +325,7 @@ window.expandComments = function(btn) {
     list.innerHTML = renderComments(data.comments, 0);
 };
 
-// 댓글 작성
+// parentId 가 있으면 대댓글, 없으면 일반 댓글
 window.submitComment = async function(boardId, parentId) {
     const inputId = parentId ? `reply-input-${parentId}` : `comment-input-${boardId}`;
     const input = document.getElementById(inputId) as HTMLInputElement;
@@ -360,7 +341,7 @@ window.submitComment = async function(boardId, parentId) {
     else showToast("로그인이 필요합니다", true);
 };
 
-// 실시간 댓글 추가 (WebSocket 수신용)
+// WebSocket으로 받은 댓글을 현재 열린 오버레이에 끼워넣는다
 function appendRealtimeComment(comment, parentId, boardId) {
     const html = `
         <li class="comment-item" id="comment-${comment.id}">
@@ -396,7 +377,6 @@ function appendRealtimeComment(comment, parentId, boardId) {
     if(cnt) cnt.innerText = String(parseInt(cnt.innerText) + 1);
 }
 
-// 답글 폼 토글
 window.toggleReplyForm = function(cid) {
     const box = document.getElementById(`reply-form-${cid}`);
     if(box.style.display === 'block') {

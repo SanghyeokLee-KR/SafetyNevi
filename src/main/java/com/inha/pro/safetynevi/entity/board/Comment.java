@@ -11,10 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 댓글(Comment) 엔티티
- * - 자기 참조 관계(Self-Reference)를 통한 대댓글 구현
- */
+// parent/children 자기참조로 대댓글을 표현
 @Entity
 @Table(name = "SAFETY_COMMENT")
 @Getter
@@ -40,13 +37,13 @@ public class Comment {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member writer;
 
-    // 상위 댓글 (부모)
+    // 원댓글
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_ID")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Comment parent;
 
-    // 대댓글 목록 (자식)
+    // 달린 대댓글들
     @Builder.Default
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdAt ASC")

@@ -6,10 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * 회원가입 요청 DTO
- * - 정규식(@Pattern)을 통한 입력값 유효성 검증 포함
- */
 @Getter
 @Setter
 @ToString

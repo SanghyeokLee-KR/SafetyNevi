@@ -6,16 +6,13 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-/**
- * WebSocket 및 STOMP 메시지 브로커 설정
- */
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // 클라이언트 연결 엔드포인트 설정 (SockJS Fallback 포함)
+        // SockJS 폴백 포함 연결 엔드포인트
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
@@ -23,10 +20,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // 메시지 구독 요청 url prefix (Subscribe)
-        registry.enableSimpleBroker("/topic");
-
-        // 메시지 발행 요청 url prefix (Publish)
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.enableSimpleBroker("/topic");        // 구독(subscribe) prefix
+        registry.setApplicationDestinationPrefixes("/app"); // 발행(publish) prefix
     }
 }

@@ -1,6 +1,4 @@
-/**
- * 지도 객체 초기화 및 컨트롤러 설정
- */
+// 카카오 지도 생성과 좌측 컨트롤 버튼 바인딩
 export let map = null;
 export let clusterer = null;
 
@@ -8,7 +6,6 @@ let currentCircles = [];
 let watchId = null;
 let isRoadviewMode = false;
 
-// 지도 초기화
 export function initMap() {
     const container = document.getElementById('map');
     const options = { center: new kakao.maps.LatLng(37.566826, 126.9786567), level: 4 };
@@ -23,7 +20,6 @@ export function initMap() {
     return map;
 }
 
-// 지도 컨트롤 버튼 이벤트 설정
 function setupMapControls() {
     const controls = {
         traffic: document.getElementById('btn-mode-traffic'),
@@ -36,25 +32,25 @@ function setupMapControls() {
         roadview: document.getElementById('btn-mode-roadview')
     };
 
-    // 1. 교통정보 토글
+    // 교통정보
     controls.traffic?.addEventListener('click', () => {
         const active = controls.traffic.classList.toggle('active');
         active ? map.addOverlayMapTypeId(kakao.maps.MapTypeId.TRAFFIC) : map.removeOverlayMapTypeId(kakao.maps.MapTypeId.TRAFFIC);
     });
 
-    // 2. 지형도 토글
+    // 지형도
     controls.terrain?.addEventListener('click', () => {
         const active = controls.terrain.classList.toggle('active');
         active ? map.addOverlayMapTypeId(kakao.maps.MapTypeId.TERRAIN) : map.removeOverlayMapTypeId(kakao.maps.MapTypeId.TERRAIN);
     });
 
-    // 3. 위성지도 토글
+    // 위성지도(하이브리드)
     controls.skyview?.addEventListener('click', () => {
         const active = controls.skyview.classList.toggle('active');
         map.setMapTypeId(active ? kakao.maps.MapTypeId.HYBRID : kakao.maps.MapTypeId.ROADMAP);
     });
 
-    // 4. 로드뷰 모드
+    // 로드뷰 모드 (클릭 위치의 파노라마 열기)
     controls.roadview?.addEventListener('click', () => {
         isRoadviewMode = !isRoadviewMode;
         if (isRoadviewMode) {
@@ -74,7 +70,7 @@ function setupMapControls() {
         }
     });
 
-    // 5. 다크 모드
+    // 다크 모드
     controls.dark?.addEventListener('click', () => {
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
@@ -82,7 +78,7 @@ function setupMapControls() {
         controls.dark.classList.toggle('active');
     });
 
-    // 6. 반경 표시 (500m, 1km)
+    // 반경 표시 (500m, 1km)
     controls.radius?.addEventListener('click', () => {
         if (controls.radius.classList.contains('active')) {
             currentCircles.forEach(c => c.setMap(null));
@@ -102,7 +98,7 @@ function setupMapControls() {
         }
     });
 
-    // 7. 내 위치 트래킹
+    // 내 위치 트래킹 (watchPosition)
     controls.track?.addEventListener('click', () => {
         if (controls.track.classList.contains('active')) {
             if (watchId) navigator.geolocation.clearWatch(watchId);
@@ -122,7 +118,7 @@ function setupMapControls() {
         }
     });
 
-    // 8. 긴급 문자 신고
+    // 긴급 문자 신고 (현재 지도 중심 좌표를 119로)
     controls.sms?.addEventListener('click', () => {
         const center = map.getCenter();
         if(confirm("🚨 긴급 구조 문자를 보내시겠습니까?")) {

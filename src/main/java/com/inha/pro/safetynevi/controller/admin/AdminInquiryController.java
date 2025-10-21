@@ -19,20 +19,16 @@ public class AdminInquiryController {
     @GetMapping
     public String adminInquiryList(Model model) {
 
-        // 1. 미답변 목록 (WAITING)
-        List<InquiryDTO> unansweredList = isvc.getUnansweredInquiries();
+        List<InquiryDTO> unansweredList = isvc.getUnansweredInquiries();   // 미답변
+        List<InquiryDTO> answeredList = isvc.getRecentAnsweredInquiries(); // 답변완료 최근 5건
 
-        // 2. 답변 완료 목록 (COMPLETED, 최근 5건)
-        List<InquiryDTO> answeredList = isvc.getRecentAnsweredInquiries();
-
-        // 3. 모델에 담기
         model.addAttribute("unansweredList", unansweredList);
         model.addAttribute("answeredList", answeredList);
 
-        // 4. 현재 URI (사이드바 활성화용)
+        // 사이드바에서 현재 메뉴 활성화하려고 넘김
         model.addAttribute("requestURI", "/admin/inquiries");
 
-        return "admin/inquiries"; // admin 폴더 안의 inquiries.html
+        return "admin/inquiries";
     }
 
 

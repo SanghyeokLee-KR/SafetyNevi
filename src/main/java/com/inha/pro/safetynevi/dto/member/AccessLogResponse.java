@@ -6,7 +6,6 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-/** 접속 로그 응답 DTO */
 @Getter
 @Builder
 public class AccessLogResponse {

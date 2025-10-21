@@ -18,9 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-/**
- * 관리자 페이지 뷰 컨트롤러 (Thymeleaf 렌더링)
- */
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
@@ -31,13 +28,12 @@ public class AdminPageController {
     private final DisasterService disasterService;
     private final ReportService reportService;
 
-    // 공통 모델 속성: 현재 요청 URI (네비게이션 활성화용)
+    // 모든 화면 공통: 사이드바 메뉴 활성화용 현재 URI
     @ModelAttribute("requestURI")
     public String requestURI(HttpServletRequest request) {
         return request.getRequestURI();
     }
 
-    // 1. 대시보드 메인
     @GetMapping("")
     public String dashboard(Model model) {
         model.addAttribute("memberCount", memberService.countMembers());
@@ -46,7 +42,6 @@ public class AdminPageController {
         return "admin/dashboard";
     }
 
-    // 2. 회원 관리 페이지
     @GetMapping("/members")
     public String members(Model model) {
         List<MemberResponse> members = memberService.findAllMemberResponses();
@@ -54,13 +49,11 @@ public class AdminPageController {
         return "admin/members";
     }
 
-    // 3. 게시물 관리 페이지
     @GetMapping("/boards")
     public String boards(Model model) {
         return "admin/boards";
     }
 
-    // 4. 신고 관리 페이지 (페이징 적용)
     @GetMapping("/reports")
     public String reports(Model model, @RequestParam(defaultValue = "0") int page) {
         Page<ReportResponse> reportPage = reportService.getAllReports(page, 10).map(ReportResponse::from);
@@ -68,10 +61,9 @@ public class AdminPageController {
         return "admin/reports";
     }
 
-    // 5. 재난 관리 및 시뮬레이션 페이지
     @GetMapping("/disaster")
     public String disasterPage() {
-        // 재난 목록은 화면에서 /api/disaster-zones(JS)로 불러오므로 모델에 담지 않는다
+        // 재난 목록은 화면 JS가 /api/disaster-zones로 따로 불러옴
         return "admin/disaster";
     }
 }

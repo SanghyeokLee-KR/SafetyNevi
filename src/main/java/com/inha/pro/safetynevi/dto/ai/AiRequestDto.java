@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * AI 분석 요청 DTO
- * - Python 서버로 전송할 텍스트 데이터
- */
+// Python AI 서버로 보낼 분석 대상 텍스트
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

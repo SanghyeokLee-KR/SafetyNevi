@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * 회원 가입 시 실시간 중복 검사 API
- */
+// 회원가입 화면에서 실시간으로 중복 체크하는 API
 @RestController
 @RequestMapping("/api/check")
 @RequiredArgsConstructor
@@ -18,7 +16,6 @@ public class MemberApiController {
 
     private final MemberService memberService;
 
-    // 아이디 중복 확인
     @GetMapping("/id")
     public ResponseEntity<Map<String, Boolean>> checkId(@RequestParam("userId") String userId) {
         boolean exists = memberService.checkUserIdDuplicate(userId);
@@ -27,7 +24,6 @@ public class MemberApiController {
         return ResponseEntity.ok(response);
     }
 
-    // 이메일 중복 확인
     @GetMapping("/email")
     public ResponseEntity<Map<String, Boolean>> checkEmail(@RequestParam("email") String email) {
         boolean exists = memberService.checkEmailDuplicate(email);
@@ -36,7 +32,6 @@ public class MemberApiController {
         return ResponseEntity.ok(response);
     }
 
-    // 닉네임 중복 확인
     @GetMapping("/nickname")
     public ResponseEntity<Map<String, Boolean>> checkNickname(@RequestParam("nickname") String nickname) {
         boolean exists = memberService.checkNicknameDuplicate(nickname);

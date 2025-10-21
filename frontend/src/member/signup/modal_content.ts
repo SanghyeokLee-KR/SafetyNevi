@@ -65,7 +65,6 @@ const LOCATION_TERMS = `
     <p>이용자는 자신의 위치정보에 대한 열람·정정·삭제를 요청할 수 있으며, 회사는 관련 법령에 따라 지체 없이 조치합니다.</p>
 `;
 
-// 페이지 로드 시 약관 주입
 document.addEventListener('DOMContentLoaded', () => {
     const termsBody = document.getElementById('terms-content');
     const locationBody = document.getElementById('location-content');

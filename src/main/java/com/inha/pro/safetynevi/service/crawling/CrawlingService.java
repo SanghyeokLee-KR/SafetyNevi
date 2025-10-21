@@ -17,12 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 
-/**
- * 긴급재난문자 수집 서비스
- * 행정안전부 긴급재난문자 공식 API(재난안전데이터공유플랫폼)를 주기적으로 조회해
- * 신규 메시지를 저장하고, AI 위험 판정 시 지도에 재난 영역을 생성한다.
- * (이전: 네이버 검색 HTML 크롤링 → 공식 OpenAPI로 전환)
- */
+// 긴급재난문자 공식 API 1분마다 긁어서 신규 저장 + AI 위험판정시 지도에 영역 생성 (전엔 네이버 크롤링이었음)
 @Slf4j
 @Service
 @RequiredArgsConstructor

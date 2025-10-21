@@ -1,7 +1,6 @@
 // 재난 현황 및 시뮬레이션
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Kakao Map & Geocoder
     const geocoder = new kakao.maps.services.Geocoder();
     const mapElements = {
         address: document.getElementById('address') as HTMLInputElement,
@@ -30,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }).open();
     });
 
-    // Load Active Disasters
     const tbody = document.getElementById('disaster-list-body');
 
     const loadActiveDisasters = async (): Promise<void> => {
@@ -74,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadActiveDisasters();
 
-    // Terminate Disaster
     tbody?.addEventListener('click', async (e) => {
         const target = e.target as HTMLElement;
         if (!target.classList.contains('btn-terminate')) return;
@@ -91,7 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Simulator
     const requestSimulate = async (url: string, payload: Record<string, string>): Promise<void> => {
         try {
             const params = new URLSearchParams(payload).toString();

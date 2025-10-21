@@ -1,10 +1,7 @@
-/**
- * UI 인터랙션 및 공통 컴포넌트 관리 (Sidebar, Tab, Modal)
- */
+// 사이드바·탭·모달 등 공통 UI 인터랙션과 신고/상세 패널
 import { updateMarkers } from './map-marker.js';
 import { setRouteDestination } from './map-route.js';
 
-// 탭 네비게이션 설정
 export function setupTabNavigation() {
     const tabButtons = document.querySelectorAll('.kb-tab-button');
     const routeFinder = document.getElementById('kb-route-finder');
@@ -41,7 +38,6 @@ export function setupTabNavigation() {
     });
 }
 
-// 탐색 필터 체크박스 동기화
 export function setupCheckboxLogic() {
     const allCheckbox = document.getElementById('kb-explore-all');
     const targetCheckboxes = document.querySelectorAll('.kb-target-checkbox');
@@ -53,7 +49,6 @@ export function setupCheckboxLogic() {
     }
 }
 
-// 상세화면 UI 이벤트
 export function setupDetailViewEvents() {
     const backBtn = document.getElementById('btn-detail-back');
     if (backBtn) {
@@ -81,7 +76,6 @@ export function setupDetailViewEvents() {
     }
 }
 
-// 신고 모달 열기
 export function openReportModal(type, id, name, user = null) {
     const modal = document.getElementById('common-report-modal');
     const targetText = document.getElementById('report-target-text');
@@ -104,7 +98,6 @@ export function openReportModal(type, id, name, user = null) {
 }
 window.openReportModal = openReportModal;
 
-// 신고 전송 요청
 export async function submitReport() {
     const type = (document.getElementById('report-type') as HTMLInputElement).value;
     const id = (document.getElementById('report-id') as HTMLInputElement).value || null;
@@ -159,7 +152,6 @@ export async function submitReport() {
     }
 }
 
-// 사이드바 컨텐츠 업데이트
 export function updateSidebar(data) {
     const wrap = document.querySelector('.kb-wrap');
     if (wrap) wrap.classList.remove('kb-sidebar-hidden');
@@ -212,7 +204,6 @@ export function updateSidebar(data) {
 
     if (dynamicArea) dynamicArea.innerHTML = dynamicHtml;
 
-    // 로드뷰 및 신고 버튼
     const roadviewArea = document.getElementById('roadview-btn-area');
     if (roadviewArea) {
         roadviewArea.innerHTML = `
@@ -225,7 +216,6 @@ export function updateSidebar(data) {
         document.getElementById('btn-report-detail').onclick = () => openReportModal('FACILITY', data.id ?? null, data.name, null);
     }
 
-    // 즐겨찾기, 주소복사 버튼
     const oldActions = document.querySelector('.detail-actions');
     if(oldActions) oldActions.remove();
 
@@ -314,7 +304,6 @@ export function showToast(message, isError = false) {
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// 전역 UI 설정 (필터, 사이드바 토글)
 export function setupGlobalUI() {
     const wrap = document.querySelector('.kb-wrap');
     const closeBtn = document.querySelector('.kb-menu-icon');

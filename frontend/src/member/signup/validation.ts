@@ -1,7 +1,6 @@
 // 입력값 실시간 유효성 검증 (중복확인 및 정규식 체크)
 document.addEventListener('DOMContentLoaded', () => {
 
-    // UI 상태 변경 헬퍼
     const setStatus = (input: HTMLElement, msgElem: HTMLElement | null, isValid: boolean, message: string): void => {
         if (!msgElem) return;
         msgElem.style.display = 'block';
@@ -18,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 공통 API 중복 확인 함수
     async function checkDuplicate(url: string, input: HTMLElement, msgElem: HTMLElement | null, successMsg: string, failMsg: string): Promise<void> {
         try {
             const res = await fetch(url);
@@ -31,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 초기화 이벤트 등록
+    // 입력이 바뀌면 이전 검증 표시(valid/invalid)를 지운다
     const resetListener = (input: HTMLElement, msgElem: HTMLElement | null): void => {
         input?.addEventListener('input', () => {
             input.classList.remove('valid', 'invalid');
@@ -121,7 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const pwMatchMsg = document.getElementById('pw-match-msg');
     const pwBar = document.getElementById('pw-meter-bar');
 
-    // 비밀번호 강도 시각화
     const updateMeter = (val: string): void => {
         if (!pwBar) return;
         if (!val) { pwBar.style.width = '0%'; return; }

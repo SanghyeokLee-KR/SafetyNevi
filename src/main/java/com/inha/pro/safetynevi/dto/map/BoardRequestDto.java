@@ -8,10 +8,6 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
- * 게시글 작성/수정 요청 DTO
- * - 텍스트 데이터 및 이미지 파일(MultipartFile) 포함
- */
 @Getter
 @Setter
 @ToString

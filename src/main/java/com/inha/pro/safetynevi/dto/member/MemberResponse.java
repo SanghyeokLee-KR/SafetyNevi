@@ -6,7 +6,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-/** 회원 정보 응답 DTO (비밀번호·보안답변 등 민감 정보 제외) */
+// 비밀번호, 보안답변 같은 민감 필드는 빼고 내려준다
 @Getter
 @Builder
 public class MemberResponse {

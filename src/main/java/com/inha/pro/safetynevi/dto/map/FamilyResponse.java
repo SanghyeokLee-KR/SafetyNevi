@@ -4,7 +4,6 @@ import com.inha.pro.safetynevi.entity.member.Family;
 import lombok.Builder;
 import lombok.Getter;
 
-/** 안심 연락처 응답 DTO */
 @Getter
 @Builder
 public class FamilyResponse {

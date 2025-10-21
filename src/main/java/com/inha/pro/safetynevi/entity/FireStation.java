@@ -5,11 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * 소방서(FireStation) 상세 정보 엔티티
- * - Facility 상속
- * - 원본 CSV 데이터 매핑 이슈로 인해 일부 Getter 메서드 오버라이드 처리
- */
+// 원본 CSV가 컬럼을 어긋나게 담고 있어서 getter 몇 개를 손봤다 (아래 참고)
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
@@ -19,27 +15,25 @@ import lombok.Setter;
 @PrimaryKeyJoinColumn(name = "FACILITY_ID")
 public class FireStation extends Facility {
 
-    // 실제 데이터베이스에는 이 컬럼에 '주소' 정보가 저장되어 있음
+    // PHONE_NUMBER_HQ 컬럼에 실제로는 주소가 들어있다
     @Column(name = "PHONE_NUMBER_HQ", length = 100)
     private String addressInPhoneColumn;
 
     @Column(name = "SUB_TYPE", length = 100)
     private String subType; // 119안전센터, 구조대 등
 
-    // --- 데이터 보정 메서드 ---
-
-    // 레거시 코드 호환성 유지
+    // 예전 코드가 이 이름으로 부르고 있어서 남겨둠
     public String getPhoneNumberHq() {
         return this.addressInPhoneColumn;
     }
 
-    // 부모의 getAddress를 오버라이드하여 실제 주소가 저장된 필드를 반환
+    // 주소가 엉뚱한 컬럼에 있어서 오버라이드로 맞춰준다
     @Override
     public String getAddress() {
         return this.addressInPhoneColumn;
     }
 
-    // 실제 전화번호 데이터가 없으므로 null 반환
+    // 전화번호 데이터가 없는 셋이라 그냥 null
     public String getPhoneNumber() {
         return null;
     }

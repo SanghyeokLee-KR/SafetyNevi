@@ -13,11 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * 회원 관리 서비스
- * - 회원가입, 정보 수정, 탈퇴, 비밀번호 재설정
- * - 관리자용 통계 데이터 조회 지원
- */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -30,11 +25,10 @@ public class MemberService {
     private final FamilyRepository familyRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // --- 회원 가입 ---
     public void signup(MemberSignupDto dto) {
         validatePassword(dto.getPassword());
 
-        // 서버 측 중복 검사 (클라이언트 검사 우회 + 기존 계정(admin 포함) 탈취 방지)
+        // 클라 검사 우회로 기존 계정(admin 포함) 가로채는 거 막으려고 서버에서도 중복 체크
         if (memberRepository.existsByUserId(dto.getUserId()))
             throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
         if (dto.getEmail() != null && memberRepository.existsByEmail(dto.getEmail()))
@@ -77,7 +71,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public boolean checkNicknameDuplicate(String nickname) { return memberRepository.existsByNickname(nickname); }
 
-    // --- 비밀번호 찾기 ---
+    // 비밀번호 찾기 (보안질문 기반)
     @Transactional(readOnly = true)
     public Integer findPwQuestion(String userId, String email) {
         Member member = memberRepository.findByUserIdAndEmail(userId, email)
@@ -97,7 +91,7 @@ public class MemberService {
         member.updatePassword(passwordEncoder.encode(newPassword));
     }
 
-    // --- 마이페이지 ---
+    // 마이페이지 정보 수정
     public void updateMemberInfo(String userId, String nickname, String phone, String address, String detailAddress) {
         Member member = memberRepository.findById(userId).orElseThrow();
         member.updateInfo(nickname, phone, address, detailAddress);
@@ -137,7 +131,7 @@ public class MemberService {
         return inquiryRepository.findAllByMember_UserIdOrderByCreatedAtDesc(userId);
     }
 
-    // --- 관리자 기능 ---
+    // 여기부터 관리자 기능
     @Transactional(readOnly = true)
     public long countMembers() { return memberRepository.count(); }
 
@@ -154,7 +148,6 @@ public class MemberService {
         return memberRepository.findById(userId).map(MemberResponse::from).orElse(null);
     }
 
-    // 탈퇴 처리
     public void withdrawMember(String userId, String password) {
         Member member = memberRepository.findById(userId).orElseThrow();
         if (!passwordEncoder.matches(password, member.getPassword())) throw new IllegalArgumentException("비밀번호 불일치");

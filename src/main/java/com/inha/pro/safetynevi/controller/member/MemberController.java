@@ -25,11 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 회원 관련 페이지 및 API 컨트롤러
- * - 로그인/가입/찾기 뷰 렌더링
- * - 회원가입, 정보수정, 탈퇴 등 비즈니스 로직 처리
- */
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -42,31 +37,28 @@ public class MemberController {
     private final BoardService boardService;
     private final InquiryService inquiryService;
 
-    // 비밀번호 찾기 질문 매핑
+    // 보안질문 번호 -> 질문 텍스트
     private final Map<Integer, String> questionMap = Map.of(
             1, "인생 좌우명?", 2, "보물 1호?", 3, "기억에 남는 선생님?", 4, "졸업한 초등학교?", 5, "다시 태어나면 되고싶은 것?"
     );
 
-    // 로그인 페이지
     @GetMapping("/login")
     public String loginPage() {
         return "member/login";
     }
 
-    // 회원가입 페이지
     @GetMapping("/signup")
     public String signupPage(Model model) {
         model.addAttribute("kakaoJsKey", kakaoJsKey);
         return "member/signup";
     }
 
-    // 아이디/비밀번호 찾기 페이지
     @GetMapping("/findAccount")
     public String findAccountPage() {
         return "member/findAccount";
     }
 
-    // 마이페이지 (정보, 로그, 작성글, 문의내역 조회)
+    // 마이페이지 - 정보+로그+내 글+문의내역 한 번에
     @GetMapping("/myInfo")
     public String myInfoPage(Model model, @AuthenticationPrincipal User user) {
         if (user != null) {
@@ -84,7 +76,6 @@ public class MemberController {
         return "member/myInfo";
     }
 
-    // 회원가입 요청 처리
     @PostMapping("/signup")
     @ResponseBody
     public ResponseEntity<String> signupProcess(@RequestBody MemberSignupDto signupDto) {
@@ -99,7 +90,6 @@ public class MemberController {
         }
     }
 
-    // 내 정보 수정
     @PostMapping("/api/myinfo/update")
     @ResponseBody
     public ResponseEntity<?> updateInfo(@RequestBody Map<String, String> req, @AuthenticationPrincipal User user) {
@@ -113,7 +103,6 @@ public class MemberController {
         }
     }
 
-    // 비밀번호 변경 (검증 포함)
     @PostMapping("/api/myinfo/change-pw")
     @ResponseBody
     public ResponseEntity<?> changePassword(@RequestBody Map<String, String> req, @AuthenticationPrincipal User user) {
@@ -127,7 +116,7 @@ public class MemberController {
         }
     }
 
-    // 회원 탈퇴 및 로그아웃 처리
+    // 탈퇴하면 세션도 같이 끊음
     @PostMapping("/api/member/withdraw")
     @ResponseBody
     public ResponseEntity<?> withdrawMember(@RequestBody Map<String, String> req,
@@ -144,7 +133,7 @@ public class MemberController {
         }
     }
 
-    // 비밀번호 찾기: 질문 조회
+    // 비번찾기 1단계 - 아이디+이메일로 보안질문 가져오기
     @PostMapping("/api/find/question")
     @ResponseBody
     public ResponseEntity<?> getQuestion(@RequestBody Map<String, String> request) {
@@ -156,14 +145,14 @@ public class MemberController {
         }
     }
 
-    // 비밀번호 찾기: 답변 검증
+    // 비번찾기 2단계 - 보안질문 답 맞는지 확인
     @PostMapping("/api/find/verify")
     @ResponseBody
     public ResponseEntity<?> verifyAnswer(@RequestBody Map<String, String> request, HttpSession session) {
         String userId = request.get("userId");
         boolean isCorrect = memberService.verifyPwAnswer(userId, request.get("answer"));
         if (isCorrect) {
-            // 검증 통과한 userId를 세션에 묶어, 재설정 단계에서 본인확인을 강제한다
+            // 통과한 userId를 세션에 박아둬야 다음 단계에서 본인확인 강제 가능
             session.setAttribute("PW_RESET_VERIFIED", userId);
             return ResponseEntity.ok("verified");
         }
@@ -171,12 +160,12 @@ public class MemberController {
         return ResponseEntity.badRequest().body("Answer mismatch");
     }
 
-    // 비밀번호 재설정
+    // 비번찾기 3단계 - 실제 재설정
     @PostMapping("/api/find/reset")
     @ResponseBody
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request, HttpSession session) {
         String userId = request.get("userId");
-        // 보안 질문 검증을 통과한 동일 세션·동일 userId만 재설정 허용 (계정 탈취 방지)
+        // 2단계 통과한 같은 세션·같은 userId만 허용 (남의 계정 비번 못 바꾸게)
         Object verified = session.getAttribute("PW_RESET_VERIFIED");
         if (verified == null || !verified.equals(userId)) {
             return ResponseEntity.status(403).body("본인 확인이 필요합니다.");

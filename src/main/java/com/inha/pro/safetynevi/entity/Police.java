@@ -5,10 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * 경찰서(Police) 상세 정보 엔티티
- * - Facility 상속
- */
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)

@@ -6,7 +6,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-/** 신고 응답 DTO (신고자는 닉네임만 노출) */
+// 신고자는 닉네임만 노출
 @Getter
 @Builder
 public class ReportResponse {

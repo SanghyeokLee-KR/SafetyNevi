@@ -9,10 +9,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
-/**
- * AI 분석 서버 연동 서비스
- * - RestTemplate을 사용하여 외부 AI API에 텍스트 분석 요청
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -40,7 +36,7 @@ public class AiClientService {
             return response.getBody();
         } catch (Exception e) {
             log.error("AI Server Error: {}", e.getMessage());
-            // 장애 시 기본값 반환 (Fail-safe)
+            // AI 서버 죽어도 크롤링은 계속 돌아야 하니 일단 SAFE로 처리
             return new AiResponseDto("UNKNOWN", "SAFE", 0.0);
         }
     }

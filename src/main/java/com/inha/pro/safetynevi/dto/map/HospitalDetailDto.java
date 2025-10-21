@@ -4,9 +4,6 @@ import com.inha.pro.safetynevi.entity.Hospital;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/**
- * 병원 상세 정보 DTO
- */
 @Getter
 @NoArgsConstructor
 public class HospitalDetailDto {
@@ -18,10 +15,10 @@ public class HospitalDetailDto {
     private double longitude;
     private String phoneNumber;
     private String roadAddress;
-    private String subType;         // 병원 종류 (종합병원, 의원 등)
-    private Integer bedCount;       // 병상 수
-    private Integer staffCount;     // 의료진 수
-    private String operatingStatus; // 영업 상태
+    private String subType; // 종합병원, 의원 등
+    private Integer bedCount;
+    private Integer staffCount;
+    private String operatingStatus;
 
     public HospitalDetailDto(Hospital hospital) {
         this.id = hospital.getId();

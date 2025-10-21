@@ -37,11 +37,11 @@ public class InquiryEntity {
     @Column(name = "IMAGE_URL")
     private String imageUrl;
 
-    // --- 작성자 (이름 매핑 확실하게!) ---
-    @Column(name = "WRITER_ID", nullable = false) // DB의 WRITER_ID와 매핑
+    // --- 작성자 ---
+    @Column(name = "WRITER_ID", nullable = false)
     private String writerId;
 
-    @Column(name = "WRITER_NAME", nullable = false) // DB의 WRITER_NAME과 매핑
+    @Column(name = "WRITER_NAME", nullable = false)
     private String writerName;
 
     // --- 상태 ---
@@ -66,17 +66,12 @@ public class InquiryEntity {
     @Column(name = "CREATED_DATE", updatable = false)
     private LocalDateTime createdDate;
 
-    // --- [비즈니스 로직 메서드] ---
-    // Entity 안에 로직을 두면 객체지향적이며 관리가 편해집니다.
-
-    // 답변 등록 기능
     public void registerAnswer(String answer) {
         this.answerContent = answer;
         this.answerDate = LocalDateTime.now();
-        this.status = InquiryStatus.COMPLETED; // 답변이 달리면 상태를 완료로 변경
+        this.status = InquiryStatus.COMPLETED; // 답변 달리면 완료 처리
     }
 
-    // 내부 Enum 정의 (혹은 별도 파일로 분리 가능)
     public enum InquiryStatus {
         WAITING,    // 답변 대기
         IN_PROGRESS,// 처리 중
@@ -88,31 +83,25 @@ public class InquiryEntity {
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .category(dto.getCategory())
-                .imageUrl(dto.getImageUrl()) // 서비스에서 만들어준 URL
+                .imageUrl(dto.getImageUrl())
                 .writerId(dto.getWriterId())
                 .writerName(dto.getWriterName())
                 .isSecret(dto.getIsSecret() != null ? dto.getIsSecret() : 0)
-
-                // ▼▼▼ [여기를 수정하세요] ▼▼▼
-                // dto.getStatus()가 null이면 기본값(WAITING)을 넣고, 값이 있으면 변환해서 넣는다.
+                // status가 비어 있으면 WAITING으로
                 .status(dto.getStatus() != null && !dto.getStatus().isEmpty()
                         ? InquiryStatus.valueOf(dto.getStatus())
                         : InquiryStatus.WAITING)
-                // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
                 .answerContent(dto.getAnswerContent())
-                // createdDate는 @CreatedDate가 알아서 하므로 생략
                 .build();
     }
 
-    // [수정 메서드] 제목, 내용, 카테고리, 비밀글 여부, 이미지 경로를 한 번에 업데이트
     public void modifyInquiry(String title, String content, String category, int secret, String imageUrl) {
         this.title = title;
         this.content = content;
         this.category = category;
         this.isSecret = secret;
 
-        // 이미지가 새로 들어왔을 때만 변경 (null이면 기존 이미지 유지)
+        // 새 이미지가 있을 때만 교체, null이면 기존 유지
         if (imageUrl != null) {
             this.imageUrl = imageUrl;
         }

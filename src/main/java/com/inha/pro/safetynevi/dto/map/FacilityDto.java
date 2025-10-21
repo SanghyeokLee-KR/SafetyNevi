@@ -6,22 +6,19 @@ import com.inha.pro.safetynevi.entity.Shelter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/**
- * 지도 마커용 시설물 요약 정보 DTO
- * - 모든 시설(경찰, 소방, 병원, 대피소)의 공통 필드 및 일부 특화 필드 포함
- */
+// 지도 마커용 시설 요약. 모든 시설 타입을 한 형태로 합친다
 @Getter
 @NoArgsConstructor
 public class FacilityDto {
 
     private Long id;
-    private String type;            // 시설 유형 (police, fire, hospital, shelter)
+    private String type; // police, fire, hospital, shelter
     private String name;
     private String address;
     private double latitude;
     private double longitude;
-    private String operatingStatus; // 운영 상태 (영업/폐업 등)
-    private Integer maxCapacity;    // 수용 가능 인원 (대피소 전용)
+    private String operatingStatus; // 영업/폐업 등
+    private Integer maxCapacity;    // 대피소만 해당
 
     public FacilityDto(Facility facility) {
         this.id = facility.getId();

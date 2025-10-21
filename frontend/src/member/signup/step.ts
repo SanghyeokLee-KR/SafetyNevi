@@ -1,7 +1,6 @@
 // 회원가입 단계(Step) 제어 및 최종 가입 요청 처리
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 단계별 요소 및 버튼
     const steps: Record<number, HTMLElement | null> = {
         1: document.getElementById('step-1'),
         2: document.getElementById('step-2'),
@@ -14,13 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const title = document.getElementById('page-title');
 
-    // 약관 동의 관련
     const checkAll = document.getElementById('agree_all') as HTMLInputElement;
     const checkRequired = document.getElementById('agreement_required') as HTMLInputElement;
     const checkLocation = document.getElementById('location_agreement') as HTMLInputElement;
     const btnNext1 = document.getElementById('btn-step1-next') as HTMLButtonElement;
 
-    // 1. 약관 동의 상태 업데이트
     const updateAgreementState = (): void => {
         const isAllChecked = checkRequired.checked && checkLocation.checked;
 
@@ -30,10 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
         btnNext1.innerText = isAllChecked ? "다음 단계로" : "약관에 모두 동의해주세요";
     };
 
-    // 전역 함수로 등록 (모달에서 호출하기 위함)
+    // 약관 모달(modal.ts)에서 호출할 수 있도록 전역에 노출
     window.updateAgreementState = updateAgreementState;
 
-    // 체크박스 이벤트 바인딩
     checkAll?.addEventListener('change', (e) => {
         const checked = (e.target as HTMLInputElement).checked;
         checkRequired.checked = checked;
@@ -45,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         el?.addEventListener('change', updateAgreementState);
     });
 
-    // 2. 단계 이동 헬퍼 함수
     const moveStep = (current: number, next: number, titleText: string): void => {
         steps[current]?.classList.add('kb-hidden');
         steps[next]?.classList.remove('kb-hidden');
@@ -57,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (title) title.innerText = titleText;
     };
 
-    // 버튼 이벤트 리스너
     document.getElementById('btn-step1-next')?.addEventListener('click', () =>
         moveStep(1, 2, "계정 정보를 입력해주세요"));
 
@@ -67,20 +61,19 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-step3-prev')?.addEventListener('click', () =>
         moveStep(3, 2, "계정 정보를 입력해주세요"));
 
-    // Step 2 -> 3 이동 시 유효성 검사
+    // 다음 단계로 넘어가기 전 계정 정보 입력값 검증
     document.getElementById('btn-step2-next')?.addEventListener('click', () => {
         const idInput = document.getElementById('user_id') as HTMLInputElement;
         const emailInput = document.getElementById('email') as HTMLInputElement;
         const pwInput = document.getElementById('password') as HTMLInputElement;
         const pwConfirm = document.getElementById('password-confirm') as HTMLInputElement;
 
-        // 빈 값 체크
         if (!idInput.value || !emailInput.value || !pwInput.value || !pwConfirm.value) {
             alert("필수 정보를 모두 입력해주세요.");
             return;
         }
 
-        // 유효성(valid 클래스) 체크
+        // validation.ts가 통과 시 붙여둔 'valid' 클래스로 중복확인까지 끝났는지 판단
         if (!idInput.classList.contains('valid')) {
             alert("아이디 중복 확인을 완료해주세요.");
             idInput.focus(); return;
@@ -97,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         moveStep(2, 3, "프로필 정보를 입력해주세요");
     });
 
-    // 3. 최종 가입 요청 (async/await 적용)
+    // 최종 가입 요청
     document.getElementById('signup-form')?.addEventListener('submit', async (e) => {
         e.preventDefault();
 

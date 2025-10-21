@@ -4,10 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-/**
- * AI 분석 응답 DTO
- * - 재난 유형(disasterType), 안전 여부(safety), 신뢰도(confidence) 매핑
- */
+// Python AI 서버 응답
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

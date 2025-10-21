@@ -14,11 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * 시설물(Facility) 조회 서비스
- * - 지도 내 범위 검색(Bounds Search) 및 상세 정보 조회
- * - 다형성을 활용하여 각 시설 타입(병원, 소방서 등)에 맞는 DTO 반환
- */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -32,7 +27,6 @@ public class FacilityService {
     private static final Pageable BOUNDS_LIMIT = PageRequest.of(0, 1500);
     private static final Pageable SEARCH_LIMIT = PageRequest.of(0, 50);
 
-    // 지도 영역 내 시설물 검색
     public List<FacilityDto> findFacilitiesInBounds(String type, double swLat, double swLng, double neLat, double neLng) {
         List<Facility> facilities = new ArrayList<>();
 
@@ -58,7 +52,7 @@ public class FacilityService {
                 .collect(Collectors.toList());
     }
 
-    // 시설 상세 정보 조회 (다형성 처리)
+    // 실제 타입에 맞는 상세 DTO로 내려줌
     public Object findDetailById(Long id) {
         Facility facility = facilityRepository.findById(id).orElse(null);
 
@@ -72,7 +66,6 @@ public class FacilityService {
         return new FacilityDto(facility);
     }
 
-    // 시설명 검색
     public List<Facility> searchFacilitiesByName(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) return List.of();
         return facilityRepository.findByNameContaining(keyword.trim(), SEARCH_LIMIT);

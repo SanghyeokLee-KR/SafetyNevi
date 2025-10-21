@@ -2,11 +2,8 @@ package com.inha.pro.safetynevi.util.map;
 
 import org.springframework.stereotype.Component;
 
-/**
- * GPS 좌표 변환기
- * - 위도/경도(WGS84)를 기상청 API용 격자 좌표(X, Y)로 변환
- * - Lambert Conformal Conic Projection(람베르트 정각 원추 투영법) 적용
- */
+// WGS84 위경도 -> 기상청 격자좌표(X,Y). 람베르트 정각원추도법(LCC) 공식 그대로 옮긴 거라
+// 상수들 못 건드림 (기상청 단기예보 API 가이드 기준)
 @Component
 public class GpsConverter {
 

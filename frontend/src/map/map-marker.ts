@@ -1,13 +1,10 @@
-/**
- * 시설물 마커 및 클러스터링 관리
- */
+// 시설물 마커 생성·클러스터링과 시설 기반 안전 점수 계산
 import { map, clusterer } from './map-core.js';
 import { updateSidebar, showToast } from './map-ui.js';
 
 let markerImages: Record<string, any> = {};
 let currentOverlay: any = null;
 
-// 마커 이미지 리소스 초기화
 export function setupMarkerImages() {
     if (typeof kakao === 'undefined') return;
 
@@ -28,7 +25,6 @@ export function setupMarkerImages() {
     markerImages.shelter_low = new kakao.maps.MarkerImage('/img/markers/marker_shelter_low.png', size, options);
 }
 
-// 지도 영역 내 시설물 마커 갱신
 export async function updateMarkers() {
     if (Object.keys(markerImages).length === 0) setupMarkerImages();
 
@@ -38,7 +34,6 @@ export async function updateMarkers() {
     const queryParams = `swLat=${sw.getLat()}&swLng=${sw.getLng()}&neLat=${ne.getLat()}&neLng=${ne.getLng()}`;
     const facilityTypes = getCheckedTypes();
 
-    // 기존 오버레이 및 클러스터 초기화
     clusterer.clear();
     if(currentOverlay) currentOverlay.setMap(null);
 
@@ -73,7 +68,6 @@ export async function updateMarkers() {
     }
 }
 
-// 마커 생성 및 클러스터러 추가
 function drawMarkers(facilities) {
     const newMarkers = facilities.map(facility => {
         const position = new kakao.maps.LatLng(facility.latitude, facility.longitude);
@@ -86,7 +80,6 @@ function drawMarkers(facilities) {
     clusterer.addMarkers(newMarkers);
 }
 
-// 시설 상태 및 속성에 따른 마커 이미지 반환
 function getMarkerImage(facility) {
     const type = (facility.type || "").toLowerCase();
     const status = facility.operatingStatus;
@@ -108,7 +101,6 @@ function getMarkerImage(facility) {
     return markerImages.default;
 }
 
-// 커스텀 오버레이 표시
 function showCustomOverlay(marker, facility) {
     if (currentOverlay) currentOverlay.setMap(null);
 
@@ -151,7 +143,6 @@ function showCustomOverlay(marker, facility) {
     });
 }
 
-// 상세 정보 조회
 async function handleMarkerClick(facilityId) {
     if (!facilityId) return;
     try {
@@ -164,13 +155,11 @@ async function handleMarkerClick(facilityId) {
     }
 }
 
-// 체크된 필터 타입 반환
 function getCheckedTypes() {
     return Array.from(document.querySelectorAll('.kb-target-checkbox:checked'))
         .map(cb => cb.getAttribute('data-type'));
 }
 
-// 지도 이벤트 리스너 등록
 export function setupMapEventListeners() {
     const reSearchBtn = document.getElementById('btn-re-search');
 
@@ -192,7 +181,6 @@ export function setupMapEventListeners() {
     updateMarkers();
 }
 
-// 안전 점수 계산 (주변 시설 기반)
 function calculateSafetyScore(facilities) {
     const panel = document.getElementById('safety-score-panel');
     const valEl = document.getElementById('safety-score-val');

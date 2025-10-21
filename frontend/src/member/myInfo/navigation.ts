@@ -3,13 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuItems = document.querySelectorAll<HTMLElement>('.kb-menu-item');
     const sections = document.querySelectorAll<HTMLElement>('.kb-content-section');
 
-    // 탭 전환 함수
     const switchTab = (targetId: string): void => {
-        // 1. 모든 섹션 숨김 & 메뉴 비활성화
         sections.forEach(sec => sec.style.display = 'none');
         menuItems.forEach(item => item.classList.remove('kb-active'));
 
-        // 2. 타겟 섹션 활성화
         const targetSection = document.getElementById(`${targetId}-section`);
         const targetMenu = document.querySelector(`.kb-menu-item[data-target="${targetId}"]`);
 
@@ -17,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (targetMenu) targetMenu.classList.add('kb-active');
     };
 
-    // 클릭 이벤트 등록
     menuItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();

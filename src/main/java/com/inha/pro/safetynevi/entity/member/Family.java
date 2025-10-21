@@ -5,9 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
-/**
- * 가족/지인 안심 연락처 엔티티
- */
 @Entity
 @Table(name = "SAFETY_FAMILY")
 @Getter

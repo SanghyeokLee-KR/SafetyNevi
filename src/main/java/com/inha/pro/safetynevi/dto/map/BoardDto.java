@@ -4,10 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 import java.util.List;
 
-/**
- * 게시글 상세 정보 응답 DTO
- * - 게시글 정보, 작성자, 좋아요 상태, 댓글 목록(계층 구조) 포함
- */
 @Data @Builder
 public class BoardDto {
     private Long id;
@@ -26,7 +22,6 @@ public class BoardDto {
 
     private List<CommentDto> comments;
 
-    // 댓글 DTO (Inner Class)
     @Data @Builder
     public static class CommentDto {
         private Long id;

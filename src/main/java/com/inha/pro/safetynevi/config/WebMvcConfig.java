@@ -5,10 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * Web MVC 설정
- * - 로컬 파일 업로드 경로를 리소스 핸들러에 매핑
- */
+// 업로드된 로컬 파일을 URL로 서빙하려고 리소스 핸들러에 경로 매핑
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
@@ -17,7 +14,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 외부 경로의 파일들을 URL로 접근 가능하도록 매핑
         registry.addResourceHandler("/images/uploads/**")
                 .addResourceLocations("file:///" + uploadDir + "/");
 

@@ -28,23 +28,19 @@ public class NoticeService {
 
     private final NoticeRepository nrepo;
 
-    // application.properties의 C:/safety_uploads/notice 값을 가져옴
     @Value("${file.upload.notice}")
     private String uploadDir;
 
-    // [공지 작성]
     @Transactional
     public void saveNotice(NoticeDTO dto, String writerId) {
 
-        // 1. 작성자 정보 세팅
         dto.setWriterId(writerId);
         dto.setWriterName("관리자");
 
-        // 2. 파일 업로드 처리
         MultipartFile file = dto.getFile();
         if (file != null && !file.isEmpty()) {
             try {
-                // 경로 조작(../) 방지: 정규화 후 파일명만 추출
+                // 경로조작(../) 막으려고 정규화 후 파일명만 추출
                 String originalFilename = StringUtils.getFilename(
                         StringUtils.cleanPath(file.getOriginalFilename() == null ? "file" : file.getOriginalFilename()));
                 String uuid = UUID.randomUUID().toString().substring(0, 8);
@@ -66,20 +62,17 @@ public class NoticeService {
             }
         }
 
-        // 3. Entity 변환 및 저장
         NoticeEntity notice = NoticeEntity.toEntity(dto);
         nrepo.save(notice);
     }
 
-    // [공지사항 목록 조회]
     @Transactional(readOnly = true)
     public Page<NoticeDTO> getNoticeList(Pageable pageable, String keyword) {
-        // 검색+정렬 통합 메서드 호출
         Page<NoticeEntity> noticeEntities = nrepo.findNoticeListWithCustomSort(keyword, pageable);
         return noticeEntities.map(NoticeDTO::toDto);
     }
 
-    // [상세 조회] 조회수 증가 + DTO 반환
+    // 조회수 올리고 상세 반환
     @Transactional
     public NoticeDTO getNoticeDetail(Long id) {
         nrepo.updateViewCount(id);
@@ -88,19 +81,17 @@ public class NoticeService {
         return NoticeDTO.toDto(notice);
     }
 
-    // [공지사항 삭제]
     @Transactional
     public void deleteNotice(Long id) {
         NoticeEntity notice = nrepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 공지가 없습니다."));
 
-        // 첨부파일 삭제 로직
+        // 첨부파일도 같이 지움
         if (notice.getAttachmentUrl() != null) {
             try {
-                // URL 접두사를 떼고 실제 파일명만 추출
                 String fileName = notice.getAttachmentUrl().substring("/upload/notice/".length());
 
-                // 한글 파일명 깨짐 방지 디코딩
+                // 한글 파일명 깨지지 않게 디코딩
                 fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
 
                 Path filePath = Paths.get(uploadDir, fileName);

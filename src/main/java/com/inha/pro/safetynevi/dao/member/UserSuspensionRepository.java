@@ -5,18 +5,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 
-/**
- * 회원 이용 정지(Suspension) 이력 관리
- */
 public interface UserSuspensionRepository extends JpaRepository<UserSuspension, Long> {
 
-    // 현재 시점(now) 기준 유효한 정지 내역이 있는지 확인
+    // 지금 기준 살아있는 정지가 있나 (endAt null이면 무기한)
     boolean existsByTargetUserIdAndStartAtLessThanEqualAndEndAtAfterOrEndAtIsNull(
             String userId,
             LocalDateTime now1,
             LocalDateTime now2
     );
 
-    // 가장 최근의 정지 내역 조회
+    // 제일 최근 정지 1건
     UserSuspension findTop1ByTargetUserIdOrderByStartAtDesc(String userId);
 }

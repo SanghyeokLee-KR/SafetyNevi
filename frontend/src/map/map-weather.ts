@@ -1,10 +1,7 @@
-/**
- * 현재 위치 및 날씨 정보 관리
- */
+// 현재 위치 파악 후 해당 좌표의 날씨·주소 표시
 import { map } from './map-core.js';
 import { toggleLoading, showToast } from './map-ui.js';
 
-// 현재 위치 로드 및 날씨 정보 요청
 export function loadCurrentLocationAndWeather() {
     showToast("내 위치를 찾는 중입니다...");
 
@@ -42,7 +39,6 @@ function errorCallback(error) {
     fetchWeatherAndAddress(defaultLat, defaultLon);
 }
 
-// 현재 위치 마커 표시 및 지도 이동
 function displayMarker(locPosition) {
     if (!map) return;
 
@@ -61,14 +57,13 @@ function displayMarker(locPosition) {
         yAnchor: 0.5
     });
 
-    // 부드러운 이동 처리
+    // 줌 애니메이션(800ms)이 끝날 즈음 panTo 해야 끊김 없이 이어진다
     map.setLevel(4, { animate: { duration: 800 } });
     setTimeout(() => {
         map.panTo(locPosition);
     }, 300);
 }
 
-// 날씨 및 주소 정보 API 호출
 async function fetchWeatherAndAddress(lat, lon) {
     try {
         const response = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
@@ -78,7 +73,6 @@ async function fetchWeatherAndAddress(lat, lon) {
     } catch (error) { console.error(error); }
 }
 
-// 날씨 UI 업데이트
 function updateWeatherUI(data: any) {
     const addrEl = document.querySelector<HTMLElement>('#current-address');
     if (addrEl) addrEl.innerText = data.address || "주소정보 없음";

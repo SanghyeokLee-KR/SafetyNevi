@@ -6,9 +6,6 @@ import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-/**
- * 게시글 좋아요 매핑 엔티티
- */
 @Entity
 @Table(name = "SAFETY_BOARD_LIKE")
 @Getter

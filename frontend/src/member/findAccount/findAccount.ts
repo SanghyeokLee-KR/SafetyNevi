@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentUserId = '';
 
-    // DOM Elements
     const step1 = document.getElementById('step-1') as HTMLElement;
     const step2 = document.getElementById('step-2') as HTMLElement;
     const step3 = document.getElementById('step-3') as HTMLElement;

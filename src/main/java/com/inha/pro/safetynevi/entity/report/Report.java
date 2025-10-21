@@ -9,11 +9,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
-/**
- * 신고(Report) 엔티티
- * - 시설 정보 오류, 게시글 신고, 악성 유저 신고 데이터 저장
- * - 관리자 페이지에서 상태(STATUS) 변경 가능
- */
+// 시설 오류/게시글/유저 신고를 한 테이블에 담는다. 상태는 관리자가 바꾼다
 @Entity
 @Table(name = "SAFETY_REPORT")
 @Getter
@@ -38,23 +34,22 @@ public class Report {
     @Column(name = "TARGET_TYPE", nullable = false)
     private String targetType;
 
-    // 신고 대상 ID (PK)
+    // 신고 대상의 PK
     @Column(name = "TARGET_ID")
     private Long targetId;
 
-    // 신고 대상 닉네임/아이디 (유저 차단용)
+    // 유저 차단용으로 닉네임/아이디를 따로 보관
     @Column(name = "TARGET_USER")
     private String targetUser;
 
-    // 신고 사유 코드 (abuse, spam 등)
+    // abuse, spam 같은 사유 코드
     @Column(name = "REASON", nullable = false)
     private String reason;
 
-    // 상세 내용
     @Column(name = "DESCRIPTION", columnDefinition = "CLOB")
     private String description;
 
-    // 처리 상태 (RECEIVED -> PROCESSING -> DONE)
+    // RECEIVED -> PROCESSING -> DONE
     @Column(name = "STATUS", nullable = false)
     private String status;
 

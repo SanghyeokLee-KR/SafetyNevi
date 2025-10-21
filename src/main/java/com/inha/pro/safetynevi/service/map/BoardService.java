@@ -19,11 +19,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * 게시판 비즈니스 로직 서비스
- * - 게시글 작성, 수정, 삭제 및 이미지 업로드 처리
- * - 좋아요 및 댓글 기능 구현
- */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -37,7 +32,6 @@ public class BoardService {
     @Value("${file.upload.dir}")
     private String uploadDir;
 
-    // 전체 게시글 조회
     @Transactional(readOnly = true)
     public List<BoardDto> getAllBoards(String currentUserId) {
         boolean admin = isAdmin(currentUserId);
@@ -47,7 +41,6 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
-    // 내 작성 글 조회
     @Transactional(readOnly = true)
     public List<BoardDto> getMyBoards(String userId) {
         boolean admin = isAdmin(userId);
@@ -56,7 +49,6 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
-    // 게시글 상세 조회
     @Transactional(readOnly = true)
     public BoardDto getBoardDetail(Long boardId, String currentUserId) {
         Board board = boardRepository.findById(boardId)
@@ -68,7 +60,7 @@ public class BoardService {
         return userId != null && memberRepository.findById(userId).map(Member::isAdmin).orElse(false);
     }
 
-    // Entity -> DTO 변환 (좋아요 여부 및 삭제 권한 확인 포함)
+    // Board -> DTO. 로그인 유저 기준 좋아요/삭제권한 플래그도 같이 채움
     private BoardDto convertToBoardDto(Board board, String currentUserId, boolean isAdmin) {
         boolean isLiked = false;
         boolean canDelete = false;
@@ -111,7 +103,6 @@ public class BoardService {
                 .build();
     }
 
-    // 게시글 작성 (이미지 업로드 포함)
     public BoardDto createBoardReturnDto(String userId, String title, String content, String category,
                                          Double lat, Double lon, String locationType, MultipartFile file) {
         Member member = memberRepository.findById(userId).orElseThrow();
@@ -119,7 +110,7 @@ public class BoardService {
 
         if (file != null && !file.isEmpty()) {
             try {
-                // 경로 조작(../) 방지: 정규화 후 파일명만 추출하고, 경로 결합도 File(parent, child)로 안전하게
+                // 경로조작(../) 막으려고 정규화 후 파일명만 떼고, 결합도 File(parent, child)로
                 String safeName = StringUtils.getFilename(
                         StringUtils.cleanPath(file.getOriginalFilename() == null ? "file" : file.getOriginalFilename()));
                 String storeName = UUID.randomUUID() + "_" + safeName;
@@ -138,16 +129,14 @@ public class BoardService {
         return convertToBoardDto(saved, userId, isAdmin(userId));
     }
 
-    // 게시글 삭제
     public void deleteBoard(Long boardId, String userId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("Board not found"));
-        if (!board.getWriter().getUserId().equals(userId) && !isAdmin(userId)) {
+        if (!board.getWriter().getUserId().equals(userId) && !isAdmin(userId)) { // 작성자 본인이나 관리자만
             throw new SecurityException("Permission denied");
         }
         boardRepository.delete(board);
     }
 
-    // 좋아요 토글
     public boolean toggleLike(Long boardId, String userId) {
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findById(userId).orElseThrow();
@@ -167,7 +156,6 @@ public class BoardService {
         return boardRepository.findById(boardId).map(b -> b.getLikes().size()).orElse(0);
     }
 
-    // 댓글 작성
     public BoardDto.CommentDto addComment(Long boardId, String userId, String content, Long parentId) {
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findById(userId).orElseThrow();
@@ -181,7 +169,7 @@ public class BoardService {
                 .content(saved.getContent()).timeAgo("방금 전").replies(new ArrayList<>()).build();
     }
 
-    // 상대 시간 계산 (예: 5분 전)
+    // "방금 전", "5분 전" 같은 상대시간 문자열
     private String timeAgo(LocalDateTime date) {
         if(date == null) return "";
         long sec = Duration.between(date, LocalDateTime.now()).getSeconds();

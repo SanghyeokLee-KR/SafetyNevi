@@ -5,9 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
-/**
- * 접속 로그 엔티티 (로그인/로그아웃 이력)
- */
 @Entity
 @Table(name = "SAFETY_ACCESS_LOG")
 @Getter

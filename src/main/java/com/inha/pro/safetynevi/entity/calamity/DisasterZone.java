@@ -7,10 +7,7 @@ import lombok.ToString;
 
 import java.time.Instant;
 
-/**
- * 재난 구역(Disaster Zone) 엔티티
- * - 좌표/반경 기반의 원형 재난 또는 행정구역 기반 재난 정보 저장
- */
+// 좌표+반경(원형)이나 행정구역명, 둘 중 한 방식으로 재난 범위를 잡는다
 @Getter
 @Setter
 @ToString

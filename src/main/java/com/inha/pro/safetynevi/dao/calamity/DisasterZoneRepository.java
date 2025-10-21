@@ -8,8 +8,6 @@ import java.util.List;
 
 public interface DisasterZoneRepository extends JpaRepository<DisasterZone, Long> {
 
-    /**
-     * 만료 시간(expiryTime)이 현재 시간보다 이후인(아직 유효한) 재난 구역 조회
-     */
+    // 아직 안 만료된(유효한) 구역만
     List<DisasterZone> findByExpiryTimeAfter(Instant currentTime);
 }

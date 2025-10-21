@@ -1,6 +1,4 @@
-/**
- * 시설물 검색 및 최근 검색어 관리
- */
+// 시설물 키워드 검색과 최근 검색어(localStorage) 관리
 import { map } from './map-core.js';
 import { updateSidebar } from './map-ui.js';
 
@@ -16,7 +14,6 @@ export function setupSearchLogic() {
 
     if (!toggleBtn || !searchPanel) return;
 
-    // 검색창 열기/닫기
     toggleBtn.addEventListener('click', () => {
         if (searchPanel.style.display === 'none') {
             searchPanel.style.display = 'block';
@@ -32,7 +29,6 @@ export function setupSearchLogic() {
         resultList.classList.remove('show');
     });
 
-    // 검색 실행 핸들러
     const executeSearch = async () => {
         const keyword = searchInput.value.trim();
         if (keyword.length < 2) {
@@ -73,7 +69,6 @@ export function setupSearchLogic() {
         });
     }
 
-    // 최근 검색어 표시
     function showRecentSearches() {
         const history = JSON.parse(localStorage.getItem('safety_recent_search') || '[]') || [];
         const listEl = document.getElementById('kb-recent-list') as HTMLElement;
@@ -115,7 +110,6 @@ export function setupSearchLogic() {
         localStorage.setItem('safety_recent_search', JSON.stringify(history));
     }
 
-    // 키워드 삭제
     function deleteKeyword(keyword) {
         let history = JSON.parse(localStorage.getItem('safety_recent_search') || '[]') || [];
         history = history.filter(k => k !== keyword);
@@ -123,7 +117,6 @@ export function setupSearchLogic() {
         showRecentSearches();
     }
 
-    // 검색 결과 렌더링
     function renderResults(data, keyword) {
         resultList.innerHTML = '';
         if (data.length === 0) {

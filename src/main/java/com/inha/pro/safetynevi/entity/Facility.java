@@ -4,11 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * 시설물(Facility) 최상위 엔티티
- * - 상속 관계 매핑(InheritanceType.JOINED)을 사용하여 공통 속성(이름, 주소, 좌표) 관리
- * - 구분 컬럼(TYPE)을 통해 하위 엔티티(경찰, 소방, 병원, 대피소) 식별
- */
+// 경찰/소방/병원/대피소의 공통 부모. JOINED 상속, TYPE 컬럼으로 구분
 @Getter
 @Setter
 @Entity

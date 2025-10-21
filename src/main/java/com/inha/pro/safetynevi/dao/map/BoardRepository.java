@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    // 전체 게시글 조회 (작성자, 댓글, 좋아요 Fetch Join)
+    // 전체 글 + 작성자/댓글/좋아요 한 번에 fetch join (N+1 방지)
     @Query("SELECT DISTINCT b FROM Board b " +
             "LEFT JOIN FETCH b.writer " +
             "LEFT JOIN FETCH b.comments " +

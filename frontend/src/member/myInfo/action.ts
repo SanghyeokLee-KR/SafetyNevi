@@ -1,7 +1,6 @@
 // 마이페이지 기능 모음
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Regex & Utils
     const REGEX = {
         nickname: /^[가-힣a-zA-Z0-9]{2,10}$/,
         phone: /^010\d{8}$/,
@@ -131,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 문의하기 (Toggle View)
+    // 문의하기
     const inquiryForm = document.getElementById('inquiry-form') as HTMLFormElement | null;
     const listView = document.getElementById('inquiry-view-list');
     const writeView = document.getElementById('inquiry-view-write');
@@ -167,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 게시글 관리 (Event Delegation)
+    // 게시글 관리
     const modal = document.getElementById('post-view-modal');
     const modalBody = document.getElementById('post-view-body');
     const closeModal = (): void => { if (modal) modal.style.display = 'none'; };

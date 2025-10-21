@@ -1,7 +1,4 @@
-/**
- * 지도 애플리케이션 진입점 (Entry Point)
- * - 지도 초기화, UI 설정, 이벤트 바인딩, 초기 데이터 로드 수행
- */
+// 지도 페이지 진입점: 초기화 → UI → 기능 → 데이터 로드 순으로 부팅
 import { initMap } from './map-core.js';
 import { setupTabNavigation, setupCheckboxLogic, setupDetailViewEvents, setupGlobalUI } from './map-ui.js';
 import { setupMarkerImages, setupMapEventListeners } from './map-marker.js';
@@ -14,7 +11,7 @@ import { setupBoardLogic } from './map-board.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
 
-    // 1. 지도 엔진 및 리소스 초기화
+    // 지도 엔진과 마커 리소스가 먼저 떠야 나머지가 동작한다
     try {
         initMap();
         setupMarkerImages();
@@ -24,23 +21,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // 2. UI 및 이벤트 핸들러 설정
     setupTabNavigation();
     setupCheckboxLogic();
     setupDetailViewEvents();
     setupGlobalUI();
 
-    // 3. 주요 기능 로직 바인딩
     setupSearchLogic();
     setupRouteLogic();
     setupMyPlaceLogic();
     setupBoardLogic();
 
-    // 4. 지도 이벤트 리스너 및 초기 데이터 로드
     setupMapEventListeners();
     loadCurrentLocationAndWeather();
 
-    // 5. 재난 데이터 초기 로드 + WebSocket 실시간 수신 (10초 폴링 대신 푸시)
+    // 재난은 초기 1회 로드 후 소켓으로 push 수신 (폴링 대신)
     loadDisasterZones();
     connectDisasterSocket();
 });

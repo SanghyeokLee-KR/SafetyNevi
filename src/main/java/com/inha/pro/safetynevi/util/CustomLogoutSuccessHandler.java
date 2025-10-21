@@ -11,10 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-/**
- * 로그아웃 성공 핸들러
- * - 로그아웃 로그 저장 후 메인 페이지로 리다이렉트
- */
+// 로그아웃 시 접속로그 한 줄 남기고 메인으로
 @Component
 @RequiredArgsConstructor
 public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {

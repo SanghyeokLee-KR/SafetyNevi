@@ -13,10 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * 게시글(Board) 엔티티
- * - 위치 정보(좌표)를 포함한 커뮤니티 게시글
- */
+// 좌표를 들고 있는 커뮤니티 게시글
 @Entity
 @Table(name = "SAFETY_BOARD")
 @Getter
@@ -60,13 +57,13 @@ public class Board {
     @Column(name = "CREATED_AT")
     private LocalDateTime createdAt;
 
-    // 댓글: 순서가 중요하므로 List 사용
+    // 작성 순서대로 보여줘야 해서 List
     @Builder.Default
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdAt ASC")
     private List<Comment> comments = new ArrayList<>();
 
-    // 좋아요: 중복 방지 및 Fetch Join 최적화를 위해 Set 사용
+    // 중복 좋아요 막고 fetch join 시 곱집합 방지하려고 Set
     @Builder.Default
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<BoardLike> likes = new HashSet<>();

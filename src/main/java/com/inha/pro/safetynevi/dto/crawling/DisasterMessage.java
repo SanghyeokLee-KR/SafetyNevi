@@ -16,16 +16,15 @@ public class DisasterMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dmid;
 
-    private Long sn; // 공식 긴급재난문자 API 일련번호 (중복 방지용 자연키)
+    private Long sn; // 재난문자 API 일련번호. 중복 방지용 자연키로 씀
 
-    private String disasterType; // 재난 상황
-    private String area; // 지역
-    private String sentDate; // 날짜
+    private String disasterType;
+    private String area;
+    private String sentDate;
 
-    @Lob // 내용이 길 수 있으므로 Lob 타입을 사용합니다.
-    private String content; // 내용
+    @Lob // 본문이 길어질 수 있음
+    private String content;
 
-    // DTO를 Entity로 변환하는 생성자
     public DisasterMessage(DisasterMessageDto dto) {
         this.disasterType = dto.getDisasterType();
         this.area = dto.getArea();

@@ -9,11 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * 관리자 전용 기능 API 컨트롤러
- * - 재난 시뮬레이션 생성/종료
- * - 회원 강제 관리
- */
 @Slf4j
 @RestController
 @RequestMapping("/api/admin")
@@ -23,7 +18,7 @@ public class AdminController {
     private final DisasterService disasterService;
     private final MemberService memberService;
 
-    // 원형(Circle) 재난 시뮬레이션 생성 (위도, 경도, 반경)
+    // 원형 재난 시뮬레이션 (중심좌표 + 반경)
     @PostMapping("/simulate")
     public ResponseEntity<DisasterZoneResponse> createDisaster(
             @RequestParam double lat, @RequestParam double lon,
@@ -34,7 +29,7 @@ public class AdminController {
         return ResponseEntity.ok(DisasterZoneResponse.from(zone));
     }
 
-    // 지역(Polygon) 기반 재난 시뮬레이션 생성 (행정구역명)
+    // 행정구역명으로 폴리곤 재난 시뮬레이션
     @PostMapping("/simulate-area")
     public ResponseEntity<DisasterZoneResponse> createAreaDisaster(
             @RequestParam String areaName,
@@ -45,19 +40,17 @@ public class AdminController {
         return ResponseEntity.ok(DisasterZoneResponse.from(zone));
     }
 
-    // 재난 상황 종료 및 삭제
     @DeleteMapping("/disaster/{id}")
     public ResponseEntity<String> deleteDisaster(@PathVariable Long id) {
         disasterService.deleteDisaster(id);
         return ResponseEntity.ok("삭제 성공");
     }
 
-    // 회원 강제 탈퇴 처리
     @DeleteMapping("/member/{userId}")
     public ResponseEntity<String> kickMember(@PathVariable String userId) {
         log.info("[Admin] Force withdrawal request: ID={}", userId);
 
-        if (memberService.isAdmin(userId)) {
+        if (memberService.isAdmin(userId)) { // 관리자끼리는 못 자름
             return ResponseEntity.badRequest().body("관리자 계정은 삭제할 수 없습니다.");
         }
 

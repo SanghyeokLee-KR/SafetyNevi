@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
-/**
- * 회원 이용 정지(Suspension) 이력 엔티티
- */
 @Entity
 @Table(name = "USER_SUSPENSION")
 @Getter @Setter
