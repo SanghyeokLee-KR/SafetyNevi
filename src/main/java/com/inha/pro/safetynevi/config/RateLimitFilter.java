@@ -11,7 +11,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-// /api/** 남용 막는 IP별 레이트리밋. 실제 카운팅은 RateLimiter 가 함 (로컬 인메모리 / 운영 Redis)
 @Slf4j
 @Component
 @RequiredArgsConstructor

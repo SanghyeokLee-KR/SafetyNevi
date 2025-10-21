@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
-// 운영용. Redis 고정 윈도우 카운터라 인스턴스들이 카운트를 같이 본다.
-// 분 단위 키에 INCR 하고 처음 만들 때만 TTL 1분 — 만료는 Redis가 알아서 하니 따로 안 치워도 됨
 @Profile("prod")
 @Component
 @RequiredArgsConstructor
@@ -22,6 +20,7 @@ public class RedisRateLimiter implements RateLimiter {
 
     @Override
     public boolean isOverLimit(String key) {
+        // 분 단위 키에 INCR, 처음 만들 때만 TTL 1분 → 만료는 Redis가 알아서 (따로 정리 안해도 됨)
         long minute = System.currentTimeMillis() / 60_000;
         String redisKey = "ratelimit:" + key + ":" + minute;
         Long count = redis.opsForValue().increment(redisKey);

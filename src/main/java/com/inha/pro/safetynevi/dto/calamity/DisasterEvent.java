@@ -1,9 +1,8 @@
 package com.inha.pro.safetynevi.dto.calamity;
 
-// 카프카로 주고받는 재난 이벤트. DTO 통째로 넣으면 역직렬화가 까다로워서 필드 펼친 record 로 둔다.
-// action: NEW / DELETE
+// DTO 통째로 넣으면 역직렬화가 까다로워서 필드 펼친 record 로 둠
 public record DisasterEvent(
-        String action,
+        String action,   // NEW / DELETE
         Long id,
         String disasterType,
         Double latitude,
@@ -20,7 +19,6 @@ public record DisasterEvent(
         return new DisasterEvent("DELETE", id, null, null, null, null, null);
     }
 
-    // 받는 쪽에서 다시 응답 DTO 로
     public DisasterZoneResponse toZone() {
         return DisasterZoneResponse.builder()
                 .id(id)

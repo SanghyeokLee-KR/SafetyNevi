@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.config.TopicBuilder;
 
-// 재난 이벤트 토픽. 앱 뜰 때 없으면 알아서 만들어준다 (운영만)
 @Configuration
 @Profile("prod")
 public class KafkaTopicConfig {

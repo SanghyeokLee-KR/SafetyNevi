@@ -3,13 +3,11 @@ package com.inha.pro.safetynevi.service.calamity;
 import com.inha.pro.safetynevi.dto.calamity.DisasterEvent;
 import com.inha.pro.safetynevi.dto.calamity.DisasterZoneResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-// 운영용. 재난 생기면 카프카에 던지고 끝. 받아서 뿌리는건 DisasterEventListener 가 함
-@Slf4j
+// 발행만 한다. 받아서 클라이언트로 뿌리는건 DisasterEventListener
 @Profile("prod")
 @Component
 @RequiredArgsConstructor

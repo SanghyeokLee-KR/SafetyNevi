@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class DisasterService {
 
     private final DisasterZoneRepository disasterZoneRepository;
-    private final DisasterBroadcaster broadcaster;   // 로컬은 웹소켓 바로, 운영은 카프카 거쳐서
+    private final DisasterBroadcaster broadcaster;
 
     // 1. 원형 재난 생성
     @CacheEvict(value = "activeDisasters", allEntries = true)
@@ -76,7 +76,7 @@ public class DisasterService {
         return disasterZoneRepository.findAll();
     }
 
-    // 5. 활성 재난만 조회. 지도 뜰때마다 부르니 캐싱, 캐시 직렬화 땜에 DTO로 반환
+    // 5. 활성 재난만. 캐시 직렬화 때문에 엔티티 말고 DTO로 반환
     @Cacheable("activeDisasters")
     @Transactional(readOnly = true)
     public List<DisasterZoneResponse> getActiveDisasterZones() {

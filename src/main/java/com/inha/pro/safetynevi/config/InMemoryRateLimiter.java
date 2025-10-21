@@ -8,12 +8,10 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-// 로컬용. 인메모리 고정 윈도우(1분) 카운터
 @Profile("!prod")
 @Component
 public class InMemoryRateLimiter implements RateLimiter {
 
-    // IP별 분당 허용 요청수. 평소 사용은 안 막히게 넉넉히
     @Value("${ratelimit.api.per-minute:300}")
     private int maxRequests;
 
@@ -35,7 +33,7 @@ public class InMemoryRateLimiter implements RateLimiter {
         }
     }
 
-    // 안 쓰는 윈도우 주기적으로 치워줌 (메모리 새는거 방지)
+    // 안 쓰는 윈도우 주기적으로 정리 (메모리 누수 방지)
     @Scheduled(fixedDelay = 300_000)
     public void cleanup() {
         long now = System.currentTimeMillis();
