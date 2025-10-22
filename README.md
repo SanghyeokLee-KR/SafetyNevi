@@ -1,235 +1,252 @@
-# SafetyNevi (안전네비)
-### AI & GIS 기반 지능형 재난 안전 대피 플랫폼
-> **"위기 상황에 빛이 되어줄 안전네비"**
-> 텍스트 중심의 재난 정보를 넘어, 가장 직관적이고 즉각적인 시각 정보를 제공합니다.
-
 <div align="center">
-  <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Spring%20Security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white"/>
+  <img src="src/main/resources/static/img/logo/로고.png" width="150" alt="SafetyNevi"/>
+  <h1>SafetyNevi (안전네비)</h1>
+  <p><b>AI · 지도 기반 재난 대피 플랫폼</b></p>
 
-  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white"/>
-  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Scikit_Learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white"/>
-
-  <br>
-
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"/>
-  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white"/>
-  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Thymeleaf-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Kakao-FFCD00?style=for-the-badge&logo=kakao&logoColor=black"/>
-
-  <img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
-  <img src="https://img.shields.io/badge/DigitalOcean-0080FF?style=for-the-badge&logo=digitalocean&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Oracle-F80000?style=for-the-badge&logo=oracle&logoColor=white"/>
-
+  <p>
+    <img src="https://img.shields.io/badge/Java_21-ED8B00?logo=openjdk&logoColor=white" alt="Java 21"/>
+    <img src="https://img.shields.io/badge/Spring_Boot_3.5-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot"/>
+    <img src="https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=white" alt="Redis"/>
+    <img src="https://img.shields.io/badge/Kafka-231F20?logo=apachekafka&logoColor=white" alt="Kafka"/>
+    <img src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white" alt="Python"/>
+    <img src="https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white" alt="FastAPI"/>
+    <img src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white" alt="Docker"/>
+    <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?logo=githubactions&logoColor=white" alt="CI/CD"/>
+    <img src="https://img.shields.io/badge/Oracle-F80000?logo=oracle&logoColor=white" alt="Oracle"/>
+  </p>
 </div>
 
+> 재난문자를 지도 위 **위험 구역(폴리곤)** 으로 바꾸고, 현재 위치에서 **'운영 중'인 대피소까지 경로**를 안내하는 플랫폼.
+
+> **이 프로젝트의 정의** — 인하공전 졸업작품으로 만든 재난 대피 플랫폼입니다. 졸작 시연 이후 **실서비스 수준으로 다듬는 중**(공식 API 전환 · HA 인프라 · CI/CD · 관측 · 보안)이고, 이 README는 그 엔지니어링 과정까지 함께 담았습니다. AI 위험판별은 아직 한계가 분명해서([9. 한계](#9-한계와-트레이드오프) 참고) **안전 판단의 최종 근거가 아니라**, 공식 경보를 빠르게 지도에 띄우고 대피를 돕는 보조 도구로 봐주세요.
+
+> **운영 고지** — 졸업작품 평가용으로 2025.12.07 ~ 12.14 (7일) `safety.inhatc.com` 에 배포·시연했고, 현재 데모 서버는 내려간 상태입니다. 코드는 계속 리팩터링·하드닝 중입니다.
+
+<details open>
+<summary><b>목차</b></summary>
+
+<br>
+
+**소개**
+* [1. 프로젝트 개요](#1-프로젝트-개요)
+* [2. 팀](#2-팀)
+
+**설계 · 기능**
+* [3. 시스템 아키텍처](#3-시스템-아키텍처)
+* [4. 주요 기능](#4-주요-기능)
+* [5. AI 파이프라인](#5-ai-파이프라인)
+* [6. 실서비스로 다듬기](#6-실서비스로-다듬기)
+* [7. 설계 다이어그램](#7-설계-다이어그램)
+
+**스택 · 한계**
+* [8. 기술 스택](#8-기술-스택)
+* [9. 한계와 트레이드오프](#9-한계와-트레이드오프)
+
+**실행**
+* [10. 디렉터리 구조](#10-디렉터리-구조)
+* [11. 설치 및 실행](#11-설치-및-실행)
+
+</details>
+
 ---
 
-## LIVE DEMO & 서비스 운영 고지
+## 1. 프로젝트 개요
+
+기후변화·도시화로 재난은 잦아지는데, 재난문자는 텍스트라 "어디가 위험하고 어디로 가야 하는지"가 한눈에 안 들어옵니다. SafetyNevi는 **재난문자를 지도 위 위험 구역으로 바꾸고, 현재 위치에서 운영 중인 대피소까지 경로를 안내**합니다.
+
+```
+재난문자 / 기상 데이터  →  AI 분류(재난유형 · 위험도)  →  지도 폴리곤 + WebSocket 실시간 알림  →  운영 중 대피소 경로 안내
+```
+
+메인 서버(Spring Boot)와 AI 서버(Python FastAPI)를 분리해, 무거운 텍스트 추론이 웹 응답을 막지 않도록 했습니다.
+
+---
+
+## 2. 팀
+
+| 이름 | 포지션 | 주요 기여 |
+| :--- | :--- | :--- |
+| **[이상혁](https://github.com/SanghyeokLee-KR)** | Tech Lead · PM | Python AI 서버·모델, 지도 핵심(폴리곤·경로 탐색)·WebSocket, Oracle 스키마·관리자, 배포(Docker·Nginx/HTTPS) |
+| **유기민** | Backend | 재난문자 수집 스케줄러, 게시판·공지·문의 REST API, DB 스키마 |
+| **김보겸** | Frontend Lead | 전체 퍼블리싱·반응형, 로고·아이콘·발표자료, 회원 UX |
+| **이진혁** | Frontend | 재난 행동요령 콘텐츠, 테스트 데이터셋 |
+
+> 졸업작품 이후의 실서비스화 작업(공식 API 전환 · Redis/Kafka · CI/CD · 관측 · 보안)은 [이상혁](https://github.com/SanghyeokLee-KR)이 이어서 진행했습니다.
+
+---
+
+## 3. 시스템 아키텍처
 
 <div align="center">
-
-**접속 URL:** [https://safety.inhatc.com](https://safety.inhatc.com)
-
+  <img src="src/main/resources/static/img/다이어그램/시스템%20아키텍처.png" width="720" alt="시스템 아키텍처"/>
 </div>
 
-> **주의: 운영 기간 제한**
->
-> 본 프로젝트는 **학교 프로젝트 평가 목적**으로 배포되었습니다.
-> <br>서버 운영 및 라이센스 비용 문제로 인해
->
-> * **운영 기간:** 2025년 12월 07일 ~ 2025년 12월 14일 (총 7일간)
-> * **기간 이후:** 서버는 종료되며, GitHub 저장소는 아카이브(Archive) 상태로 전환될 예정입니다.
+- **메인 (Spring Boot)** — 사용자·지도·시설·게시판·공지·관리자·재난 도메인 + WebSocket(STOMP) 실시간 알림.
+- **AI (FastAPI)** — 재난문자 텍스트를 받아 재난유형·위험도를 분류해 돌려줍니다. 메인 서버와 HTTP로 통신.
+- **데이터** — 운영은 Oracle, 로컬은 H2 인메모리(프로파일로 전환). 시설 수천 건은 기동 시 CSV로 적재.
 
 ---
 
-## 목차 (Table of Contents)
-1. [프로젝트 개요](#프로젝트-개요-overview)
-2. [시스템 아키텍처](#시스템-아키텍처-system-architecture)
-3. [핵심 설계 다이어그램](#핵심-설계-다이어그램)
-4. [파이프라인 상세](#파이프라인-상세)
-5. [주요 기능](#주요-기능-key-features)
-6. [팀원 및 역할 분담](#팀원-및-역할-분담-roles--responsibilities)
-7. [기술 스택](#기술-스택-technology)
-8. [설치 및 실행](#설치-및-실행-installation)
+## 4. 주요 기능
+
+**1. 실시간 긴급 알림 + GIS 시각화**
+AI가 위험을 감지하면 WebSocket으로 접속 중인 모든 사용자에게 모달 알림을 보내고, 해당 지역을 지도에 붉은 폴리곤(위험 구역)으로 그립니다.
+
+**2. 운영 중 대피소 경로 안내**
+단순 최단거리가 아니라 **'지금 운영 중'인 시설만** 필터링하고, Kakao Mobility API로 도보/차량 실제 경로와 소요시간을 계산합니다.
+
+**3. 시설물 클러스터링**
+전국 경찰서·소방서·병원·대피소 수천 개를 마커 클러스터링으로 묶어 보여주고, 줌 레벨에 따라 시/구/동 단위로 집약합니다.
+
+**4. 위치 기반 안전 커뮤니티**
+지도에서 직접 위치를 찍어 제보 글을 쓰고, 실시간 댓글·좋아요로 상황을 공유합니다.
 
 ---
 
-## 프로젝트 개요 (Overview)
+## 5. AI 파이프라인
 
-**SafetyNevi**는 기후 변화와 도시화로 인해 급증하는 재난 상황에서,
-기존 **텍스트 위주의 재난 문자 시스템**이 가진 한계(위치 파악의 어려움, 대피 경로 부재)를 극복하기 위해 개발된 **AI & 지도 기반 재난 대응 플랫폼**입니다.
+| 단계 | 내용 |
+| :--- | :--- |
+| **수집** | 1분 간격으로 공식 API(행안부 긴급재난문자) 조회 |
+| **전처리** | 정규식으로 날짜·특수문자 제거, 행정구역 명칭 정규화 |
+| **추론** | scikit-learn **Naive Bayes + TF-IDF** 모델 2개 — 재난유형(화재·호우·지진 등) 분류 / 위험도(DANGER·SAFE) 판별 |
+| **경보** | `predict_proba`로 확신도 산출, 임계치를 높게 둬서 그 이상일 때만 지도에 위험 구역 생성 |
 
-자체 개발한 **AI 자연어 처리 모델**이 실시간 재난 문자를 분석하여
-**위험 지역을 지도상 Polygon(영역)으로 시각화**하고,
-사용자의 현재 위치를 기준으로 **‘운영 중’인 안전 대피소까지의 최적 경로**를 안내합니다.
-
-### 핵심 가치
-1. **AI 자동 분석**
-   관리자 개입 없이 24시간 재난 위험도 자동 판별 (Accuracy ~92%, internal test set)
-
-2. **직관적 시각화**
-   재난 텍스트 데이터를 GIS 데이터로 변환해 지도에 즉시 표출
-
-3. **골든타임 확보**
-   실시간 위험 알림 + 최적 경로 안내로 신속한 대피 유도
+위험으로 판정되면 메인 서버가 지역명 기준으로 60분짜리 위험 폴리곤을 만들고 WebSocket으로 전파합니다.
+이 모델의 한계는 [9. 한계와 트레이드오프](#9-한계와-트레이드오프)에 솔직하게 적었습니다.
 
 ---
 
-## 시스템 아키텍처 (System Architecture)
+## 6. 실서비스로 다듬기
 
-본 프로젝트는 **Spring Boot 기반 메인 서버**와
-**Python FastAPI 기반 AI 서버**가 분리된 **MSA 지향 구조**로 설계되었습니다.
+졸작은 "동작하는 데모"였습니다. 그 뒤로 실제 운영을 가정하고 다음을 보강했습니다 — 포트폴리오에서 제일 신경 쓴 부분입니다.
+
+| 영역 | 한 일 | 왜 |
+| :--- | :--- | :--- |
+| **데이터 소스** | 네이버 HTML 크롤링 → **공식 OpenAPI**(행안부 재난문자 · 기상청 단기예보) | 크롤링은 페이지 구조 바뀌면 깨지고 비공식. 공식 API가 안정적·합법 |
+| **캐시 · 세션 · 레이트리밋** | 운영은 **Redis**, 로컬은 인메모리 — **프로파일로 분리** | 인스턴스를 늘려도 캐시·세션·남용카운터가 공유돼야 HA. 단 로컬은 Docker 없이 그대로 떠야 해서 갈라둠 |
+| **이벤트 전파** | 재난 알림을 **Kafka**로 발행→소비, 컨슈머 그룹을 인스턴스마다 고유(UUID)하게 | 인스턴스가 여러 대면 모든 인스턴스가 각자 붙은 WebSocket 클라이언트로 fan-out 해야 알림이 다 감 |
+| **배포 (CI/CD)** | **GitHub Actions** → Docker 이미지 빌드 → **GHCR** push → 서버 `pull` · 재시작 | 푸시하면 테스트·이미지·배포까지 자동. 서버 시크릿 없으면 배포 단계는 graceful skip |
+| **관측** | Actuator **health / liveness / readiness** + **Prometheus** 메트릭 | 로드밸런서·모니터링이 앱 상태를 읽을 수 있게 |
+| **보안** | 보안 헤더 + **CSP**(외부 리소스 허용목록) · IP 레이트리밋 · graceful shutdown | XSS·API 남용 방어, 배포 중 처리 중이던 요청 유실 방지 |
+| **프론트 빌드** | 중복 JS 제거 → **TypeScript**(tsc) + Gradle 빌드 통합 | 타입 안전 + 빌드 산출물 일원화(`frontend/src` → `static/js` 자동 컴파일) |
+
+> 위 운영 인프라(Redis · Kafka)는 **`prod` 프로파일에서만** 켜집니다. 로컬(`h2`)·테스트는 관련 오토컨피그를 빼서 **Docker 없이 그대로** 동작합니다. (운영 검증 상태는 [9. 한계](#9-한계와-트레이드오프) 참고)
 
 ---
 
-## 핵심 설계 다이어그램
+## 7. 설계 다이어그램
 
-시스템 구조, 기능 범위, 데이터 관계와 흐름을 정리한 설계 다이어그램입니다. (이미지를 누르면 원본 크기로 열립니다.)
+이미지를 누르면 원본 크기로 열립니다.
 
 <table>
   <tr>
     <td width="50%" align="center" valign="top">
-      <b>1. 시스템 아키텍처</b><br/>
-      <img src="src/main/resources/static/img/다이어그램/시스템%20아키텍처.png" width="420" alt="시스템 아키텍처"/>
+      <b>유스케이스</b><br/>
+      <a href="src/main/resources/static/img/다이어그램/유스케이스%20다이어그램.png"><img src="src/main/resources/static/img/다이어그램/유스케이스%20다이어그램.png" width="400" alt="유스케이스 다이어그램"/></a>
     </td>
     <td width="50%" align="center" valign="top">
-      <b>2. 유스케이스 다이어그램</b><br/>
-      <img src="src/main/resources/static/img/다이어그램/유스케이스%20다이어그램.png" width="420" alt="유스케이스 다이어그램"/>
+      <b>클래스</b><br/>
+      <a href="src/main/resources/static/img/다이어그램/클래스%20다이어그램.png"><img src="src/main/resources/static/img/다이어그램/클래스%20다이어그램.png" width="400" alt="클래스 다이어그램"/></a>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center" valign="top">
-      <b>3. 클래스 다이어그램</b><br/>
-      <img src="src/main/resources/static/img/다이어그램/클래스%20다이어그램.png" width="420" alt="클래스 다이어그램"/>
+      <b>데이터베이스 ERD</b><br/>
+      <a href="src/main/resources/static/img/다이어그램/erd다이어그램.png"><img src="src/main/resources/static/img/다이어그램/erd다이어그램.png" width="400" alt="ERD"/></a>
     </td>
     <td width="50%" align="center" valign="top">
-      <b>4. 데이터베이스 ERD</b><br/>
-      <img src="src/main/resources/static/img/다이어그램/erd다이어그램.png" width="420" alt="ERD 다이어그램"/>
+      <b>데이터 처리 시퀀스</b><br/>
+      <a href="src/main/resources/static/img/다이어그램/시퀀스%20다이어그램.png"><img src="src/main/resources/static/img/다이어그램/시퀀스%20다이어그램.png" width="400" alt="시퀀스 다이어그램"/></a>
     </td>
-  </tr>
-  <tr>
-    <td width="50%" align="center" valign="top">
-      <b>5. 데이터 처리 시퀀스</b><br/>
-      <img src="src/main/resources/static/img/다이어그램/시퀀스%20다이어그램.png" width="420" alt="시퀀스 다이어그램"/>
-    </td>
-    <td width="50%"></td>
   </tr>
 </table>
 
 ---
 
-## 파이프라인 상세
+## 8. 기술 스택
 
-### 1. Data Ingestion (데이터 수집)
-
-* **주기:** 1분 간격
-* **소스:** 공공기관의 재난 문자 크롤링 (Crawling)
-* **데이터 형식:** 비정형 텍스트 데이터 수집
-
-### 2. Preprocessing (데이터 전처리)
-
-* **목표:** AI 모델 학습 및 추론에 적합한 형태로 데이터 정제
-* **주요 작업:**
-    * **Regex(정규 표현식)** 기반 날짜 및 특수문자 제거
-    * 행정구역 명칭 **정규화** (Normalization)
-
----
-
-### 3. AI Inference (AI 추론)
-
-| 항목 | 상세 내용 |
+| 분류 | 스택 |
 | :--- | :--- |
-| **Model** | Scikit-learn **Multinomial Naive Bayes** |
-| **Feature Extraction** | **TF-IDF Vectorizer** (Term Frequency-Inverse Document Frequency) |
-| **Classification** | **재난 유형** (화재, 호우, 지진 등) 분류 및 **위험도** (DANGER/SAFE) 판별 |
-
-### 4. Alerting & Scoring (경보 발령 및 확신도 계산)
-
-* **Probability Scoring (확률 계산):** `predict_proba()` 함수를 사용하여 **확신도(Confidence Score)** 산출
-* **Alert Threshold (경보 기준):** 계산된 확신도가 **90% 이상**일 경우에만 최종 사용자에게 경보를 발령
-
----
-## 주요 기능 (Key Features)
-1. 실시간 긴급 알림 & GIS 시각화
-   AI가 위험을 감지하면 **WebSocket**을 통해 접속 중인 모든 사용자에게 긴급 모달 알림을 전송합니다.
-
-   행정구역 데이터(GeoJSON)와 매핑하여 지도상에 **붉은색 폴리곤(위험 구역)**을 렌더링합니다.
-
-2. 사용자 맞춤형 안전 경로 안내
-   단순 최단 거리가 아닌, **'현재 운영 중'**인 시설만 필터링합니다.
-
-   **Kakao Mobility API**를 연동하여 도보/차량 기준의 실제 이동 경로와 소요 시간을 계산합니다.
-
-3. 시설물 정보 클러스터링
-   전국 수천 개의 경찰서, 소방서, 병원, 대피소 데이터를 마커 클러스터링(Clusterer) 기법으로 지도에 깔끔하게 표출합니다.
-
-   줌 레벨에 따라 시/구/동 단위로 정보를 집약하여 보여줍니다.
-
-4. 위치 기반 안전 커뮤니티
-   지도 위에서 직접 위치를 지정하여 제보 게시글을 작성할 수 있습니다.
-
-   실시간 댓글 및 좋아요 기능을 통해 시민들 간의 상황 공유가 가능합니다.
+| **Backend** | Java 21, Spring Boot 3.5, Spring Security, JPA, WebSocket(STOMP) |
+| **AI 서버** | Python, FastAPI, scikit-learn, Pandas, Joblib |
+| **Frontend** | TypeScript, Thymeleaf, HTML/CSS, Kakao Map/Mobility |
+| **운영 인프라** | Redis(캐시·세션·레이트리밋), Kafka(이벤트), Docker, Nginx |
+| **DB** | Oracle (운영) / H2 (로컬·테스트) |
+| **CI/CD · 관측** | GitHub Actions, GHCR, Actuator, Prometheus |
+| **외부 API** | 행안부 긴급재난문자, 기상청 단기예보, Kakao |
 
 ---
-## 팀원 및 역할 분담 (Roles & Responsibilities)
 
-| 이름 | 포지션 | 상세 역할 (R&R) |
-| :--- | :--- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **이상혁** | **Tech Lead & PM** | • **AI/System Architecture:** Python AI 서버 구축, 모델 학습, 시스템 통합 설계<br>• **Core Logic:** 지도 서비스 핵심(폴리곤 시각화, 경로 탐색), WebSocket 구현<br> • **Database & Report:** Oracle DB 스키마 설계 및 관리자 기능 구현, 최종 보고서 작성<br> • **Deployment:** DigitalOcean 서버 배포, Docker DB 구성, Nginx/HTTPS 인프라 구축 |
-| **유기민** | **Backend Core** | • **Data Pipeline:** 재난 문자 크롤링 로직 및 스케줄러 구현<br>• **API Dev:** 게시판/공지/문의 REST API 설계 및 개발<br>• **Database:** Oracle DB 스키마 설계 및 관리자 기능 구현                                                                                                                    |
-| **김보겸** | **Frontend Lead** | • **UI/UX:** 전체 웹 페이지 퍼블리싱 및 반응형 디자인 적용<br>• **Design:** 로고, 아이콘, 핀포인트 등 그래픽 리소스 제작, 발표용 PPTX 제작<br>• **User Flow:** 회원가입, 로그인, 마이페이지 UX 설계                                                                                                                              |
-| **이진혁** | **Frontend Support** | • **Content:** 재난 행동요령 페이지 콘텐츠 구성 및 스타일링<br>• **Data:** 테스트 데이터셋 조사 및 시각화 보조                                                                                                                                                                                |
+## 9. 한계와 트레이드오프
 
----
-## 기술 스택 (Technology)
+실서비스 기준으로 솔직하게 남은 한계입니다.
 
-| 분류 (Category) | 기술 스택 (Technology) |
-| :--- | :--- |
-| **Backend** | Java 21, Spring Boot 3.5.6, Spring Security, JPA |
-| **AI Server** | Python 3.10, FastAPI, Scikit-learn, Pandas, Joblib |
-| **Frontend** | TypeScript, Thymeleaf, HTML5, CSS3 |
-| **Web Server** | Nginx (Reverse Proxy & Static File Serving) |
-| **Database** | Oracle Database 21c XE (via Docker) |
-| **External API** | Kakao Map/Mobility API, Public Data Portal, Naver Search |
-| **Infrastructure** | DigitalOcean Droplet (Ubuntu), Docker |
+- **AI 위험판별이 핵심 약점입니다.** scikit-learn(Naive Bayes + TF-IDF) 모델 2개를 학습해 쓰지만, **학습 라벨을 규칙 기반으로 만들어서** 사실상 그 규칙을 모사하는 수준입니다. 처음 보는 다양한 재난문자에 대한 일반화는 검증하지 못했고, 실제 안전 판단의 최종 근거로 쓰기엔 **제대로 라벨링된 데이터로 재학습·검증이 필요**합니다. 그래서 지금은 확신도 임계치를 높게 두고 보조적으로만 씁니다.
+- **운영 인프라(Redis · Kafka)는 코드·설정까지지만 실부하 검증 전입니다.** 프로파일 분리·`docker-compose`·fan-out 컨슈머 설계는 끝났지만, **실제 다중 인스턴스·부하·장애 상황 검증은 아직** 안 했습니다(로컬에 Docker가 없어 운영 런타임은 CI/서버 몫). 운영해 본 건 단일 인스턴스 데모뿐입니다.
+- **세션 직렬화 미검증** — 운영 Redis 세션은 세션 속성 직렬화에 의존하는데, 실서버에서 끝까지 확인하진 않았습니다.
+- **데모 종료** — 7일 평가 운영 후 서버는 내렸습니다. 재배포하려면 서버 · GitHub 시크릿 세팅이 필요합니다.
 
 ---
-## 설치 및 실행 (Installation)
-### 1. Python AI Server
+
+## 10. 디렉터리 구조
+
+```
+SafetyNevi/
+├── src/main/java/.../safetynevi/   # Spring Boot — 도메인별 controller·service·dto·entity·config
+├── src/main/resources/
+│   ├── templates/                  # Thymeleaf 뷰
+│   └── static/{css,js,img}         # 정적 리소스 (js 는 TypeScript 빌드 산출물)
+├── frontend/src/                   # TypeScript 소스 (→ static/js 로 컴파일)
+├── python/                         # FastAPI AI 서버 (main.py · train.py · *.pkl)
+├── Dockerfile · docker-compose.yml # 이미지 빌드 + Redis/Kafka 포함 배포 구성
+├── .github/workflows/ci.yml        # CI/CD (테스트 → 이미지 → GHCR → 배포)
+└── build.gradle
+```
+
+---
+
+## 11. 설치 및 실행
+
+### 1) Python AI 서버
 
 ```bash
-# 필수 라이브러리 설치
-pip install fastapi uvicorn scikit-learn pandas oracledb joblib
-
-# AI 서버 실행 (Port: 8000)
+cd python
+pip install fastapi uvicorn scikit-learn pandas joblib
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-### 2. Main Server (Spring Boot)
+### 2) 메인 서버 (Spring Boot) — 요구사항: Java 21
 
-**요구사항:** Java 21
-
-**1) 설정 파일 준비** — 실제 키가 담긴 설정은 보안상 git에 포함되지 않습니다. 예시 파일을 복사해 채워주세요.
+**설정 파일 준비** — 실제 키가 든 설정은 git에 포함하지 않습니다. 예시를 복사해 채워주세요.
 
 ```bash
 cp src/main/resources/application-example.properties src/main/resources/application.properties
-# Kakao API 키, DB 접속 정보 등 입력
+# Kakao · 기상청 · 재난문자 API 키, DB 접속 정보 입력
 ```
 
-**2) 로컬 실행** — H2 인메모리 DB로 Oracle 없이 바로 실행됩니다.
+**로컬 실행** — H2 인메모리로 Oracle·Docker 없이 바로 뜹니다.
 
 ```bash
 ./gradlew bootRun --args='--spring.profiles.active=h2'
 ```
 
-* 접속: `http://localhost:9090`
-* 테스트 계정: `admin / admin1234` (관리자), `test / test1234` (일반) — 시작 시 자동 생성
+- 접속: `http://localhost:9090`
+- 테스트 계정: `admin / admin1234` (관리자), `test / test1234` (일반) — 기동 시 자동 생성
+- 프론트엔드는 자동 빌드됩니다. TypeScript(`frontend/src/*.ts`)가 `bootRun`·`build` 때 `static/js`로 컴파일됩니다(Node는 최초 1회 자동 다운로드). JS 수정은 `frontend/src`에서 하고, `static/js`는 빌드 산출물이라 직접 건드리지 않습니다.
 
-> **프론트엔드는 자동으로 빌드됩니다.** TypeScript 소스(`frontend/src/*.ts`)는 `gradlew bootRun`·`build` 시 `static/js`로 자동 컴파일됩니다 (Node는 최초 1회 자동 다운로드). JS를 수정할 땐 `frontend/src`를 편집하고, `static/js`는 빌드 산출물이라 직접 건드리지 않습니다.
+### 3) 운영 배포 (참고)
+
+`docker-compose.yml`이 GHCR 이미지 + Redis + Kafka를 함께 띄웁니다. 서버에 Docker와 `application-prod.properties`(실제 키)를 두고:
+
+```bash
+docker compose pull && docker compose up -d
+```
+
+`master`에 push하면 GitHub Actions가 테스트 → 이미지 빌드 → GHCR push → 서버 배포까지 자동으로 처리합니다.
+
+---
+
+## 라이선스
+
+[MIT](LICENSE)
