@@ -19,6 +19,7 @@ public class DisasterMessage {
     private Long sn; // 재난문자 API 일련번호. 중복 방지용 자연키로 씀
 
     private String disasterType;
+    private String emergencyLevel; // 공식 긴급단계(위급/긴급/안전안내) — 진짜 위험도, AI 추정 아님
     private String area;
     private String sentDate;
 
@@ -27,6 +28,7 @@ public class DisasterMessage {
 
     public DisasterMessage(DisasterMessageDto dto) {
         this.disasterType = dto.getDisasterType();
+        this.emergencyLevel = dto.getEmergencyLevel();
         this.area = dto.getArea();
         this.sentDate = dto.getSentDate();
         this.content = dto.getContent();

@@ -58,8 +58,8 @@ def fetch_data_from_db():
 
     conn.outputtypehandler = output_type_handler
 
-    # 필요한 컬럼만 조회
-    query = "SELECT DMID, CONTENT, DISASTERTYPE, AREA FROM DM"
+    # 필요한 컬럼만 조회 (EMERGENCY_LEVEL = 공식 긴급단계, 위험도 정답으로 씀)
+    query = "SELECT DMID, CONTENT, DISASTERTYPE, EMERGENCY_LEVEL, AREA FROM DM"
     df = pd.read_sql(query, conn)
     conn.close()
 
@@ -70,25 +70,15 @@ def fetch_data_from_db():
 
 
 # ==========================================
-# 4. 위험도 라벨링 (Rule-base)
+# 4. 위험도 라벨 (공식 긴급단계 기반)
 # ==========================================
-def label_risk(content):
-    """
-    AI 학습을 위한 정답지 만들기.
-    특정 키워드가 있으면 '위험', 아니면 '안전'으로 일단 분류함.
-    """
-    text = str(content)
-
-    danger_keywords = [
-        "확진", "감염", "전파", "사망", "대피", "폭발", "붕괴",
-        "산불", "침수", "고립", "위험", "강풍", "강한 바람"
-    ]
-
-    for kw in danger_keywords:
-        if kw in text:
-            return "위험"  # DANGER
-
-    return "안전"  # SAFE
+# 예전엔 본문 키워드로 라벨을 찍었는데, 그러면 모델이 그 키워드 규칙을 그대로 따라하는
+# 순환 구조라 의미가 없었다. 그래서 정부 공식 긴급단계(EMRG_STEP_NM: 위급/긴급/안전안내)를 정답으로 쓴다.
+# 라벨 출처가 '본문'이 아니라 '공식 단계 필드'라 비순환 → text -> 공식판정 을 배우는 진짜 지도학습.
+# (출력은 DANGER/SAFE 로 둬서 FastAPI·자바 쪽 계약과 맞춤)
+def to_risk(emergency_level):
+    s = str(emergency_level)
+    return "DANGER" if ("위급" in s or "긴급" in s) else "SAFE"
 
 
 # ==========================================
@@ -147,8 +137,9 @@ def prepare_training_dataframe(df, max_per_area=MAX_PER_AREA):
     df['content'] = df['content'].astype(str).apply(clean_text)
     df['disastertype'] = df['disastertype'].astype(str)
 
-    # 위에서 만든 룰베이스 함수로 위험도 라벨링
-    df['risk_label'] = df['content'].apply(label_risk)
+    # 위험도 라벨 = 공식 긴급단계 (본문 키워드가 아니라 정부 분류 → 순환 안 됨)
+    # 주의: 긴급단계 비어있는(옛날 크롤링) 행은 SAFE로 떨어지니, 새 크롤링으로 다시 채운 뒤 재학습할 것
+    df['risk_label'] = df['emergency_level'].apply(to_risk)
 
     # 지역명 패턴 추출
     area_patterns = build_area_patterns(df['area'])

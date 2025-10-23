@@ -83,12 +83,14 @@ public class CrawlingService {
                 String content = item.path("MSG_CN").asText("");
                 String area = item.path("RCPTN_RGN_NM").asText("정보 없음");
                 String type = item.path("DST_SE_NM").asText("기타");
+                // 공식 긴급단계(위급/긴급/안전안내). 키 발급 후 실제 응답으로 필드명 확인 — 보통 EMRG_STEP_NM
+                String emergencyLevel = item.path("EMRG_STEP_NM").asText("");
                 String sentDate = item.path("CRT_DT").asText("");
 
-                DisasterMessage message = new DisasterMessage(new DisasterMessageDto(type, area, sentDate, content));
+                DisasterMessage message = new DisasterMessage(new DisasterMessageDto(type, emergencyLevel, area, sentDate, content));
                 message.setSn(sn);
                 disasterMessageRepository.save(message);
-                log.info("신규 재난문자 저장: {} ({})", area, type);
+                log.info("신규 재난문자 저장: {} ({} / {})", area, type, emergencyLevel.isBlank() ? "단계없음" : emergencyLevel);
 
                 if (!firstRun) {
                     analyzeAndTriggerDisaster(message);
@@ -99,11 +101,21 @@ public class CrawlingService {
         }
     }
 
+    // 위험 판정은 정부 공식 긴급단계를 그대로 쓴다(권위 출처). 단계가 비어있는 메시지만 AI 보조 추정.
     private void analyzeAndTriggerDisaster(DisasterMessage msg) {
-        // AI 서버에 위험도 분석 요청 → 위험하면 지역명 기반으로 지도에 폴리곤(60분) 생성
-        if (aiClientService.isCritical(msg.getContent())) {
+        String level = msg.getEmergencyLevel();
+        boolean critical = (level != null && !level.isBlank())
+                ? isCriticalLevel(level)                          // 공식 긴급단계 중계
+                : aiClientService.isCritical(msg.getContent());   // 단계 없을 때만 AI 보조
+
+        if (critical) {
             disasterService.createAreaDisaster(msg.getArea(), msg.getDisasterType(), 60);
-            log.info("위험 판정 - 재난 영역 생성: {}", msg.getArea());
+            log.info("위험({}) - 재난 영역 생성: {}", (level == null || level.isBlank()) ? "AI추정" : level, msg.getArea());
         }
+    }
+
+    // 위급재난문자·긴급재난문자면 위험. 안전안내문자는 표시만(영역 생성 안 함).
+    private boolean isCriticalLevel(String level) {
+        return level.contains("위급") || level.contains("긴급");
     }
 }
