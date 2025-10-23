@@ -1,10 +1,11 @@
+import os
 import re
 import oracledb
 import pandas as pd
 import joblib
 import random
+from pathlib import Path
 from collections import Counter
-from datetime import datetime
 
 # 시각화용 라이브러리
 import matplotlib.pyplot as plt
@@ -21,10 +22,13 @@ from sklearn.utils import resample
 # ==========================================
 # 1. 환경 설정
 # ==========================================
-# DB 접속 정보 (로컬 개발용)
-DB_USER = ""
-DB_PASSWORD = ""
-DB_DSN = ""
+# DB 접속 정보 — 환경변수에서 받는다 (하드코딩해서 커밋하면 유출되니까). 예) export DB_USER=...
+DB_USER = os.environ.get("DB_USER", "")
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "")
+DB_DSN = os.environ.get("DB_DSN", "")
+
+# 모델 .pkl 은 이 파일과 같은 폴더에 저장 (CWD가 어디든 main.py 가 찾게)
+MODEL_DIR = Path(__file__).resolve().parent
 
 # 한 지역 데이터가 너무 많으면 편향되니까 최대 개수 제한
 MAX_PER_AREA = 300
@@ -150,12 +154,14 @@ def prepare_training_dataframe(df, max_per_area=MAX_PER_AREA):
         dtype = r['disastertype']
         area = r['area'] if pd.notna(r['area']) else "UNKNOWN"
         risk = r['risk_label']
+        level = r['emergency_level']  # 위험도 모델은 공식 단계가 있는 행만 학습할 거라 같이 들고 감
 
         # 1. 원본 데이터 추가
         rows.append({
             'content': content,
             'disastertype': dtype,
             'risk_label': risk,
+            'emergency_level': level,
             'area': area,
             'version': 'original'
         })
@@ -168,6 +174,7 @@ def prepare_training_dataframe(df, max_per_area=MAX_PER_AREA):
                 'content': anon,
                 'disastertype': dtype,
                 'risk_label': risk,
+                'emergency_level': level,
                 'area': area,
                 'version': 'anon'
             })
@@ -219,44 +226,71 @@ def visualize_data(df):
         wc = WordCloud(font_path=FONT_PATH, width=800, height=400, background_color="white")
         wc.generate(text)
         wc.to_file("wordcloud.png")
-    except:
+    except Exception:
         print("⚠️ 워드클라우드 생성 실패 (폰트 문제일 수 있음)")
 
     print("📁 이미지 저장 완료 (class_distribution.png 등)")
 
 
 # ==========================================
-# 8. 모델 학습 및 저장 (핵심)
+# 8. 모델 학습 · 평가 · 저장
 # ==========================================
+def make_type_pipe():
+    return Pipeline([('tfidf', TfidfVectorizer(max_features=5000)), ('clf', MultinomialNB())])
+
+
+def make_risk_pipe():
+    return Pipeline([('tfidf', TfidfVectorizer(max_features=3000)), ('clf', MultinomialNB())])
+
+
+def evaluate(make_pipe, X, y, name):
+    # 홀드아웃 20%로 성능을 '측정'한다. 특히 소수 클래스(DANGER) 재현율을 봐야 의미 있음.
+    counts = Counter(y)
+    if len(counts) < 2 or min(counts.values()) < 2 or len(y) < 20:
+        print(f"   [{name}] 표본/클래스 부족 → 평가 생략")
+        return
+    X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=SEED, stratify=y)
+    pipe = make_pipe()
+    pipe.fit(X_tr, y_tr)
+    print(f"\n[{name}] 홀드아웃(20%) 성능:")
+    print(classification_report(y_te, pipe.predict(X_te), zero_division=0))
+
+
+def balance_classes(df_risk):
+    # 위험도는 안전안내(SAFE)가 대다수라, DANGER를 다수 클래스 수만큼 업샘플해 균형을 맞춘다.
+    counts = df_risk['risk_label'].value_counts()
+    if len(counts) < 2:
+        return df_risk
+    n = counts.max()
+    parts = []
+    for _, grp in df_risk.groupby('risk_label'):
+        parts.append(grp if len(grp) >= n else resample(grp, replace=True, n_samples=n, random_state=SEED))
+    return pd.concat(parts).sample(frac=1, random_state=SEED).reset_index(drop=True)
+
+
 def train_and_save_models(df):
-    print("\n🚀 AI 모델 학습 시작...")
+    print("\n🚀 모델 학습 시작...")
 
-    # 1차 모델: 재난 종류 분류 (Naive Bayes 사용)
-    # TF-IDF로 텍스트를 벡터로 바꾸고 분류기에 넣음
-    pipeline1 = Pipeline([
-        ('tfidf', TfidfVectorizer(max_features=5000)),
-        ('clf', MultinomialNB())
-    ])
+    # 1. 재난 종류 모델 — 평가 먼저 보고, 최종 모델은 전체 데이터로 학습
+    evaluate(make_type_pipe, df['content'], df['disastertype'], "재난 종류")
+    type_pipe = make_type_pipe()
+    type_pipe.fit(df['content'], df['disastertype'])
+    joblib.dump(type_pipe, MODEL_DIR / "model_disaster.pkl")
 
-    print("   -> 재난 종류 모델 학습 중...")
-    pipeline1.fit(df['content'], df['disastertype'])
-    # ★ 저장 파일명 수정 (server.py랑 맞춤)
-    joblib.dump(pipeline1, "model_disaster.pkl")
+    # 2. 위험도 모델 — 공식 긴급단계가 채워진 행만 + 불균형 업샘플 후 학습
+    risk_df = df[df['emergency_level'].notna() & (df['emergency_level'].astype(str).str.strip() != "")]
+    if risk_df.empty:
+        print("⚠️ 긴급단계가 채워진 데이터가 없어 위험도 모델은 건너뜀 (새 크롤링으로 단계 채운 뒤 재학습)")
+        return type_pipe, None
 
-    # 2차 모델: 위험/안전 판별
-    pipeline2 = Pipeline([
-        ('tfidf', TfidfVectorizer(max_features=3000)),
-        ('clf', MultinomialNB())
-    ])
-
-    print("   -> 위험도 판단 모델 학습 중...")
-    pipeline2.fit(df['content'], df['risk_label'])
-    # ★ 저장 파일명 수정 (server.py랑 맞춤)
-    joblib.dump(pipeline2, "model_safety.pkl")
+    balanced = balance_classes(risk_df)
+    evaluate(make_risk_pipe, balanced['content'], balanced['risk_label'], "위험도 DANGER/SAFE")
+    risk_pipe = make_risk_pipe()
+    risk_pipe.fit(balanced['content'], balanced['risk_label'])
+    joblib.dump(risk_pipe, MODEL_DIR / "model_safety.pkl")
 
     print("✅ 모델 저장 완료: model_disaster.pkl, model_safety.pkl")
-
-    return pipeline1, pipeline2
+    return type_pipe, risk_pipe
 
 
 # ==========================================
@@ -303,7 +337,7 @@ def save_analysis_results(df, model_type, model_risk):
                 "pr": pred_risk
             })
         except Exception as e:
-            pass  # 에러나도 일단 진행
+            print(f"⚠️ DM_ANALYSIS 저장 실패 (dmid={dmid}): {e}")  # 조용히 삼키지 말고 알림
 
     conn.commit()
     conn.close()
@@ -345,7 +379,10 @@ def main():
     df_for_save = df_db.rename(columns={'DMID': 'dmid', 'content_clean': 'content'})
     df_for_save['version'] = 'original'  # 강제로 마킹
 
-    save_analysis_results(df_for_save, model_type, model_risk)
+    if model_risk is None:
+        print("ℹ️ 위험도 모델이 없어 DB 재분석은 건너뜁니다 (긴급단계 채운 뒤 재실행).")
+    else:
+        save_analysis_results(df_for_save, model_type, model_risk)
 
     print("\n=== 🎉 학습 완료! 서버를 재시작하세요. ===")
 
