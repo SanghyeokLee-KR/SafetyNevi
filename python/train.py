@@ -30,8 +30,9 @@ DB_DSN = os.environ.get("DB_DSN", "")
 # 모델 .pkl 은 이 파일과 같은 폴더에 저장 (CWD가 어디든 main.py 가 찾게)
 MODEL_DIR = Path(__file__).resolve().parent
 
-# 한 지역 데이터가 너무 많으면 편향되니까 최대 개수 제한
-MAX_PER_AREA = 300
+# 데이터 편향 방지용 상한 (리포트 보고 튜닝)
+MAX_PER_AREA = 300   # 한 지역이 너무 많으면 줄임 (지리 편향)
+MAX_PER_TYPE = 500   # 한 재난종류가 너무 많으면 줄임 — 코로나 시절 데이터라 감염병 쏠림 방지
 SEED = 42
 random.seed(SEED)
 
@@ -133,7 +134,7 @@ def remove_area_mentions(text, area_patterns):
 # ==========================================
 # 6. 학습용 데이터셋 만들기
 # ==========================================
-def prepare_training_dataframe(df, max_per_area=MAX_PER_AREA):
+def prepare_training_dataframe(df, max_per_area=MAX_PER_AREA, max_per_type=MAX_PER_TYPE):
     print("🛠️ 학습 데이터 가공 중... (지역명 제거 등)")
     df.columns = [c.lower() for c in df.columns]
 
@@ -182,18 +183,23 @@ def prepare_training_dataframe(df, max_per_area=MAX_PER_AREA):
     # 데이터 셔플
     df_all = pd.DataFrame(rows).sample(frac=1, random_state=SEED).reset_index(drop=True)
 
-    # 특정 지역 데이터가 너무 많으면 좀 줄임 (Downsampling)
+    # 다운샘플링 — 지역/재난종류가 너무 많으면 깎아서 편향을 막는다.
+    #  - 지역 캡: 지리 편향
+    #  - 종류 캡: 코로나 시절 데이터라 감염병이 압도하는 시기 편향 (이게 핵심)
     final = []
     area_counts = Counter()
+    type_counts = Counter()
 
     for _, r in df_all.iterrows():
         area = r['area']
-        if area_counts[area] < max_per_area:
+        dtype = r['disastertype']
+        if area_counts[area] < max_per_area and type_counts[dtype] < max_per_type:
             final.append(r)
             area_counts[area] += 1
+            type_counts[dtype] += 1
 
     df_final = pd.DataFrame(final)
-    print(f"✅ 최종 학습 데이터: {len(df_final)}건 확보")
+    print(f"✅ 최종 학습 데이터: {len(df_final)}건 (종류별 분포: {dict(type_counts)})")
 
     return df_final
 
