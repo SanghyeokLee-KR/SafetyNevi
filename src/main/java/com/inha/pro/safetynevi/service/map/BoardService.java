@@ -7,6 +7,7 @@ import com.inha.pro.safetynevi.entity.board.*;
 import com.inha.pro.safetynevi.entity.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -146,7 +147,11 @@ public class BoardService {
             boardLikeRepository.delete(like.get());
             return false;
         } else {
-            boardLikeRepository.save(BoardLike.builder().board(board).user(member).build());
+            try {
+                boardLikeRepository.save(BoardLike.builder().board(board).user(member).build());
+            } catch (DataIntegrityViolationException e) {
+                // 동시 요청으로 이미 들어간 좋아요면 유니크 제약 위반 무시
+            }
             return true;
         }
     }

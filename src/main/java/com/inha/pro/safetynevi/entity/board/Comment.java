@@ -3,6 +3,7 @@ package com.inha.pro.safetynevi.entity.board;
 import com.inha.pro.safetynevi.entity.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -43,10 +44,11 @@ public class Comment {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Comment parent;
 
-    // 달린 대댓글들
+    // 달린 대댓글들. 재귀 조회 N+1 줄이려고 배치로 묶음
     @Builder.Default
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdAt ASC")
+    @BatchSize(size = 100)
     private List<Comment> children = new ArrayList<>();
 
     @CreationTimestamp

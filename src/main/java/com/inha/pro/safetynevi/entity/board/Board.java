@@ -3,6 +3,7 @@ package com.inha.pro.safetynevi.entity.board;
 import com.inha.pro.safetynevi.entity.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -63,8 +64,9 @@ public class Board {
     @OrderBy("createdAt ASC")
     private List<Comment> comments = new ArrayList<>();
 
-    // 중복 좋아요 막고 fetch join 시 곱집합 방지하려고 Set
+    // 중복 좋아요 막고 fetch join 시 곱집합 방지하려고 Set, 지연로딩은 배치로 묶음
     @Builder.Default
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 100)
     private Set<BoardLike> likes = new HashSet<>();
 }

@@ -7,7 +7,9 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Table(name = "SAFETY_BOARD_LIKE")
+// 한 유저가 한 글에 좋아요 1번만: 중복 insert 막는 유니크 제약
+@Table(name = "SAFETY_BOARD_LIKE",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"BOARD_ID", "USER_ID"}))
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
