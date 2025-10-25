@@ -1,4 +1,6 @@
 // 관리자 신고 관리
+import { escapeHtml } from '../common/escape.js';
+
 document.addEventListener('DOMContentLoaded', () => {
 
     const Toast = {
@@ -19,14 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
             t.style.opacity = '1';
             setTimeout(() => { t!.style.opacity = '0'; }, 2200);
         }
-    };
-
-    const ENTITIES: Record<string, string> = {
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;", "/": "&#x2F;"
-    };
-    const escapeHtml = (str: unknown): string => {
-        if (!str) return "";
-        return String(str).replace(/[&<>"'`=/]/g, s => ENTITIES[s] ?? s);
     };
 
     const modal = document.getElementById('postModal');

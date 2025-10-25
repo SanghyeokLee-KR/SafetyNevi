@@ -1,4 +1,6 @@
 // 마이페이지 기능 모음
+import { escapeHtml } from '../../common/escape.js';
+
 document.addEventListener('DOMContentLoaded', () => {
 
     const REGEX = {
@@ -214,19 +216,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const commentsHtml = data.comments?.length
             ? data.comments.map((c: any) =>
                 `<li class="kb-post-comment-item">
-                    <span class="writer">${c.writer}</span>
-                    <span>${c.content}</span>
+                    <span class="writer">${escapeHtml(c.writer)}</span>
+                    <span>${escapeHtml(c.content)}</span>
                 </li>`).join('')
             : '<li style="text-align:center; color:#999; padding:10px;">댓글이 없습니다.</li>';
 
         modalBody.innerHTML = `
             <div class="kb-post-header">
-                <span class="kb-badge ${badgeClass}">${data.category}</span>
-                <span class="kb-date">${data.date}</span>
+                <span class="kb-badge ${badgeClass}">${escapeHtml(data.category)}</span>
+                <span class="kb-date">${escapeHtml(data.date)}</span>
             </div>
-            <h3 class="kb-post-title">${data.title}</h3>
-            ${data.imageUrl ? `<img src="${data.imageUrl}" class="kb-post-img" alt="image">` : ''}
-            <div class="kb-post-content">${data.content}</div>
+            <h3 class="kb-post-title">${escapeHtml(data.title)}</h3>
+            ${data.imageUrl ? `<img src="${escapeHtml(data.imageUrl)}" class="kb-post-img" alt="image">` : ''}
+            <div class="kb-post-content">${escapeHtml(data.content)}</div>
 
             <div class="kb-comments-section">
                 <h6>댓글 (${data.comments?.length || 0})</h6>

@@ -1,6 +1,7 @@
 // 경로 탐색, 안전 대피소 추천, 모의주행
 import { map } from './map-core.js';
 import { updateSidebar, toggleLoading, showToast } from './map-ui.js';
+import { escapeHtml } from '../common/escape.js';
 
 let currentPolylines = [];
 const geocoder = new kakao.maps.services.Geocoder();
@@ -142,8 +143,8 @@ async function executeRouteSearch(_refit?: boolean) {
                         약 ${formatTime(durationMin)}
                     </div>
                     <div style="font-size:13px; color:#666; border-top:1px solid #eee; padding-top:10px;">
-                        <span style="color:#337cf4; font-weight:bold;">출발</span> ${startPoint.name || '출발지'}<br>
-                        <span style="color:#d9534f; font-weight:bold;">도착</span> ${endPoint.name || '도착지'}
+                        <span style="color:#337cf4; font-weight:bold;">출발</span> ${escapeHtml(startPoint.name) || '출발지'}<br>
+                        <span style="color:#d9534f; font-weight:bold;">도착</span> ${escapeHtml(endPoint.name) || '도착지'}
                     </div>
                     
                     <button id="btn-simulate-route" style="width:100%; margin-top:15px; padding:10px; background:#555; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">
@@ -321,8 +322,8 @@ function renderRouteResults(routes) {
         else if (route.recommendationType.includes("최단")) badgeColor = '#f0ad4e';
 
         item.innerHTML = `
-             <div style="margin-bottom:5px;"><span style="background:${badgeColor}; color:white; font-size:11px; padding:3px 6px; border-radius:4px; font-weight:bold;">${route.recommendationType}</span></div>
-             <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">${index + 1}. ${route.name}</div>
+             <div style="margin-bottom:5px;"><span style="background:${badgeColor}; color:white; font-size:11px; padding:3px 6px; border-radius:4px; font-weight:bold;">${escapeHtml(route.recommendationType)}</span></div>
+             <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">${index + 1}. ${escapeHtml(route.name)}</div>
              <div style="font-size:13px; color:#555;">거리: ${formatDistance(route.distanceMeter)} | 도보 ${route.timeWalk}분</div>
          `;
 

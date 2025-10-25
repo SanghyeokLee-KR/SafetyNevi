@@ -1,6 +1,7 @@
 // 게시글 작성·조회 및 실시간(WebSocket) 연동
 import { map } from './map-core.js';
 import { showToast, toggleLoading, openReportModal } from './map-ui.js';
+import { escapeHtml } from '../common/escape.js';
 
 let isWriteMode = false;
 let tempMarker = null;
@@ -214,7 +215,7 @@ export function showBoardOverlay(marker, data) {
     if(currentOverlay) currentOverlay.setMap(null);
 
     const isGps = data.locationType === 'GPS';
-    const imageHtml = data.imageUrl ? `<img src="${data.imageUrl}" class="board-image-thumbnail" alt="첨부 이미지">` : '';
+    const imageHtml = data.imageUrl ? `<img src="${escapeHtml(data.imageUrl)}" class="board-image-thumbnail" alt="첨부 이미지">` : '';
 
     // 내 글이면 삭제, 남의 글이면 신고 버튼
     let actionBtn = '';
@@ -232,19 +233,19 @@ export function showBoardOverlay(marker, data) {
     content.innerHTML = `
         <div class="board-header">
             <div class="board-writer">
-                <span class="board-badge ${data.category}">${data.category}</span> 
-                ${data.writer} ${isGps ? '<span class="verified-badge">✅</span>' : ''}
+                <span class="board-badge ${escapeHtml(data.category)}">${escapeHtml(data.category)}</span>
+                ${escapeHtml(data.writer)} ${isGps ? '<span class="verified-badge">✅</span>' : ''}
             </div>
             <div style="display:flex; align-items:center;">
-                <span class="board-date">${data.date}</span>
+                <span class="board-date">${escapeHtml(data.date)}</span>
                 ${actionBtn}
                 <span class="board-close" style="margin-left:10px;">✕</span>
             </div>
         </div>
         <div class="board-body">
             ${imageHtml}
-            <span class="board-title">${data.title}</span>
-            <div class="board-content">${data.content}</div>
+            <span class="board-title">${escapeHtml(data.title)}</span>
+            <div class="board-content">${escapeHtml(data.content)}</div>
         </div>
         <div class="board-actions">
             <div class="action-btn like-btn ${data.liked ? 'liked' : ''}" id="like-btn-${data.id}">
@@ -301,11 +302,11 @@ function renderComments(comments, limit = 0) {
         <li class="comment-item" id="comment-${c.id}">
             <div class="comment-bubble">
                 <div class="comment-header">
-                    <span class="comment-writer">${c.writer}</span>
-                    <span class="comment-time">${c.timeAgo}</span>
+                    <span class="comment-writer">${escapeHtml(c.writer)}</span>
+                    <span class="comment-time">${escapeHtml(c.timeAgo)}</span>
                     <span class="btn-reply" onclick="window.toggleReplyForm(${c.id})">답글</span>
                 </div>
-                <div class="comment-text">${c.content}</div>
+                <div class="comment-text">${escapeHtml(c.content)}</div>
             </div>
             <ul class="reply-list" id="reply-list-${c.id}">${renderComments(c.replies)}</ul>
             <div id="reply-form-${c.id}" style="display:none;"></div>
@@ -347,11 +348,11 @@ function appendRealtimeComment(comment, parentId, boardId) {
         <li class="comment-item" id="comment-${comment.id}">
             <div class="comment-bubble">
                 <div class="comment-header">
-                    <span class="comment-writer">${comment.writer}</span>
-                    <span class="comment-time">${comment.timeAgo}</span>
+                    <span class="comment-writer">${escapeHtml(comment.writer)}</span>
+                    <span class="comment-time">${escapeHtml(comment.timeAgo)}</span>
                     <span class="btn-reply" onclick="window.toggleReplyForm(${comment.id})">답글</span>
                 </div>
-                <div class="comment-text">${comment.content}</div>
+                <div class="comment-text">${escapeHtml(comment.content)}</div>
             </div>
             <ul class="reply-list" id="reply-list-${comment.id}"></ul>
             <div id="reply-form-${comment.id}" style="display:none;"></div>

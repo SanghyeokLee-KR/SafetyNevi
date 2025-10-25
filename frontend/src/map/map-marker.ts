@@ -1,6 +1,7 @@
 // 시설물 마커 생성·클러스터링과 시설 기반 안전 점수 계산
 import { map, clusterer } from './map-core.js';
 import { updateSidebar, showToast } from './map-ui.js';
+import { escapeHtml } from '../common/escape.js';
 
 let markerImages: Record<string, any> = {};
 let currentOverlay: any = null;
@@ -118,8 +119,8 @@ function showCustomOverlay(marker, facility) {
     }
 
     content.innerHTML = `
-        <div class="overlay-title">${facility.name}</div>
-        <div class="overlay-status" style="color:${statusColor}">● ${statusText}</div>
+        <div class="overlay-title">${escapeHtml(facility.name)}</div>
+        <div class="overlay-status" style="color:${statusColor}">● ${escapeHtml(statusText)}</div>
         ${capacityInfo}
         <button class="overlay-btn">자세히 보기 ></button>
     `;

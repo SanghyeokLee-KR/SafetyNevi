@@ -1,6 +1,7 @@
 // 시설물 키워드 검색과 최근 검색어(localStorage) 관리
 import { map } from './map-core.js';
 import { updateSidebar } from './map-ui.js';
+import { escapeHtml } from '../common/escape.js';
 
 export function setupSearchLogic() {
     const toggleBtn = document.getElementById('btn-search-toggle');
@@ -82,7 +83,7 @@ export function setupSearchLogic() {
         history.forEach((item) => {
             const li = document.createElement('li');
             li.className = 'kb-recent-item';
-            li.innerHTML = `<span>🕒 ${item}</span> <span class="btn-recent-del">✕</span>`;
+            li.innerHTML = `<span>🕒 ${escapeHtml(item)}</span> <span class="btn-recent-del">✕</span>`;
 
             li.addEventListener('click', (e) => {
                 if((e.target as HTMLElement).classList.contains('btn-recent-del')) return;
@@ -128,15 +129,18 @@ export function setupSearchLogic() {
             const li = document.createElement('li');
             li.className = 'kb-search-item';
 
-            const regex = new RegExp(`(${keyword})`, 'gi');
-            const highlightedName = item.name.replace(regex, '<span class="highlight-text">$1</span>');
+            // 이름은 먼저 이스케이프한 뒤 키워드 하이라이트. 키워드의 정규식 메타문자도 이스케이프(정규식 인젝션 방지)
+            const safeName = escapeHtml(item.name);
+            const safeKeyword = escapeHtml(keyword).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${safeKeyword})`, 'gi');
+            const highlightedName = safeName.replace(regex, '<span class="highlight-text">$1</span>');
 
             const typeLabel = item.type === 'police' ? '경찰서' : item.type === 'fire' ? '소방서' : item.type === 'hospital' ? '병원' : '대피소';
 
             li.innerHTML = `
                 <div class="search-item-info">
                     <div class="search-item-name">${highlightedName}</div>
-                    <div class="search-item-address">${item.address || '주소 정보 없음'}</div>
+                    <div class="search-item-address">${escapeHtml(item.address) || '주소 정보 없음'}</div>
                 </div>
                 <div class="search-item-category">${typeLabel}</div>
             `;

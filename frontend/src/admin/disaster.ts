@@ -1,4 +1,6 @@
 // 재난 현황 및 시뮬레이션
+import { escapeHtml } from '../common/escape.js';
+
 document.addEventListener('DOMContentLoaded', () => {
 
     const geocoder = new kakao.maps.services.Geocoder();
@@ -52,13 +54,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isFire = item.disasterType.includes('fire');
                 const badgeColor = isFire ? '#ef4444' : '#3b82f6';
                 const locationTxt = item.areaName
-                    ? `[지역] ${item.areaName}`
+                    ? `[지역] ${escapeHtml(item.areaName)}`
                     : `[좌표] ${item.latitude.toFixed(4)}, ${item.longitude.toFixed(4)}`;
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>#${item.id}</td>
-                    <td><span class="status-badge" style="background-color:${badgeColor}">${item.disasterType}</span></td>
+                    <td><span class="status-badge" style="background-color:${badgeColor}">${escapeHtml(item.disasterType)}</span></td>
                     <td>${locationTxt}</td>
                     <td>진행중</td>
                     <td><button class="btn-danger-soft btn-terminate" data-id="${item.id}">종료</button></td>

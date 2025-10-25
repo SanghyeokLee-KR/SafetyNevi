@@ -1,6 +1,7 @@
 // 사이드바·탭·모달 등 공통 UI 인터랙션과 신고/상세 패널
 import { updateMarkers } from './map-marker.js';
 import { setRouteDestination } from './map-route.js';
+import { escapeHtml } from '../common/escape.js';
 
 export function setupTabNavigation() {
     const tabButtons = document.querySelectorAll('.kb-tab-button');
@@ -91,7 +92,7 @@ export function openReportModal(type, id, name, user = null) {
         targetText.innerText = `대상: ${name} (시설 정보 오류 신고)`;
         blockOption.style.display = 'none';
     } else {
-        targetText.innerHTML = `대상 게시글: <b>${name}</b><br>작성자: ${user}`;
+        targetText.innerHTML = `대상 게시글: <b>${escapeHtml(name)}</b><br>작성자: ${escapeHtml(user)}`;
         blockOption.style.display = 'block';
     }
     modal.style.display = 'block';
