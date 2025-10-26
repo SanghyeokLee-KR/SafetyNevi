@@ -2,6 +2,7 @@ package com.inha.pro.safetynevi.controller.report;
 
 import com.inha.pro.safetynevi.dto.report.ReportRequestDto;
 import com.inha.pro.safetynevi.service.report.ReportService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,7 +20,7 @@ public class ReportController {
     private final ReportService reportService;
 
     @PostMapping
-    public ResponseEntity<?> createReport(@RequestBody ReportRequestDto dto,
+    public ResponseEntity<?> createReport(@Valid @RequestBody ReportRequestDto dto,
                                           @AuthenticationPrincipal User user) {
         if (user == null) {
             return ResponseEntity.status(401).body("로그인이 필요합니다.");

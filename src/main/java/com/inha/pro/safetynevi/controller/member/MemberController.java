@@ -10,6 +10,7 @@ import com.inha.pro.safetynevi.service.member.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -78,7 +79,7 @@ public class MemberController {
 
     @PostMapping("/signup")
     @ResponseBody
-    public ResponseEntity<String> signupProcess(@RequestBody MemberSignupDto signupDto) {
+    public ResponseEntity<String> signupProcess(@Valid @RequestBody MemberSignupDto signupDto) {
         try {
             memberService.signup(signupDto);
             return ResponseEntity.ok("success");
@@ -134,15 +135,12 @@ public class MemberController {
     }
 
     // 비번찾기 1단계 - 아이디+이메일로 보안질문 가져오기
+    // 계정 존재 여부가 드러나지 않게 항상 200 + 질문 번호로 응답(서비스가 더미 처리).
     @PostMapping("/api/find/question")
     @ResponseBody
     public ResponseEntity<?> getQuestion(@RequestBody Map<String, String> request) {
-        try {
-            Integer qNum = memberService.findPwQuestion(request.get("userId"), request.get("email"));
-            return ResponseEntity.ok(Collections.singletonMap("question", qNum));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("User not found");
-        }
+        Integer qNum = memberService.findPwQuestion(request.get("userId"), request.get("email"));
+        return ResponseEntity.ok(Collections.singletonMap("question", qNum));
     }
 
     // 비번찾기 2단계 - 보안질문 답 맞는지 확인
@@ -150,7 +148,14 @@ public class MemberController {
     @ResponseBody
     public ResponseEntity<?> verifyAnswer(@RequestBody Map<String, String> request, HttpSession session) {
         String userId = request.get("userId");
-        boolean isCorrect = memberService.verifyPwAnswer(userId, request.get("answer"));
+        boolean isCorrect;
+        try {
+            isCorrect = memberService.verifyPwAnswer(userId, request.get("answer"));
+        } catch (IllegalArgumentException e) {
+            // 시도 제한에 걸린 경우 - 답 불일치와 동일하게 처리(존재 여부 비노출)
+            session.removeAttribute("PW_RESET_VERIFIED");
+            return ResponseEntity.badRequest().body("Answer mismatch");
+        }
         if (isCorrect) {
             // 통과한 userId를 세션에 박아둬야 다음 단계에서 본인확인 강제 가능
             session.setAttribute("PW_RESET_VERIFIED", userId);

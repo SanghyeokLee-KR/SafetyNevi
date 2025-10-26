@@ -6,6 +6,7 @@ import com.inha.pro.safetynevi.dto.member.AccessLogResponse;
 import com.inha.pro.safetynevi.dto.member.MemberResponse;
 import com.inha.pro.safetynevi.dto.member.MemberSignupDto;
 import com.inha.pro.safetynevi.entity.member.*;
+import com.inha.pro.safetynevi.util.LoginAttemptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,10 @@ public class MemberService {
     private final FavoritePlaceRepository favoritePlaceRepository;
     private final FamilyRepository familyRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LoginAttemptService loginAttemptService;
+
+    // 비번찾기 시도제한 키 접두어 (로그인 잠금과 분리)
+    private static final String PW_FIND_PREFIX = "pwfind:";
 
     public void signup(MemberSignupDto dto) {
         validatePassword(dto.getPassword());
@@ -72,17 +77,37 @@ public class MemberService {
     public boolean checkNicknameDuplicate(String nickname) { return memberRepository.existsByNickname(nickname); }
 
     // 비밀번호 찾기 (보안질문 기반)
+    // 계정 존재 여부가 응답으로 드러나지 않게 항상 질문 번호를 돌려준다.
+    // 불일치 시엔 userId로 고정된 더미 질문을 반환(요청마다 바뀌지 않게).
+    // 실제 재설정은 2단계 답변 검증 + 세션 토큰으로 막혀 있어 더미 노출은 무해.
     @Transactional(readOnly = true)
     public Integer findPwQuestion(String userId, String email) {
-        Member member = memberRepository.findByUserIdAndEmail(userId, email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        return member.getPwQuestion();
+        return memberRepository.findByUserIdAndEmail(userId, email)
+                .map(Member::getPwQuestion)
+                .orElseGet(() -> decoyQuestion(userId));
     }
 
+    // userId 기반 1~5 고정 더미 질문 번호
+    private Integer decoyQuestion(String userId) {
+        if (userId == null || userId.isBlank()) return 1;
+        return Math.floorMod(userId.toLowerCase().hashCode(), 5) + 1;
+    }
+
+    // 보안질문 답 검증. 없는 계정이어도 throw 없이 false (존재 여부 비노출).
+    // 같은 userId로 너무 많이 틀리면 일정 시간 잠근다(brute-force 방어).
     @Transactional(readOnly = true)
     public boolean verifyPwAnswer(String userId, String rawAnswer) {
-        Member member = memberRepository.findById(userId).orElseThrow();
-        return passwordEncoder.matches(rawAnswer, member.getPwAnswer());
+        String key = PW_FIND_PREFIX + userId;
+        if (loginAttemptService.isBlocked(key)) {
+            throw new IllegalArgumentException("잠시 후 다시 시도해주세요.");
+        }
+        Member member = memberRepository.findById(userId).orElse(null);
+        if (member == null || !passwordEncoder.matches(rawAnswer, member.getPwAnswer())) {
+            loginAttemptService.loginFailed(key);
+            return false;
+        }
+        loginAttemptService.loginSucceeded(key);
+        return true;
     }
 
     public void resetPassword(String userId, String newPassword) {
