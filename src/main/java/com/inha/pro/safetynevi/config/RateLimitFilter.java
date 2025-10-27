@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,6 +18,10 @@ import java.io.IOException;
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private final RateLimiter rateLimiter;
+
+    // 신뢰 프록시(Nginx) 뒤에서만 XFF 인정. 직접 노출 환경에선 클라가 헤더 위조로 레이트리밋 우회 가능.
+    @Value("${app.trust-proxy:false}")
+    private boolean trustProxy;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -37,9 +42,11 @@ public class RateLimitFilter extends OncePerRequestFilter {
     }
 
     private String clientIp(HttpServletRequest req) {
-        // Nginx 등 리버스 프록시 뒤에서는 실제 클라이언트 IP가 X-Forwarded-For 에 담긴다
-        String xff = req.getHeader("X-Forwarded-For");
-        if (xff != null && !xff.isBlank()) return xff.split(",")[0].trim();
+        // 신뢰 프록시 뒤일 때만 XFF 인정 (아니면 위조로 우회 가능 → 직접 연결 IP 사용)
+        if (trustProxy) {
+            String xff = req.getHeader("X-Forwarded-For");
+            if (xff != null && !xff.isBlank()) return xff.split(",")[0].trim();
+        }
         return req.getRemoteAddr();
     }
 }

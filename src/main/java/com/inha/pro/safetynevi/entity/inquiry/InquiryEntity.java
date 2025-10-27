@@ -10,7 +10,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
-@Data
 @Entity
 @Table(name = "SAFETY_INQUIRY")
 @Getter
@@ -87,11 +86,9 @@ public class InquiryEntity {
                 .writerId(dto.getWriterId())
                 .writerName(dto.getWriterName())
                 .isSecret(dto.getIsSecret() != null ? dto.getIsSecret() : 0)
-                // status가 비어 있으면 WAITING으로
-                .status(dto.getStatus() != null && !dto.getStatus().isEmpty()
-                        ? InquiryStatus.valueOf(dto.getStatus())
-                        : InquiryStatus.WAITING)
-                .answerContent(dto.getAnswerContent())
+                // 신규 문의는 항상 대기·답변없음으로 강제 (사용자가 폼에 status·answer 끼워 답변 위조하는 거 방지)
+                .status(InquiryStatus.WAITING)
+                .answerContent(null)
                 .build();
     }
 

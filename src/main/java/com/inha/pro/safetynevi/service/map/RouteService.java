@@ -116,7 +116,9 @@ public class RouteService {
     }
 
     private boolean isOperating(String status) {
-        return status != null && (status.contains("정상") || status.contains("영업") || status.contains("운영"));
+        // 대피소 상태값은 '사용중'/'사용중지'/'일시중지' (CSV 기준). '사용중'이면서 '중지' 아닌 것만 운영중.
+        if (status == null) return false;
+        return status.contains("사용중") && !status.contains("중지");
     }
 
     @Value("${api.kakao.restKey}")
@@ -139,7 +141,7 @@ public class RouteService {
                     .header("Content-Type", "application/json")
                     .retrieve()
                     .bodyToMono(String.class)
-                    .block(); // 호출부가 동기라 그냥 block
+                    .block(java.time.Duration.ofSeconds(5)); // 동기 호출 + 타임아웃(API 행 시 스레드 점유 방지)
 
             return objectMapper.readTree(response);
 

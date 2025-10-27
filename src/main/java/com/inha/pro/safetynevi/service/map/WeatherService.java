@@ -49,7 +49,7 @@ public class WeatherService {
                 .onErrorReturn("주소 정보 없음");
 
         GpsConverter.LatXLngY grid = gpsConverter.convertGpsToGrid(lat, lon);
-        LocalDateTime base = LocalDateTime.now().minusMinutes(30);
+        LocalDateTime base = LocalDateTime.now().minusMinutes(45); // 초단기실황은 매시각 자료가 ~40분 뒤 발표돼서 여유를 둠
         String baseDate = base.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String baseTime = base.format(DateTimeFormatter.ofPattern("HH00"));
         String cacheKey = grid.x + ":" + grid.y + ":" + baseDate + baseTime;
@@ -59,7 +59,7 @@ public class WeatherService {
                 ? Mono.just(cachedWeather)
                 : getKmaWeather(grid.x, grid.y, baseDate, baseTime)
                         .map(this::parseKmaWeather)
-                        .doOnNext(weather -> { if (!weather.isEmpty()) weatherCache.put(cacheKey, weather); })
+                        .doOnNext(weather -> { if (weather.containsKey("T1H")) weatherCache.put(cacheKey, weather); }) // 기온 있는 의미있는 값만 캐시(빈/오염값 박제 방지)
                         .onErrorResume(e -> {
                             log.warn("기상청 날씨 조회 실패: {}", e.getMessage());
                             return Mono.just(Map.<String, String>of());

@@ -10,6 +10,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -39,7 +41,7 @@ public class DisasterService {
 
         DisasterZone saved = disasterZoneRepository.save(zone);
         log.info("원형 재난 생성: {}", saved);
-        broadcaster.broadcastNew(DisasterZoneResponse.from(saved));
+        afterCommit(() -> broadcaster.broadcastNew(DisasterZoneResponse.from(saved)));
         return saved;
     }
 
@@ -55,7 +57,7 @@ public class DisasterService {
 
         DisasterZone saved = disasterZoneRepository.save(zone);
         log.info("지역 재난 생성: {}", saved);
-        broadcaster.broadcastNew(DisasterZoneResponse.from(saved));
+        afterCommit(() -> broadcaster.broadcastNew(DisasterZoneResponse.from(saved)));
         return saved;
     }
 
@@ -66,7 +68,7 @@ public class DisasterService {
                 .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 재난 정보가 없습니다: " + id));
 
         disasterZoneRepository.delete(zone);
-        broadcaster.broadcastDelete(id);
+        afterCommit(() -> broadcaster.broadcastDelete(id));
         log.info("재난 삭제 완료: id={}", id);
     }
 
@@ -91,5 +93,20 @@ public class DisasterService {
     @Transactional(readOnly = true)
     public long countDisasters() {
         return disasterZoneRepository.count();
+    }
+
+    // 브로드캐스트는 커밋 후에. 트랜잭션 중에 보내면 롤백 시 유령 이벤트가 나가고,
+    // 구독자가 곧바로 재조회해도 아직 커밋 전이라 빈 결과를 받을 수 있다. 트랜잭션 없으면 즉시 실행.
+    private void afterCommit(Runnable action) {
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    action.run();
+                }
+            });
+        } else {
+            action.run();
+        }
     }
 }

@@ -77,7 +77,12 @@ public class MapApiController {
     @PostMapping("/family")
     public ResponseEntity<?> addFamily(@RequestBody Map<String, String> payload, @AuthenticationPrincipal User user) {
         if (user == null) return ResponseEntity.status(401).build();
-        mapService.addFamily(user.getUsername(), payload.get("name"), payload.get("phone"));
+        String name = payload.get("name");
+        String phone = payload.get("phone");
+        if (name == null || name.isBlank() || phone == null || phone.isBlank()) {
+            return ResponseEntity.badRequest().body("이름과 연락처를 입력해주세요.");
+        }
+        mapService.addFamily(user.getUsername(), name.trim(), phone.trim());
         return ResponseEntity.ok("added");
     }
 

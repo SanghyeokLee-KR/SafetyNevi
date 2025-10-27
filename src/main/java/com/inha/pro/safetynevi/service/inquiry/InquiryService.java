@@ -86,6 +86,7 @@ public class InquiryService {
 
             } catch (IOException e) {
                 log.error("문의 첨부파일 저장 실패", e);
+                throw new RuntimeException("첨부파일 저장에 실패했습니다.", e); // 조용히 넘기면 깨진 URL 저장됨 → 롤백
             }
         }
 
@@ -150,19 +151,8 @@ public class InquiryService {
         MultipartFile file = dto.getFile();
 
         if (file != null && !file.isEmpty()) {
-            // 새 파일 올리면 기존 첨부는 지움
-            if (StringUtils.hasText(inquiry.getImageUrl())) {
-                try {
-                    String oldFileName = inquiry.getImageUrl().substring("/upload/inquiry/".length());
-                    oldFileName = URLDecoder.decode(oldFileName, StandardCharsets.UTF_8);
-
-                    Path oldFilePath = Paths.get(uploadDir, oldFileName);
-                    Files.deleteIfExists(oldFilePath);
-                } catch (Exception e) {
-                    log.warn("문의 기존 첨부파일 삭제 실패: {}", e.getMessage());
-                }
-            }
-
+            // 새 파일을 먼저 저장하고(실패하면 롤백), 성공한 뒤에 기존 첨부를 지운다.
+            // 반대 순서면 새 저장이 실패했을 때 기존 첨부가 영구 유실됨.
             try {
                 String uuid = UUID.randomUUID().toString().substring(0, 8);
                 // 경로조작(../) 막으려고 정규화 후 파일명만 추출
@@ -177,9 +167,20 @@ public class InquiryService {
                 file.transferTo(filePath.toFile());
 
                 newImageUrl = "/upload/inquiry/" + savedFileName;
-
             } catch (IOException e) {
                 log.error("문의 첨부파일 저장 실패", e);
+                throw new RuntimeException("첨부파일 저장에 실패했습니다.", e);
+            }
+
+            // 새 파일 저장 성공 후 기존 첨부 삭제
+            if (StringUtils.hasText(inquiry.getImageUrl())) {
+                try {
+                    String oldFileName = inquiry.getImageUrl().substring("/upload/inquiry/".length());
+                    oldFileName = URLDecoder.decode(oldFileName, StandardCharsets.UTF_8);
+                    Files.deleteIfExists(Paths.get(uploadDir, oldFileName));
+                } catch (Exception e) {
+                    log.warn("문의 기존 첨부파일 삭제 실패: {}", e.getMessage());
+                }
             }
         }
 

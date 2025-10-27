@@ -4,20 +4,31 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public class ClientUtils {
 
-    // 프록시/LB 뒤면 실제 IP가 헤더에 있어서 순서대로 훑음
-    public static String getRemoteIP(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip == null) ip = request.getHeader("Proxy-Client-IP");
-        if (ip == null) ip = request.getHeader("WL-Proxy-Client-IP");
-        if (ip == null) ip = request.getHeader("HTTP_CLIENT_IP");
-        if (ip == null) ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+    // 헤더는 신뢰 프록시(Nginx 등) 뒤에서만 믿는다. trustProxy=false면 직접 연결 IP 사용
+    // (클라가 X-Forwarded-For 위조해서 접속로그 IP 속이는 것 방지).
+    public static String getRemoteIP(HttpServletRequest request, boolean trustProxy) {
+        String ip = null;
+        if (trustProxy) {
+            ip = request.getHeader("X-Forwarded-For");
+            if (ip == null) ip = request.getHeader("Proxy-Client-IP");
+            if (ip == null) ip = request.getHeader("WL-Proxy-Client-IP");
+            if (ip == null) ip = request.getHeader("HTTP_CLIENT_IP");
+            if (ip == null) ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
         if (ip == null) ip = request.getRemoteAddr();
+        // XFF는 "client, proxy1, ..." 형태라 맨 앞이 원 클라이언트
+        if (ip != null && ip.contains(",")) ip = ip.split(",")[0].trim();
 
         // IPv6 로컬호스트는 보기 좋게 127.0.0.1로
         if ("0:0:0:0:0:0:0:1".equals(ip)) {
             return "127.0.0.1";
         }
         return ip;
+    }
+
+    // 헤더 신뢰 안 함(직접 연결 IP). 신뢰 프록시 뒤라면 위 오버로드에 true 전달.
+    public static String getRemoteIP(HttpServletRequest request) {
+        return getRemoteIP(request, false);
     }
 
     // User-Agent에서 OS/브라우저 대충 뽑기

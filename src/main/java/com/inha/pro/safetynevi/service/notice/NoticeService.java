@@ -59,6 +59,7 @@ public class NoticeService {
 
             } catch (IOException e) {
                 log.error("공지 첨부파일 저장 실패", e);
+                throw new RuntimeException("첨부파일 저장에 실패했습니다.", e); // 조용히 넘기면 깨진 URL 저장됨 → 롤백
             }
         }
 
