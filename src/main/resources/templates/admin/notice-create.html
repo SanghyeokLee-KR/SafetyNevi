@@ -49,6 +49,9 @@
         </button>
     </div>
 
+    <div th:if="${noticeError}" th:text="${noticeError}"
+         style="margin-bottom:16px;padding:12px 16px;border-radius:8px;background:#fef3f2;color:#b42318;border:1px solid #fecdca;"></div>
+
     <div class="table-container">
         <table class="admin-table">
             <thead>

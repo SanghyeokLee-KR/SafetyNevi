@@ -16,6 +16,9 @@
         <p class="kb-subtitle">문의 내용을 상세히 작성해주시면 빠르게 답변 드리겠습니다.</p>
     </header>
 
+    <p th:if="${inquiryError}" th:text="${inquiryError}"
+       style="margin:0 0 16px;padding:12px 16px;border-radius:8px;background:#fef3f2;color:#b42318;border:1px solid #fecdca;"></p>
+
     <form class="kb-write-form" th:action="@{/inquiry/write}" method="post" enctype="multipart/form-data">
 
         <div class="kb-form-group">

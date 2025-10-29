@@ -12,7 +12,11 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import jakarta.validation.Valid;
 
 @Controller
 @RequiredArgsConstructor
@@ -63,11 +67,18 @@ public class InquiryController {
     }
 
     @PostMapping("/write")
-    public String inquiryWrite(@ModelAttribute InquiryDTO inquiryDTO,
-                               @AuthenticationPrincipal UserDetails user) {
+    public String inquiryWrite(@Valid @ModelAttribute InquiryDTO inquiryDTO,
+                               BindingResult bindingResult,
+                               @AuthenticationPrincipal UserDetails user,
+                               RedirectAttributes ra) {
 
         if (user == null) {
             return "redirect:/login";
+        }
+        // 클라 required 우회로 빈 값 들어오는 거 서버에서도 막음
+        if (bindingResult.hasErrors()) {
+            ra.addFlashAttribute("inquiryError", bindingResult.getFieldErrors().get(0).getDefaultMessage());
+            return "redirect:/inquiry/write";
         }
 
         isvc.writeInquiry(inquiryDTO, user.getUsername());

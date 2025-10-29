@@ -12,7 +12,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import jakarta.validation.Valid;
 
 @Controller
 @RequiredArgsConstructor
@@ -58,12 +62,15 @@ public class NoticeController {
     }
 
     @PostMapping("/admin/notice/NoticeWrite")
-    public String saveNotice(@ModelAttribute NoticeDTO noticeDTO,
-                             @AuthenticationPrincipal UserDetails user) {
+    public String saveNotice(@Valid @ModelAttribute NoticeDTO noticeDTO,
+                             BindingResult bindingResult,
+                             @AuthenticationPrincipal UserDetails user,
+                             RedirectAttributes ra) {
 
-        // TODO 관리자 권한 체크 넣기
-        if (user == null) {
-            return "redirect:/login";
+        // /admin/** 은 SecurityConfig 에서 ROLE_ADMIN 으로 막혀 있어 여기 오면 이미 관리자
+        if (bindingResult.hasErrors()) {
+            ra.addFlashAttribute("noticeError", bindingResult.getFieldErrors().get(0).getDefaultMessage());
+            return "redirect:/admin/notice/create";
         }
 
         nsvc.saveNotice(noticeDTO, user.getUsername());
