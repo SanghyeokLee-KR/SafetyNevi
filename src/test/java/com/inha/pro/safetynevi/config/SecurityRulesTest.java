@@ -39,4 +39,10 @@ class SecurityRulesTest {
     void loginPageIsPublic() throws Exception {
         mvc.perform(get("/login")).andExpect(status().isOk());
     }
+
+    @Test
+    void apiDocsArePublic() throws Exception {
+        // springdoc OpenAPI 문서가 인증 없이 200 (Swagger 동작 + permitAll 규칙 검증)
+        mvc.perform(get("/v3/api-docs")).andExpect(status().isOk());
+    }
 }

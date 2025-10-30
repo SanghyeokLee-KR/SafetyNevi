@@ -76,6 +76,9 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health/**").permitAll()
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
 
+                        // API 문서 (Swagger UI / OpenAPI). 운영 배포 시엔 ADMIN 제한 고려
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+
                         // 그 외 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
