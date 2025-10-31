@@ -1,11 +1,17 @@
 import os
 import re
-import oracledb
+import sys
+import random
 import pandas as pd
 import joblib
-import random
 from pathlib import Path
 from collections import Counter
+
+# oracledb는 DB로 학습할 때만 필요 — CSV 파일로 학습하면 없어도 됨
+try:
+    import oracledb
+except ImportError:
+    oracledb = None
 
 # 시각화용 라이브러리
 import matplotlib.pyplot as plt
@@ -27,6 +33,10 @@ DB_USER = os.environ.get("DB_USER", "")
 DB_PASSWORD = os.environ.get("DB_PASSWORD", "")
 DB_DSN = os.environ.get("DB_DSN", "")
 
+# CSV로도 학습 가능 — `python train.py <csv경로>` 또는 환경변수 DATA_CSV로 지정.
+# 값이 있으면 DB 대신 CSV에서 읽는다 (행안부 긴급재난문자 CSV 같은 오프라인 파일 학습용).
+DATA_CSV = os.environ.get("DATA_CSV", "")
+
 # 모델 .pkl 은 이 파일과 같은 폴더에 저장 (CWD가 어디든 main.py 가 찾게)
 MODEL_DIR = Path(__file__).resolve().parent
 
@@ -46,6 +56,8 @@ plt.rcParams['axes.unicode_minus'] = False
 # 2. DB 연결 유틸
 # ==========================================
 def get_connection():
+    if oracledb is None:
+        raise RuntimeError("oracledb 미설치 — DB로 학습하려면 'pip install oracledb' (CSV 학습은 불필요)")
     return oracledb.connect(user=DB_USER, password=DB_PASSWORD, dsn=DB_DSN)
 
 
@@ -72,6 +84,61 @@ def fetch_data_from_db():
     df.columns = [c.upper() for c in df.columns]
     print(f"📦 총 {len(df)}건 로드 완료.")
     return df
+
+
+# CSV에서 학습 데이터 읽기 (행안부 긴급재난문자 CSV 등).
+# 헤더가 한글(메시지내용/재해구분/긴급단계...)이든 영문코드(MSG_CN/DST_SE_NM...)든 키워드로 매칭하고,
+# 정부 CSV 인코딩(utf-8-sig 또는 cp949/euc-kr)을 차례로 시도한다. 출력 컬럼은 DB 경로와 동일(대문자).
+def fetch_data_from_csv(path):
+    print(f"📄 CSV에서 데이터 로드: {path}")
+    df = None
+    for enc in ("utf-8-sig", "cp949", "euc-kr"):
+        try:
+            df = pd.read_csv(path, encoding=enc, dtype=str)
+            print(f"   인코딩 {enc} 로 읽음")
+            break
+        except (UnicodeDecodeError, UnicodeError):
+            continue
+    if df is None:
+        raise RuntimeError("CSV 인코딩 판별 실패 (utf-8-sig/cp949/euc-kr 모두 실패)")
+
+    # 헤더 이름에 키워드가 들어있는 컬럼을 찾아 표준 컬럼으로 매핑
+    def find_col(*keywords):
+        for col in df.columns:
+            name = str(col).replace(" ", "").upper()
+            if any(kw.upper() in name for kw in keywords):
+                return col
+        return None
+
+    col_content = find_col("메시지내용", "메세지", "내용", "MSG_CN", "MSG")
+    col_type    = find_col("재해구분", "재난구분", "재난종류", "재해", "DST_SE_NM", "DSTSE")
+    col_level   = find_col("긴급단계", "단계", "EMRG_STEP_NM", "EMRGSTEP")
+    col_area    = find_col("수신지역", "지역", "RCPTN_RGN_NM", "RGN")
+    col_id      = find_col("일련번호", "SN", "번호", "ID")
+
+    if col_content is None or col_type is None:
+        raise RuntimeError(f"필수 컬럼(내용/재해구분)을 못 찾음. 실제 헤더: {list(df.columns)}")
+
+    out = pd.DataFrame()
+    out["DMID"] = df[col_id] if col_id else range(1, len(df) + 1)
+    out["CONTENT"] = df[col_content]
+    out["DISASTERTYPE"] = df[col_type]
+    out["EMERGENCY_LEVEL"] = df[col_level] if col_level else ""
+    out["AREA"] = df[col_area] if col_area else "UNKNOWN"
+    out = out.dropna(subset=["CONTENT"])
+
+    print(f"📦 총 {len(out)}건 로드 완료. (매핑: 내용={col_content}, 종류={col_type}, 단계={col_level}, 지역={col_area})")
+    return out
+
+
+# 학습 소스 결정 — CSV 경로(인자 또는 DATA_CSV)가 있으면 CSV, 없으면 DB
+def load_source_dataframe():
+    csv_path = sys.argv[1].strip() if (len(sys.argv) > 1 and sys.argv[1].strip()) else DATA_CSV
+    if csv_path:
+        if not Path(csv_path).exists():
+            raise FileNotFoundError(f"CSV를 찾을 수 없음: {csv_path}")
+        return fetch_data_from_csv(csv_path), "csv"
+    return fetch_data_from_db(), "db"
 
 
 # ==========================================
@@ -357,15 +424,15 @@ def save_analysis_results(df, model_type, model_risk):
 def main():
     print("\n=== 🔥 SafetyNevi AI 학습 파이프라인 시작 ===")
 
-    # 1. DB에서 데이터 가져오기
-    df_db = fetch_data_from_db()
+    # 1. 데이터 가져오기 (CSV 경로 주면 CSV, 아니면 DB)
+    df_src, mode = load_source_dataframe()
 
-    if df_db.empty:
-        print("❌ 데이터가 없습니다. 크롤링 먼저 하세요.")
+    if df_src.empty:
+        print("❌ 데이터가 없습니다. (CSV가 비었거나, DB면 크롤링 먼저)")
         return
 
     # 2. 데이터 가공 (전처리, 증강)
-    df_train = prepare_training_dataframe(df_db)
+    df_train = prepare_training_dataframe(df_src)
 
     # 3. 데이터 분포 확인 (이미지 저장)
     visualize_data(df_train)
@@ -373,21 +440,16 @@ def main():
     # 4. 모델 학습 & 저장 (.pkl 파일 생성)
     model_type, model_risk = train_and_save_models(df_train)
 
-    # 5. (선택사항) 분석 결과를 DB에 다시 저장
-    # 주의: prepare_training_dataframe에서 dmid가 유실될 수 있으므로,
-    # 실제로는 원본 df_db를 가지고 예측해서 저장하는게 더 정확함.
-    # 여기서는 흐름상 df_db를 다시 활용
-    print("\n--- 원본 데이터 재분석 ---")
-    df_db['content_clean'] = df_db['CONTENT'].apply(clean_text)
-
-    # save_analysis_results 함수를 df_db(원본) 기준으로 호출하도록 수정
-    # 컬럼명을 소문자로 맞춰서 넘김
-    df_for_save = df_db.rename(columns={'DMID': 'dmid', 'content_clean': 'content'})
-    df_for_save['version'] = 'original'  # 강제로 마킹
-
-    if model_risk is None:
-        print("ℹ️ 위험도 모델이 없어 DB 재분석은 건너뜁니다 (긴급단계 채운 뒤 재실행).")
+    # 5. DB 모드일 때만 원본을 재분석해 DB에 저장. CSV 오프라인 학습은 .pkl 생성까지가 끝(쓸 DB 없음).
+    if mode != "db":
+        print("\nℹ️ CSV 학습이라 DB 재분석은 건너뜁니다 (.pkl 만 생성).")
+    elif model_risk is None:
+        print("\nℹ️ 위험도 모델이 없어 DB 재분석은 건너뜁니다 (긴급단계 채운 뒤 재실행).")
     else:
+        print("\n--- 원본 데이터 재분석 ---")
+        df_src['content_clean'] = df_src['CONTENT'].apply(clean_text)
+        df_for_save = df_src.rename(columns={'DMID': 'dmid', 'content_clean': 'content'})
+        df_for_save['version'] = 'original'
         save_analysis_results(df_for_save, model_type, model_risk)
 
     print("\n=== 🎉 학습 완료! 서버를 재시작하세요. ===")
