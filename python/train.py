@@ -15,7 +15,10 @@ except ImportError:
 
 # 시각화용 라이브러리
 import matplotlib.pyplot as plt
-from wordcloud import WordCloud
+try:
+    from wordcloud import WordCloud
+except ImportError:
+    WordCloud = None  # 워드클라우드는 선택 — 미설치면 해당 이미지만 건너뜀(모델엔 영향 없음)
 
 # 머신러닝 (사이킷런)
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -24,6 +27,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from sklearn.utils import resample
+
+# Windows 콘솔(cp949)에서도 한글·이모지 출력이 안 깨지게 stdout을 UTF-8로 맞춤
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 # ==========================================
 # 1. 환경 설정
@@ -293,14 +300,17 @@ def visualize_data(df):
     plt.savefig("risk_distribution.png")
     plt.close()
 
-    # 워드클라우드 (자주 나오는 단어 확인)
-    text = " ".join(df['content'].tolist())
-    try:
-        wc = WordCloud(font_path=FONT_PATH, width=800, height=400, background_color="white")
-        wc.generate(text)
-        wc.to_file("wordcloud.png")
-    except Exception:
-        print("⚠️ 워드클라우드 생성 실패 (폰트 문제일 수 있음)")
+    # 워드클라우드 (자주 나오는 단어 확인) — 라이브러리 있을 때만
+    if WordCloud is None:
+        print("ℹ️ wordcloud 미설치 — 워드클라우드 이미지는 건너뜀")
+    else:
+        text = " ".join(df['content'].tolist())
+        try:
+            wc = WordCloud(font_path=FONT_PATH, width=800, height=400, background_color="white")
+            wc.generate(text)
+            wc.to_file("wordcloud.png")
+        except Exception:
+            print("⚠️ 워드클라우드 생성 실패 (폰트 문제일 수 있음)")
 
     print("📁 이미지 저장 완료 (class_distribution.png 등)")
 
@@ -341,6 +351,23 @@ def balance_classes(df_risk):
     return pd.concat(parts).sample(frac=1, random_state=SEED).reset_index(drop=True)
 
 
+def evaluate_risk(df_risk):
+    # 위험도 평가는 '불균형 그대로' 홀드아웃을 떼고 → 학습셋에만 업샘플 → 손 안 댄(실제 분포) 테스트로 측정한다.
+    # 업샘플을 먼저 하고 나누면 같은 DANGER가 train/test 양쪽에 복제돼 점수가 부풀려진다(누수).
+    counts = Counter(df_risk['risk_label'])
+    if len(counts) < 2 or min(counts.values()) < 2 or len(df_risk) < 20:
+        print("   [위험도] 표본/클래스 부족 → 평가 생략")
+        return
+    X_tr, X_te, y_tr, y_te = train_test_split(
+        df_risk['content'], df_risk['risk_label'],
+        test_size=0.2, random_state=SEED, stratify=df_risk['risk_label'])
+    train_bal = balance_classes(pd.DataFrame({'content': X_tr, 'risk_label': y_tr}))
+    pipe = make_risk_pipe()
+    pipe.fit(train_bal['content'], train_bal['risk_label'])
+    print("\n[위험도 DANGER/SAFE] 홀드아웃(20%, 실제 분포 유지) 성능:")
+    print(classification_report(y_te, pipe.predict(X_te), zero_division=0))
+
+
 def train_and_save_models(df):
     print("\n🚀 모델 학습 시작...")
 
@@ -356,8 +383,8 @@ def train_and_save_models(df):
         print("⚠️ 긴급단계가 채워진 데이터가 없어 위험도 모델은 건너뜀 (새 크롤링으로 단계 채운 뒤 재학습)")
         return type_pipe, None
 
-    balanced = balance_classes(risk_df)
-    evaluate(make_risk_pipe, balanced['content'], balanced['risk_label'], "위험도 DANGER/SAFE")
+    evaluate_risk(risk_df)  # 누수 없는 정직한 평가 (split → 학습셋만 업샘플 → 실제 분포 test)
+    balanced = balance_classes(risk_df)  # 배포 모델은 전체를 업샘플해 학습
     risk_pipe = make_risk_pipe()
     risk_pipe.fit(balanced['content'], balanced['risk_label'])
     joblib.dump(risk_pipe, MODEL_DIR / "model_safety.pkl")

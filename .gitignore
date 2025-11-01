@@ -62,3 +62,9 @@ node_modules/
 
 # 빌드 산출물 — frontend/src/*.ts 에서 gradle(buildFrontend)·npm 이 생성. 소스만 커밋
 /src/main/resources/static/js/
+
+# ======================
+# Python (AI 학습)
+# ======================
+# train.py 진단 이미지 (재실행마다 생성됨)
+python/*.png
