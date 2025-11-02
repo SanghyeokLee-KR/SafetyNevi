@@ -23,12 +23,12 @@ except ImportError:
 # 머신러닝 (사이킷런)
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, StratifiedGroupKFold
 from sklearn.metrics import classification_report
-from sklearn.utils import resample
 
-# Windows 콘솔(cp949)에서도 한글·이모지 출력이 안 깨지게 stdout을 UTF-8로 맞춤
+# Windows 콘솔(cp949)에서도 한글 출력이 안 깨지게 stdout을 UTF-8로 맞춤
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
@@ -72,7 +72,7 @@ def get_connection():
 # 3. 데이터 가져오기 (DM 테이블)
 # ==========================================
 def fetch_data_from_db():
-    print("📡 DB에서 데이터 긁어오는 중...")
+    print("DB에서 데이터 가져오는 중...")
     conn = get_connection()
 
     # 오라클 CLOB 타입은 그냥 읽으면 에러나서 String으로 변환해줘야 함
@@ -89,7 +89,7 @@ def fetch_data_from_db():
 
     # 컬럼명 다 대문자로 맞춰줌 (나중에 헷갈리지 않게)
     df.columns = [c.upper() for c in df.columns]
-    print(f"📦 총 {len(df)}건 로드 완료.")
+    print(f"총 {len(df)}건 로드 완료.")
     return df
 
 
@@ -97,7 +97,7 @@ def fetch_data_from_db():
 # 헤더가 한글(메시지내용/재해구분/긴급단계...)이든 영문코드(MSG_CN/DST_SE_NM...)든 키워드로 매칭하고,
 # 정부 CSV 인코딩(utf-8-sig 또는 cp949/euc-kr)을 차례로 시도한다. 출력 컬럼은 DB 경로와 동일(대문자).
 def fetch_data_from_csv(path):
-    print(f"📄 CSV에서 데이터 로드: {path}")
+    print(f"CSV에서 데이터 로드: {path}")
     df = None
     for enc in ("utf-8-sig", "cp949", "euc-kr"):
         try:
@@ -134,7 +134,7 @@ def fetch_data_from_csv(path):
     out["AREA"] = df[col_area] if col_area else "UNKNOWN"
     out = out.dropna(subset=["CONTENT"])
 
-    print(f"📦 총 {len(out)}건 로드 완료. (매핑: 내용={col_content}, 종류={col_type}, 단계={col_level}, 지역={col_area})")
+    print(f"총 {len(out)}건 로드 완료. (매핑: 내용={col_content}, 종류={col_type}, 단계={col_level}, 지역={col_area})")
     return out
 
 
@@ -209,7 +209,7 @@ def remove_area_mentions(text, area_patterns):
 # 6. 학습용 데이터셋 만들기
 # ==========================================
 def prepare_training_dataframe(df, max_per_area=MAX_PER_AREA, max_per_type=MAX_PER_TYPE):
-    print("🛠️ 학습 데이터 가공 중... (지역명 제거 등)")
+    print("학습 데이터 가공 중... (지역명 제거 등)")
     df.columns = [c.lower() for c in df.columns]
 
     # 텍스트 청소
@@ -224,7 +224,9 @@ def prepare_training_dataframe(df, max_per_area=MAX_PER_AREA, max_per_type=MAX_P
     area_patterns = build_area_patterns(df['area'])
 
     rows = []
-    for _, r in df.iterrows():
+    # msg_id = 원본 메시지 식별자. 원본과 그 증강본(anon)이 같은 id를 공유해서,
+    # 평가 때 한 메시지의 두 버전이 train/test 양쪽에 갈라지는 누수를 막는다.
+    for msg_id, (_, r) in enumerate(df.iterrows()):
         content = r['content']
         dtype = r['disastertype']
         area = r['area'] if pd.notna(r['area']) else "UNKNOWN"
@@ -233,12 +235,8 @@ def prepare_training_dataframe(df, max_per_area=MAX_PER_AREA, max_per_type=MAX_P
 
         # 1. 원본 데이터 추가
         rows.append({
-            'content': content,
-            'disastertype': dtype,
-            'risk_label': risk,
-            'emergency_level': level,
-            'area': area,
-            'version': 'original'
+            'content': content, 'disastertype': dtype, 'risk_label': risk,
+            'emergency_level': level, 'area': area, 'version': 'original', 'msg_id': msg_id
         })
 
         # 2. 지역명 지운 버전도 추가 (데이터 증강 효과 + 편향 방지)
@@ -246,12 +244,8 @@ def prepare_training_dataframe(df, max_per_area=MAX_PER_AREA, max_per_type=MAX_P
         # 지진, 강풍 등은 지역명이 중요할 수도 있어서 제외하고 나머지만
         if anon.strip() and dtype not in ["지진", "강풍", "대설", "산불", "수도"]:
             rows.append({
-                'content': anon,
-                'disastertype': dtype,
-                'risk_label': risk,
-                'emergency_level': level,
-                'area': area,
-                'version': 'anon'
+                'content': anon, 'disastertype': dtype, 'risk_label': risk,
+                'emergency_level': level, 'area': area, 'version': 'anon', 'msg_id': msg_id
             })
 
     # 데이터 셔플
@@ -273,7 +267,7 @@ def prepare_training_dataframe(df, max_per_area=MAX_PER_AREA, max_per_type=MAX_P
             type_counts[dtype] += 1
 
     df_final = pd.DataFrame(final)
-    print(f"✅ 최종 학습 데이터: {len(df_final)}건 (종류별 분포: {dict(type_counts)})")
+    print(f"최종 학습 데이터: {len(df_final)}건 (종류별 분포: {dict(type_counts)})")
 
     return df_final
 
@@ -282,7 +276,7 @@ def prepare_training_dataframe(df, max_per_area=MAX_PER_AREA, max_per_type=MAX_P
 # 7. 시각화 (확인용)
 # ==========================================
 def visualize_data(df):
-    print("\n📊 데이터 분포 시각화 생성 중...")
+    print("\n데이터 분포 시각화 생성 중...")
 
     # 재난 종류별 분포 그래프
     plt.figure(figsize=(10, 5))
@@ -302,7 +296,7 @@ def visualize_data(df):
 
     # 워드클라우드 (자주 나오는 단어 확인) — 라이브러리 있을 때만
     if WordCloud is None:
-        print("ℹ️ wordcloud 미설치 — 워드클라우드 이미지는 건너뜀")
+        print("wordcloud 미설치 — 워드클라우드 이미지는 건너뜀")
     else:
         text = " ".join(df['content'].tolist())
         try:
@@ -310,9 +304,9 @@ def visualize_data(df):
             wc.generate(text)
             wc.to_file("wordcloud.png")
         except Exception:
-            print("⚠️ 워드클라우드 생성 실패 (폰트 문제일 수 있음)")
+            print("워드클라우드 생성 실패 (폰트 문제일 수 있음)")
 
-    print("📁 이미지 저장 완료 (class_distribution.png 등)")
+    print("이미지 저장 완료 (class_distribution.png 등)")
 
 
 # ==========================================
@@ -323,37 +317,32 @@ def make_type_pipe():
 
 
 def make_risk_pipe():
-    return Pipeline([('tfidf', TfidfVectorizer(max_features=3000)), ('clf', MultinomialNB())])
+    # 위험도는 DANGER가 0.8%뿐이라, 업샘플(복제) 대신 class_weight='balanced' 로 불균형을 처리한다.
+    # 복제를 안 하니 평가 누수가 없고, 과경보(낮은 precision)도 NB+업샘플보다 덜하다.
+    return Pipeline([
+        ('tfidf', TfidfVectorizer(max_features=3000)),
+        ('clf', LogisticRegression(class_weight='balanced', max_iter=1000)),
+    ])
 
 
-def evaluate(make_pipe, X, y, name):
-    # 홀드아웃 20%로 성능을 '측정'한다. 특히 소수 클래스(DANGER) 재현율을 봐야 의미 있음.
-    counts = Counter(y)
-    if len(counts) < 2 or min(counts.values()) < 2 or len(y) < 20:
-        print(f"   [{name}] 표본/클래스 부족 → 평가 생략")
+def evaluate_type(df):
+    # 종류 모델 평가 — 증강본(anon)은 원본과 같은 메시지라 msg_id로 묶어, 한 메시지의 원본·증강이
+    # train/test 양쪽에 갈라지지 않게 한다(누수 방지). StratifiedGroupKFold로 클래스 비율도 유지.
+    if df['disastertype'].nunique() < 2 or len(df) < 20:
+        print("   [재난 종류] 표본 부족 → 평가 생략")
         return
-    X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=SEED, stratify=y)
-    pipe = make_pipe()
-    pipe.fit(X_tr, y_tr)
-    print(f"\n[{name}] 홀드아웃(20%) 성능:")
-    print(classification_report(y_te, pipe.predict(X_te), zero_division=0))
-
-
-def balance_classes(df_risk):
-    # 위험도는 안전안내(SAFE)가 대다수라, DANGER를 다수 클래스 수만큼 업샘플해 균형을 맞춘다.
-    counts = df_risk['risk_label'].value_counts()
-    if len(counts) < 2:
-        return df_risk
-    n = counts.max()
-    parts = []
-    for _, grp in df_risk.groupby('risk_label'):
-        parts.append(grp if len(grp) >= n else resample(grp, replace=True, n_samples=n, random_state=SEED))
-    return pd.concat(parts).sample(frac=1, random_state=SEED).reset_index(drop=True)
+    sgkf = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=SEED)
+    tr_idx, te_idx = next(sgkf.split(df['content'], df['disastertype'], groups=df['msg_id']))
+    tr, te = df.iloc[tr_idx], df.iloc[te_idx]
+    pipe = make_type_pipe()
+    pipe.fit(tr['content'], tr['disastertype'])
+    print("\n[재난 종류] 홀드아웃(20%, 메시지 단위 분리) 성능:")
+    print(classification_report(te['disastertype'], pipe.predict(te['content']), zero_division=0))
 
 
 def evaluate_risk(df_risk):
-    # 위험도 평가는 '불균형 그대로' 홀드아웃을 떼고 → 학습셋에만 업샘플 → 손 안 댄(실제 분포) 테스트로 측정한다.
-    # 업샘플을 먼저 하고 나누면 같은 DANGER가 train/test 양쪽에 복제돼 점수가 부풀려진다(누수).
+    # 위험도 평가 — 불균형을 그대로 두고 홀드아웃을 뗀다. class_weight 가 학습 때 불균형을
+    # 처리하므로 업샘플(복제) 없이 손 안 댄 실제 분포로 측정한다 → 누수 없는 정직한 precision/recall.
     counts = Counter(df_risk['risk_label'])
     if len(counts) < 2 or min(counts.values()) < 2 or len(df_risk) < 20:
         print("   [위험도] 표본/클래스 부족 → 평가 생략")
@@ -361,35 +350,33 @@ def evaluate_risk(df_risk):
     X_tr, X_te, y_tr, y_te = train_test_split(
         df_risk['content'], df_risk['risk_label'],
         test_size=0.2, random_state=SEED, stratify=df_risk['risk_label'])
-    train_bal = balance_classes(pd.DataFrame({'content': X_tr, 'risk_label': y_tr}))
     pipe = make_risk_pipe()
-    pipe.fit(train_bal['content'], train_bal['risk_label'])
+    pipe.fit(X_tr, y_tr)
     print("\n[위험도 DANGER/SAFE] 홀드아웃(20%, 실제 분포 유지) 성능:")
     print(classification_report(y_te, pipe.predict(X_te), zero_division=0))
 
 
 def train_and_save_models(df):
-    print("\n🚀 모델 학습 시작...")
+    print("\n모델 학습 시작...")
 
-    # 1. 재난 종류 모델 — 평가 먼저 보고, 최종 모델은 전체 데이터로 학습
-    evaluate(make_type_pipe, df['content'], df['disastertype'], "재난 종류")
+    # 1. 재난 종류 모델 — 평가(메시지 단위 분리) 먼저 보고, 최종 모델은 전체 데이터로 학습
+    evaluate_type(df)
     type_pipe = make_type_pipe()
     type_pipe.fit(df['content'], df['disastertype'])
     joblib.dump(type_pipe, MODEL_DIR / "model_disaster.pkl")
 
-    # 2. 위험도 모델 — 공식 긴급단계가 채워진 행만 + 불균형 업샘플 후 학습
+    # 2. 위험도 모델 — 공식 긴급단계가 채워진 행만. class_weight 로 불균형 처리(업샘플 안 함).
     risk_df = df[df['emergency_level'].notna() & (df['emergency_level'].astype(str).str.strip() != "")]
     if risk_df.empty:
-        print("⚠️ 긴급단계가 채워진 데이터가 없어 위험도 모델은 건너뜀 (새 크롤링으로 단계 채운 뒤 재학습)")
+        print("긴급단계가 채워진 데이터가 없어 위험도 모델은 건너뜀 (새 크롤링으로 단계 채운 뒤 재학습)")
         return type_pipe, None
 
-    evaluate_risk(risk_df)  # 누수 없는 정직한 평가 (split → 학습셋만 업샘플 → 실제 분포 test)
-    balanced = balance_classes(risk_df)  # 배포 모델은 전체를 업샘플해 학습
+    evaluate_risk(risk_df)
     risk_pipe = make_risk_pipe()
-    risk_pipe.fit(balanced['content'], balanced['risk_label'])
+    risk_pipe.fit(risk_df['content'], risk_df['risk_label'])
     joblib.dump(risk_pipe, MODEL_DIR / "model_safety.pkl")
 
-    print("✅ 모델 저장 완료: model_disaster.pkl, model_safety.pkl")
+    print("모델 저장 완료: model_disaster.pkl, model_safety.pkl")
     return type_pipe, risk_pipe
 
 
@@ -400,7 +387,7 @@ def save_analysis_results(df, model_type, model_risk):
     conn = get_connection()
     cur = conn.cursor()
 
-    print("\n💾 학습된 모델로 전체 데이터 재분석 & DB 저장 중...")
+    print("\n학습된 모델로 전체 데이터 재분석 & DB 저장 중...")
 
     # 전체 데이터 다시 예측해서 DB에 업데이트 (DM_ANALYSIS 테이블)
     for _, row in df.iterrows():
@@ -437,25 +424,25 @@ def save_analysis_results(df, model_type, model_risk):
                 "pr": pred_risk
             })
         except Exception as e:
-            print(f"⚠️ DM_ANALYSIS 저장 실패 (dmid={dmid}): {e}")  # 조용히 삼키지 말고 알림
+            print(f"DM_ANALYSIS 저장 실패 (dmid={dmid}): {e}")  # 조용히 삼키지 말고 알림
 
     conn.commit()
     conn.close()
 
-    print("📌 DM_ANALYSIS 테이블 업데이트 완료")
+    print("DM_ANALYSIS 테이블 업데이트 완료")
 
 
 # ==========================================
 # 메인 실행부
 # ==========================================
 def main():
-    print("\n=== 🔥 SafetyNevi AI 학습 파이프라인 시작 ===")
+    print("\n=== SafetyNevi AI 학습 파이프라인 시작 ===")
 
     # 1. 데이터 가져오기 (CSV 경로 주면 CSV, 아니면 DB)
     df_src, mode = load_source_dataframe()
 
     if df_src.empty:
-        print("❌ 데이터가 없습니다. (CSV가 비었거나, DB면 크롤링 먼저)")
+        print("데이터가 없습니다. (CSV가 비었거나, DB면 크롤링 먼저)")
         return
 
     # 2. 데이터 가공 (전처리, 증강)
@@ -469,9 +456,9 @@ def main():
 
     # 5. DB 모드일 때만 원본을 재분석해 DB에 저장. CSV 오프라인 학습은 .pkl 생성까지가 끝(쓸 DB 없음).
     if mode != "db":
-        print("\nℹ️ CSV 학습이라 DB 재분석은 건너뜁니다 (.pkl 만 생성).")
+        print("\nCSV 학습이라 DB 재분석은 건너뜁니다 (.pkl 만 생성).")
     elif model_risk is None:
-        print("\nℹ️ 위험도 모델이 없어 DB 재분석은 건너뜁니다 (긴급단계 채운 뒤 재실행).")
+        print("\n위험도 모델이 없어 DB 재분석은 건너뜁니다 (긴급단계 채운 뒤 재실행).")
     else:
         print("\n--- 원본 데이터 재분석 ---")
         df_src['content_clean'] = df_src['CONTENT'].apply(clean_text)
@@ -479,7 +466,7 @@ def main():
         df_for_save['version'] = 'original'
         save_analysis_results(df_for_save, model_type, model_risk)
 
-    print("\n=== 🎉 학습 완료! 서버를 재시작하세요. ===")
+    print("\n=== 학습 완료! 서버를 재시작하세요. ===")
 
 
 if __name__ == "__main__":
