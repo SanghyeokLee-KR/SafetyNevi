@@ -68,3 +68,6 @@ node_modules/
 # ======================
 # train.py 진단 이미지 (재실행마다 생성됨)
 python/*.png
+# 파이썬 바이트코드 캐시
+__pycache__/
+*.pyc
