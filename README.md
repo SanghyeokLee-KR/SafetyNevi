@@ -89,13 +89,17 @@
 
 ## 3. 시스템 아키텍처
 
+운영 환경은 무중단·확장을 가정해 Spring Boot를 최소 2대로 다중화한 구성입니다.
+
 <div align="center">
-  <img src="src/main/resources/static/img/다이어그램/architecture.png" width="820" alt="운영 아키텍처"/>
+  <img src="src/main/resources/static/img/다이어그램/architecture.png" width="860" alt="운영 시스템 아키텍처"/>
+  <br/>
+  <sub>두 인스턴스는 동일 구성 — Oracle · FastAPI · 외부 API 접근은 가독성을 위해 대표로만 표기</sub>
 </div>
 
-- **메인 (Spring Boot)** — 사용자·지도·시설·게시판·공지·관리자·재난 도메인 + WebSocket(STOMP) 실시간 알림.
-- **AI (FastAPI)** — 재난문자 텍스트를 받아 재난유형·위험도를 분류해 돌려줍니다. 메인 서버와 HTTP로 통신.
-- **데이터** — 운영은 Oracle, 로컬은 H2 인메모리(프로파일로 전환). 시설 수천 건은 기동 시 CSV로 적재.
+- **다중 인스턴스 + 로드밸런싱** — Nginx가 Instance 1·2(9091·9092)로 부하 분산. **Redis Cluster를 공유**해 세션·캐시·Rate Limit 카운터가 인스턴스 간 일관됩니다.
+- **Kafka fan-out** — 재난 이벤트를 `disaster-topic`으로 발행하고, **각 인스턴스가 고유 Consumer Group(UUID)** 으로 모두 수신 → 각자 붙은 클라이언트에게 WebSocket(STOMP)으로 전파. 인스턴스를 늘려도 알림이 빠지지 않습니다.
+- **AI · 데이터** — 텍스트 추론은 FastAPI로 분리(HTTP), 운영 DB는 Oracle(로컬은 H2 프로파일). 시설 수천 건은 기동 시 CSV로 적재.
 
 ---
 
