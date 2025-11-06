@@ -89,17 +89,9 @@
 
 ## 3. 시스템 아키텍처
 
-```mermaid
-flowchart LR
-    User["사용자 브라우저"] -->|HTTPS| Nginx["Nginx 리버스 프록시"]
-    Nginx --> App["Spring Boot 메인 서버<br/>지도·재난·커뮤니티·관리자"]
-    App <-->|HTTP 추론| AI["FastAPI AI 서버<br/>재난유형·위험도 분류"]
-    App --> Oracle[("Oracle 운영 DB")]
-    App -->|수집·경로·날씨| Ext["행안부·기상청·Kakao API"]
-    App -.->|WebSocket 알림| User
-    App --> Redis[("Redis · prod 전용<br/>캐시·세션·레이트리밋")]
-    App --> Kafka["Kafka · prod 전용<br/>재난 이벤트 fan-out"]
-```
+<div align="center">
+  <img src="src/main/resources/static/img/다이어그램/architecture.png" width="820" alt="운영 아키텍처"/>
+</div>
 
 - **메인 (Spring Boot)** — 사용자·지도·시설·게시판·공지·관리자·재난 도메인 + WebSocket(STOMP) 실시간 알림.
 - **AI (FastAPI)** — 재난문자 텍스트를 받아 재난유형·위험도를 분류해 돌려줍니다. 메인 서버와 HTTP로 통신.
@@ -123,19 +115,9 @@ flowchart LR
 
 **재난 경보가 모든 사용자에게 닿기까지** — 인스턴스를 여러 대 띄워도 알림이 빠짐없이 가도록, Kafka 컨슈머 그룹을 인스턴스마다 고유(UUID)하게 둬서 **모든 인스턴스가 모든 이벤트를 받아** 각자 붙은 WebSocket 클라이언트로 fan-out 합니다.
 
-```mermaid
-flowchart TB
-    Gov["행안부 긴급재난문자 API"] --> Crawl["수집 스케줄러 · 1분 간격"]
-    Crawl --> Judge{"공식 긴급단계 위급·긴급?"}
-    Judge -->|예| Zone["위험 구역 폴리곤 생성"]
-    Judge -->|단계 없음| AI["AI 보조 판정"]
-    AI --> Zone
-    Zone --> Topic["Kafka · disaster 토픽"]
-    Topic --> I1["인스턴스 1<br/>컨슈머 UUID-a"]
-    Topic --> I2["인스턴스 2<br/>컨슈머 UUID-b"]
-    I1 -.->|WebSocket| U1["접속 클라이언트"]
-    I2 -.->|WebSocket| U2["접속 클라이언트"]
-```
+<div align="center">
+  <img src="src/main/resources/static/img/다이어그램/disaster-flow.png" width="560" alt="재난 실시간 전파"/>
+</div>
 
 <div align="center">
   <img src="src/main/resources/static/img/screenshots/admin.png" width="780" alt="관리자 대시보드"/>
@@ -225,14 +207,9 @@ flowchart TB
 
 **CI/CD 파이프라인** — `master` push 한 번으로 테스트부터 배포까지 자동으로 흐릅니다.
 
-```mermaid
-flowchart LR
-    Push["master push"] --> CI["테스트 + 빌드<br/>gradlew test"]
-    CI --> Img["Docker 이미지 빌드"]
-    Img --> GHCR[("GHCR 이미지 레지스트리")]
-    GHCR --> Deploy["서버 SSH<br/>pull + 재시작"]
-    Deploy -.->|시크릿 없으면| Skip["graceful skip"]
-```
+<div align="center">
+  <img src="src/main/resources/static/img/다이어그램/cicd.png" width="900" alt="CI/CD 파이프라인"/>
+</div>
 
 ---
 

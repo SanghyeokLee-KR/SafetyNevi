@@ -1,0 +1,42 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram name="운영 아키텍처" id="arch">
+    <mxGraphModel dx="1000" dy="600" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="880" pageHeight="470" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="user" value="사용자&#10;브라우저" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="40" y="200" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nginx" value="Nginx&#10;리버스 프록시 · HTTPS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="210" y="200" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="app" value="Spring Boot 메인 서버&#10;지도 · 재난 · 커뮤니티 · 관리자" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="420" y="180" width="180" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ai" value="FastAPI AI 서버&#10;재난유형 · 위험도 분류" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="670" y="40" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="oracle" value="Oracle&#10;운영 DB" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="690" y="140" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="redis" value="Redis · prod&#10;캐시 · 세션 · 레이트리밋" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="660" y="250" width="190" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="kafka" value="Kafka · prod&#10;재난 이벤트 fan-out" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="660" y="360" width="190" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ext" value="행안부 · 기상청 · Kakao API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="410" y="370" width="200" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="eu" value="HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333;fontSize=11" edge="1" parent="1" source="user" target="nginx"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="en" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333" edge="1" parent="1" source="nginx" target="app"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ea" value="HTTP 추론" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;startArrow=block;strokeColor=#333333;fontSize=11" edge="1" parent="1" source="app" target="ai"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="eo" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333" edge="1" parent="1" source="app" target="oracle"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="er" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333" edge="1" parent="1" source="app" target="redis"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ek" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#333333" edge="1" parent="1" source="app" target="kafka"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ee" value="수집 · 경로 · 날씨" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;startArrow=block;strokeColor=#333333;fontSize=11" edge="1" parent="1" source="app" target="ext"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ews" value="WebSocket 실시간 알림" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;strokeColor=#9673a6;fontSize=11;fontColor=#777777;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="app" target="user"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
