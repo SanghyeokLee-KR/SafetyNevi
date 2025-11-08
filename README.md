@@ -89,15 +89,15 @@
 
 ## 3. 시스템 아키텍처
 
-운영 환경은 무중단·확장을 가정해 Spring Boot를 최소 2대로 다중화한 구성입니다.
+운영 환경은 무중단·확장을 가정해 **AWS에 ALB + EC2 다중 인스턴스**로 배포하는 구성입니다. (로컬·dev는 동일 이미지를 Docker Compose로 띄웁니다)
 
 <div align="center">
-  <img src="src/main/resources/static/img/다이어그램/architecture.png" width="860" alt="운영 시스템 아키텍처"/>
+  <img src="src/main/resources/static/img/다이어그램/architecture.png" width="900" alt="운영 시스템 아키텍처 (AWS)"/>
   <br/>
   <sub>두 인스턴스는 동일 구성 — Oracle · FastAPI · 외부 API 접근은 가독성을 위해 대표로만 표기</sub>
 </div>
 
-- **다중 인스턴스 + 로드밸런싱** — Nginx가 Instance 1·2(9091·9092)로 부하 분산. **Redis Cluster를 공유**해 세션·캐시·Rate Limit 카운터가 인스턴스 간 일관됩니다.
+- **다중 인스턴스 + ALB** — AWS ALB가 EC2 인스턴스(Spring Boot 9091·9092)로 부하 분산. **Redis Cluster를 공유**해 세션·캐시·Rate Limit 카운터가 인스턴스 간 일관됩니다.
 - **Kafka fan-out** — 재난 이벤트를 `disaster-topic`으로 발행하고, **각 인스턴스가 고유 Consumer Group(UUID)** 으로 모두 수신 → 각자 붙은 클라이언트에게 WebSocket(STOMP)으로 전파. 인스턴스를 늘려도 알림이 빠지지 않습니다.
 - **AI · 데이터** — 텍스트 추론은 FastAPI로 분리(HTTP), 운영 DB는 Oracle(로컬은 H2 프로파일). 시설 수천 건은 기동 시 CSV로 적재.
 
