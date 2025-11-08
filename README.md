@@ -38,7 +38,7 @@
 * [2. 팀](#2-팀)
 
 **설계 · 기능**
-* [3. 시스템 아키텍처](#3-시스템-아키텍처)
+* [3. 배포 인프라 구성](#3-배포-인프라-구성)
 * [4. 주요 기능](#4-주요-기능)
 * [5. AI 파이프라인](#5-ai-파이프라인)
 * [6. 졸작에서 실서비스로](#6-졸작에서-실서비스로)
@@ -87,19 +87,18 @@
 
 ---
 
-## 3. 시스템 아키텍처
+## 3. 배포 인프라 구성
 
-운영 환경은 무중단·확장을 가정해 **AWS에 ALB + EC2 다중 인스턴스**로 배포하는 구성입니다. (로컬·dev는 동일 이미지를 Docker Compose로 띄웁니다)
+AWS EC2 한 대에 Docker Compose로 배포합니다. GitHub Actions가 이미지를 빌드·테스트해 GHCR에 올리면, 서버가 받아서(`docker compose pull`) 무중단으로 교체합니다.
 
 <div align="center">
-  <img src="src/main/resources/static/img/다이어그램/architecture.png" width="900" alt="운영 시스템 아키텍처 (AWS)"/>
-  <br/>
-  <sub>두 인스턴스는 동일 구성 — Oracle · FastAPI · 외부 API 접근은 가독성을 위해 대표로만 표기</sub>
+  <img src="src/main/resources/static/img/다이어그램/deploy-infra.png" width="900" alt="배포 · 인프라 구성도"/>
 </div>
 
-- **다중 인스턴스 + ALB** — AWS ALB가 EC2 인스턴스(Spring Boot 9091·9092)로 부하 분산. **Redis Cluster를 공유**해 세션·캐시·Rate Limit 카운터가 인스턴스 간 일관됩니다.
-- **Kafka fan-out** — 재난 이벤트를 `disaster-topic`으로 발행하고, **각 인스턴스가 고유 Consumer Group(UUID)** 으로 모두 수신 → 각자 붙은 클라이언트에게 WebSocket(STOMP)으로 전파. 인스턴스를 늘려도 알림이 빠지지 않습니다.
-- **AI · 데이터** — 텍스트 추론은 FastAPI로 분리(HTTP), 운영 DB는 Oracle(로컬은 H2 프로파일). 시설 수천 건은 기동 시 CSV로 적재.
+- **CI/CD** — push → GitHub Actions(빌드·테스트) → 이미지 GHCR push → 서버 SSH 접속 후 `docker compose pull` & 재시작. 비밀값은 이미지에 넣지 않고 서버의 `application-prod.properties`를 마운트합니다.
+- **런타임 (EC2 · Docker Compose)** — Spring Boot(SSR·REST) · Redis(세션·캐시·Rate Limit) · Kafka(재난 이벤트 스트림)를 한 인스턴스에 함께 띄웁니다.
+- **외부 연동** — FastAPI(AI 위험도 추론, HTTP) · Oracle(운영 DB) · 공공 API(행안부 긴급재난문자 · 기상청 단기예보 · Kakao 지도/길찾기).
+- 로컬·개발 프로파일은 H2 + 인메모리 브로드캐스트라 Redis·Kafka 없이도 바로 뜹니다.
 
 ---
 
