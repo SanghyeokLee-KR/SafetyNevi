@@ -71,3 +71,6 @@ python/*.png
 # 파이썬 바이트코드 캐시
 __pycache__/
 *.pyc
+
+# draw.io 데스크탑 백업
+.$*.bkp
