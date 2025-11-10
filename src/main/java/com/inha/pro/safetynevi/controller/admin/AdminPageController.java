@@ -8,6 +8,7 @@ import com.inha.pro.safetynevi.service.member.MemberService;
 import com.inha.pro.safetynevi.service.report.ReportService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +28,9 @@ public class AdminPageController {
     private final BoardService boardService;
     private final DisasterService disasterService;
     private final ReportService reportService;
+
+    @Value("${api.kakao.jsKey}")
+    private String kakaoJsKey;
 
     // 모든 화면 공통: 사이드바 메뉴 활성화용 현재 URI
     @ModelAttribute("requestURI")
@@ -62,8 +66,9 @@ public class AdminPageController {
     }
 
     @GetMapping("/disaster")
-    public String disasterPage() {
+    public String disasterPage(Model model) {
         // 재난 목록은 화면 JS가 /api/disaster-zones로 따로 불러옴
+        model.addAttribute("kakaoJsKey", kakaoJsKey);
         return "admin/disaster";
     }
 }
