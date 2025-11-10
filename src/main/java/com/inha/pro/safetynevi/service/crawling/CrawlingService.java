@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inha.pro.safetynevi.dao.crawling.DisasterMessageRepository;
 import com.inha.pro.safetynevi.dto.crawling.DisasterMessage;
 import com.inha.pro.safetynevi.dto.crawling.DisasterMessageDto;
+import com.inha.pro.safetynevi.infra.lock.SchedulerLockInitializer;
+import com.inha.pro.safetynevi.infra.lock.SchedulerLockService;
 import com.inha.pro.safetynevi.service.ai.AiClientService;
 import com.inha.pro.safetynevi.service.calamity.DisasterService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.time.Duration;
 
 // 긴급재난문자 공식 API 1분마다 긁어서 신규 저장 + AI 위험판정시 지도에 영역 생성 (전엔 네이버 크롤링이었음)
 @Slf4j
@@ -26,6 +29,7 @@ public class CrawlingService {
     private final DisasterMessageRepository disasterMessageRepository;
     private final DisasterService disasterService;
     private final AiClientService aiClientService;
+    private final SchedulerLockService lockService;
 
     // 키 미설정 시에도 앱은 기동되도록 빈 기본값(이 경우 API 호출은 graceful 실패)
     @Value("${api.disaster.serviceKey:}")
@@ -45,34 +49,63 @@ public class CrawlingService {
         return new RestTemplate(factory);
     }
 
-    // 1분마다 공식 API 조회. 외부 I/O(API·AI) 동안 DB 커넥션을 잡지 않으려 메서드 트랜잭션은 두지 않음
-    @Scheduled(fixedDelay = 60000)
-    public void fetchDisasterMessages() {
-        if (disasterServiceKey == null || disasterServiceKey.isBlank()) return; // 키 미설정 시 동작 안 함
+    // ===== 적응형 폴링 + 분산 락 =====
+    // 활동량 기반 간격: 신규 재난문자가 잡히면 최단(20s)으로, 잠잠하면 단계적으로 늘려(최대 120s) 비용↓
+    private static final long[] BACKOFF_MS = {20_000L, 30_000L, 45_000L, 60_000L, 120_000L};
+    private volatile int backoffStep = 0;
+    private volatile long nextFetchAt = 0L;
+
+    // 20초마다 깨어나되 (1) 적응형 백오프, (2) 분산 락으로 실제 수집 시점을 제어한다.
+    // 여러 인스턴스가 떠도 락을 잡은 한 곳만 외부 API를 호출 → 호출량·일일한도·중복저장 방지.
+    @Scheduled(fixedDelay = 20_000)
+    public void scheduledPoll() {
+        if (disasterServiceKey == null || disasterServiceKey.isBlank()) return; // 키 없으면 동작 안 함
+        if (System.currentTimeMillis() < nextFetchAt) return;                    // 백오프 대기 중
+        if (!lockService.tryAcquire(SchedulerLockInitializer.DISASTER_CRAWL, Duration.ofSeconds(50))) {
+            adjustBackoff(false);   // 다른 인스턴스가 수집 중 → 로컬도 잠시 대기
+            return;
+        }
+        try {
+            int saved = fetchDisasterMessages();
+            adjustBackoff(saved > 0);   // 새 메시지 있으면 빠르게, 없으면 점점 느리게
+        } finally {
+            lockService.release(SchedulerLockInitializer.DISASTER_CRAWL);
+        }
+    }
+
+    private void adjustBackoff(boolean active) {
+        backoffStep = active ? 0 : Math.min(backoffStep + 1, BACKOFF_MS.length - 1);
+        nextFetchAt = System.currentTimeMillis() + BACKOFF_MS[backoffStep];
+    }
+
+    // 공식 API 1회 조회 → 신규 저장 + (firstRun 아닐 때) 위험 판정. 저장 건수를 반환.
+    // 외부 I/O(API·AI) 동안 DB 커넥션을 잡지 않으려 메서드 트랜잭션은 두지 않음.
+    public int fetchDisasterMessages() {
+        if (disasterServiceKey == null || disasterServiceKey.isBlank()) return 0;
 
         // 최초 실행(빈 DB)에는 과거 메시지로 지도가 도배되지 않도록 저장만 하고 위험 판정은 건너뜀
         boolean firstRun = disasterMessageRepository.count() == 0;
+        int saved = 0;
 
         try {
             // serviceKey는 인증키(Encoding) 형태 가정. URI 객체로 넘겨 RestTemplate 이중 인코딩을 방지한다.
-            // (SERVICE_KEY 오류가 나면 인증키(Decoding) 형태로 바꾸고 UriComponentsBuilder.encode() 사용)
             URI uri = new URI(DISASTER_API_URL
                     + "?serviceKey=" + disasterServiceKey
                     + "&returnType=json&pageNo=1&numOfRows=20");
 
             String responseBody = restTemplate.getForObject(uri, String.class);
-            if (responseBody == null) return;
+            if (responseBody == null) return 0;
 
             JsonNode root = objectMapper.readTree(responseBody);
 
             String resultCode = root.path("header").path("resultCode").asText("");
             if (!resultCode.isEmpty() && !"00".equals(resultCode)) {
                 log.warn("긴급재난문자 API 오류: {} - {}", resultCode, root.path("header").path("resultMsg").asText());
-                return;
+                return 0;
             }
 
             JsonNode items = root.path("body");
-            if (!items.isArray() || items.isEmpty()) return;
+            if (!items.isArray() || items.isEmpty()) return 0;
 
             // API는 최신순 → 오래된 것부터 처리(시간순 저장/로그)
             for (int i = items.size() - 1; i >= 0; i--) {
@@ -83,13 +116,14 @@ public class CrawlingService {
                 String content = item.path("MSG_CN").asText("");
                 String area = item.path("RCPTN_RGN_NM").asText("정보 없음");
                 String type = item.path("DST_SE_NM").asText("기타");
-                // 공식 긴급단계(위급/긴급/안전안내). 키 발급 후 실제 응답으로 필드명 확인 — 보통 EMRG_STEP_NM
+                // 공식 긴급단계(위급/긴급/안전안내). 보통 EMRG_STEP_NM
                 String emergencyLevel = item.path("EMRG_STEP_NM").asText("");
                 String sentDate = item.path("CRT_DT").asText("");
 
                 DisasterMessage message = new DisasterMessage(new DisasterMessageDto(type, emergencyLevel, area, sentDate, content));
                 message.setSn(sn);
                 disasterMessageRepository.save(message);
+                saved++;
                 log.info("신규 재난문자 저장: {} ({} / {})", area, type, emergencyLevel.isBlank() ? "단계없음" : emergencyLevel);
 
                 if (!firstRun) {
@@ -99,6 +133,7 @@ public class CrawlingService {
         } catch (Exception e) {
             log.error("긴급재난문자 API 조회 오류: {}", e.getMessage());
         }
+        return saved;
     }
 
     // 위험 판정은 정부 공식 긴급단계를 그대로 쓴다(권위 출처). 단계가 비어있는 메시지만 AI 보조 추정.
