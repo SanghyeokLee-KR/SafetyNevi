@@ -4,6 +4,7 @@ import com.inha.pro.safetynevi.dao.calamity.DisasterZoneRepository;
 import com.inha.pro.safetynevi.dto.calamity.DisasterZoneResponse;
 import com.inha.pro.safetynevi.entity.calamity.DisasterZone;
 import com.inha.pro.safetynevi.exception.ResourceNotFoundException;
+import com.inha.pro.safetynevi.service.push.WebPushService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -26,6 +27,7 @@ public class DisasterService {
 
     private final DisasterZoneRepository disasterZoneRepository;
     private final DisasterBroadcaster broadcaster;
+    private final WebPushService webPushService;
 
     // 1. 원형 재난 생성
     @CacheEvict(value = "activeDisasters", allEntries = true)
@@ -41,7 +43,11 @@ public class DisasterService {
 
         DisasterZone saved = disasterZoneRepository.save(zone);
         log.info("원형 재난 생성: {}", saved);
-        afterCommit(() -> broadcaster.broadcastNew(DisasterZoneResponse.from(saved)));
+        DisasterZoneResponse response = DisasterZoneResponse.from(saved);
+        afterCommit(() -> {
+            broadcaster.broadcastNew(response);     // 접속 중인 사용자에게 실시간 브로드캐스트
+            webPushService.notifyNewDisaster(response); // 미접속 사용자에게 푸시 알림
+        });
         return saved;
     }
 
@@ -57,7 +63,11 @@ public class DisasterService {
 
         DisasterZone saved = disasterZoneRepository.save(zone);
         log.info("지역 재난 생성: {}", saved);
-        afterCommit(() -> broadcaster.broadcastNew(DisasterZoneResponse.from(saved)));
+        DisasterZoneResponse response = DisasterZoneResponse.from(saved);
+        afterCommit(() -> {
+            broadcaster.broadcastNew(response);     // 접속 중인 사용자에게 실시간 브로드캐스트
+            webPushService.notifyNewDisaster(response); // 미접속 사용자에게 푸시 알림
+        });
         return saved;
     }
 

@@ -6,6 +6,23 @@
     <title>실시간 재난문자 현황</title>
     <link rel="stylesheet" href="/css/disaster/disasterMessage.css"/>
     <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <style>
+        .push-bar {
+            display: flex; align-items: center; justify-content: center;
+            gap: 12px; flex-wrap: wrap; padding: 12px 16px;
+        }
+        .push-subscribe-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 10px 18px; border: 0; border-radius: 999px;
+            background: #e63946; color: #fff; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: background .15s, opacity .15s;
+        }
+        .push-subscribe-btn:hover { background: #d62836; }
+        .push-subscribe-btn:disabled { opacity: .55; cursor: default; }
+        .push-hint { color: #6b7280; font-size: 13px; }
+    </style>
 </head>
 <body>
 
@@ -16,6 +33,11 @@
             <h1 class="header-title">실시간 재난문자 현황</h1>
         </a>
     </header>
+
+    <div class="push-bar">
+        <button id="btn-push-subscribe" type="button" class="push-subscribe-btn">🔔 재난 알림 받기</button>
+        <span class="push-hint">브라우저를 닫아도 긴급재난문자를 푸시로 받아볼 수 있어요.</span>
+    </div>
 
     <main class="app-content">
         <div class="filter-container">
@@ -101,5 +123,9 @@
         }
     }
 </script>
+
+<!-- 재난 웹푸시 구독 (표준 Web Push). 외부 SDK 없이 브라우저 PushManager 사용 -->
+<script src="/js/common/csrf.js"></script>
+<script src="/js/push/push.js"></script>
 </body>
 </html>

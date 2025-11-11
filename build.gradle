@@ -70,6 +70,16 @@ dependencies {
 
     // API 문서 (Swagger UI / OpenAPI 3)
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
+
+    // 웹푸시 (미접속 사용자에게 재난 알림) — 표준 Web Push(VAPID), Firebase·외부 계정 불필요
+    implementation 'nl.martijndwars:web-push:5.1.2'
+    // web-push 가 optional/runtime 으로만 가져오는 것들을 컴파일에 노출
+    //  - BouncyCastle: VAPID 페이로드 암호화 프로바이더(web-push optional 의존)
+    //  - httpcore: send() 반환 타입 org.apache.http.HttpResponse
+    //  - jose4j: send() throws 절의 JoseException (컴파일러가 시그니처 해석에 필요)
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+    implementation 'org.apache.httpcomponents:httpcore:4.4.16'
+    implementation 'org.bitbucket.b_c:jose4j:0.7.9'
 }
 
 tasks.named('test') {
