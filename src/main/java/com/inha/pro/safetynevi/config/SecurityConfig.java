@@ -50,7 +50,7 @@ public class SecurityConfig {
                                 "font-src 'self' data: cdn.jsdelivr.net; " +
                                 "img-src 'self' data: blob: http: https:; " +
                                 "connect-src 'self' dapi.kakao.com *.daumcdn.net *.kakao.com; " +
-                                "frame-src 'self' www.youtube.com *.daumcdn.net; " +
+                                "frame-src 'self' www.youtube.com *.daumcdn.net *.daum.net; " +
                                 "object-src 'none'; base-uri 'self'; form-action 'self'"
                         ))
                 )
@@ -68,6 +68,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/check/**", "/api/find/**").permitAll()
                         .requestMatchers("/api/facilities/**", "/api/route/**", "/api/weather/**", "/api/disaster-zones/**").permitAll()
                         .requestMatchers("/api/board").permitAll()
+
+                        // 재난 웹푸시 구독 (비로그인도 허용) + 백그라운드 수신용 서비스워커
+                        .requestMatchers("/api/push/**").permitAll()
+                        .requestMatchers("/push-sw.js").permitAll()
 
                         // 관리자 전용
                         .requestMatchers("/admin/**", "/api/admin/**", "/dashboardChart").hasRole("ADMIN")
