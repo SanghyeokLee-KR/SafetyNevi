@@ -55,6 +55,11 @@ public class CrawlingService {
     private volatile int backoffStep = 0;
     private volatile long nextFetchAt = 0L;
 
+    // 이 API는 오래된순 정렬 + totalCount 없음 → 마지막(=최신) 페이지를 찾아 캐시하고 그쪽부터 수집한다.
+    private static final int PAGE_SIZE = 20;     // 페이지당 행 수
+    private static final int RECENT_PAGES = 3;   // 최신 쪽에서 긁어올 페이지 수
+    private volatile int latestPage = 0;         // 캐시된 마지막 페이지 (0=미탐색)
+
     // 20초마다 깨어나되 (1) 적응형 백오프, (2) 분산 락으로 실제 수집 시점을 제어한다.
     // 여러 인스턴스가 떠도 락을 잡은 한 곳만 외부 API를 호출 → 호출량·일일한도·중복저장 방지.
     @Scheduled(fixedDelay = 20_000)
@@ -78,62 +83,104 @@ public class CrawlingService {
         nextFetchAt = System.currentTimeMillis() + BACKOFF_MS[backoffStep];
     }
 
-    // 공식 API 1회 조회 → 신규 저장 + (firstRun 아닐 때) 위험 판정. 저장 건수를 반환.
+    // 공식 API 조회 → 신규 저장 + (firstRun 아닐 때) 위험 판정. 저장 건수를 반환.
+    // 이 API는 오래된순 정렬이라 마지막(=최신) 페이지부터 거꾸로 몇 페이지를 긁어 최근 메시지를 모은다.
     // 외부 I/O(API·AI) 동안 DB 커넥션을 잡지 않으려 메서드 트랜잭션은 두지 않음.
     public int fetchDisasterMessages() {
         if (disasterServiceKey == null || disasterServiceKey.isBlank()) return 0;
 
         // 최초 실행(빈 DB)에는 과거 메시지로 지도가 도배되지 않도록 저장만 하고 위험 판정은 건너뜀
         boolean firstRun = disasterMessageRepository.count() == 0;
-        int saved = 0;
+        int page = resolveLatestPage();
+        if (page < 1) return 0;
 
+        int saved = 0;
+        for (int p = page; p > page - RECENT_PAGES && p >= 1; p--) {
+            saved += fetchAndStorePage(p, firstRun);
+        }
+        return saved;
+    }
+
+    // 한 페이지를 조회해 신규 메시지를 저장하고 저장 건수를 반환.
+    private int fetchAndStorePage(int pageNo, boolean firstRun) {
+        JsonNode items = fetchBody(pageNo);
+        if (items == null || !items.isArray() || items.isEmpty()) return 0;
+
+        int saved = 0;
+        // 한 페이지 안에서는 오래된 것부터 처리(시간순 저장/로그)
+        for (int i = items.size() - 1; i >= 0; i--) {
+            JsonNode item = items.get(i);
+            long sn = item.path("SN").asLong(0);
+            if (sn == 0 || disasterMessageRepository.existsBySn(sn)) continue; // 중복 skip
+
+            String content = item.path("MSG_CN").asText("");
+            String area = item.path("RCPTN_RGN_NM").asText("정보 없음");
+            String type = item.path("DST_SE_NM").asText("기타");
+            // 공식 긴급단계(위급/긴급/안전안내). 보통 EMRG_STEP_NM
+            String emergencyLevel = item.path("EMRG_STEP_NM").asText("");
+            String sentDate = item.path("CRT_DT").asText("");
+
+            DisasterMessage message = new DisasterMessage(new DisasterMessageDto(type, emergencyLevel, area, sentDate, content));
+            message.setSn(sn);
+            disasterMessageRepository.save(message);
+            saved++;
+            log.info("신규 재난문자 저장: {} ({} / {})", area, type, emergencyLevel.isBlank() ? "단계없음" : emergencyLevel);
+
+            if (!firstRun) {
+                analyzeAndTriggerDisaster(message);
+            }
+        }
+        return saved;
+    }
+
+    // 지정 페이지의 body 배열을 반환(없거나 오류면 null). serviceKey는 Encoding 형태라 URI로 넘겨 이중 인코딩 방지.
+    private JsonNode fetchBody(int pageNo) {
         try {
-            // serviceKey는 인증키(Encoding) 형태 가정. URI 객체로 넘겨 RestTemplate 이중 인코딩을 방지한다.
             URI uri = new URI(DISASTER_API_URL
                     + "?serviceKey=" + disasterServiceKey
-                    + "&returnType=json&pageNo=1&numOfRows=20");
+                    + "&returnType=json&pageNo=" + pageNo + "&numOfRows=" + PAGE_SIZE);
 
             String responseBody = restTemplate.getForObject(uri, String.class);
-            if (responseBody == null) return 0;
+            if (responseBody == null) return null;
 
             JsonNode root = objectMapper.readTree(responseBody);
-
             String resultCode = root.path("header").path("resultCode").asText("");
             if (!resultCode.isEmpty() && !"00".equals(resultCode)) {
                 log.warn("긴급재난문자 API 오류: {} - {}", resultCode, root.path("header").path("resultMsg").asText());
-                return 0;
+                return null;
             }
-
-            JsonNode items = root.path("body");
-            if (!items.isArray() || items.isEmpty()) return 0;
-
-            // API는 최신순 → 오래된 것부터 처리(시간순 저장/로그)
-            for (int i = items.size() - 1; i >= 0; i--) {
-                JsonNode item = items.get(i);
-                long sn = item.path("SN").asLong(0);
-                if (sn == 0 || disasterMessageRepository.existsBySn(sn)) continue; // 중복 skip
-
-                String content = item.path("MSG_CN").asText("");
-                String area = item.path("RCPTN_RGN_NM").asText("정보 없음");
-                String type = item.path("DST_SE_NM").asText("기타");
-                // 공식 긴급단계(위급/긴급/안전안내). 보통 EMRG_STEP_NM
-                String emergencyLevel = item.path("EMRG_STEP_NM").asText("");
-                String sentDate = item.path("CRT_DT").asText("");
-
-                DisasterMessage message = new DisasterMessage(new DisasterMessageDto(type, emergencyLevel, area, sentDate, content));
-                message.setSn(sn);
-                disasterMessageRepository.save(message);
-                saved++;
-                log.info("신규 재난문자 저장: {} ({} / {})", area, type, emergencyLevel.isBlank() ? "단계없음" : emergencyLevel);
-
-                if (!firstRun) {
-                    analyzeAndTriggerDisaster(message);
-                }
-            }
+            return root.path("body");
         } catch (Exception e) {
             log.error("긴급재난문자 API 조회 오류: {}", e.getMessage());
+            return null;
         }
-        return saved;
+    }
+
+    // 마지막(=최신) 페이지를 한 번 찾아 캐시. totalCount가 없어 지수 탐색 → 이분 탐색으로 경계를 찾는다.
+    // 이후엔 데이터가 늘어 다음 페이지가 생겼을 때만 한 칸씩 전진.
+    private int resolveLatestPage() {
+        if (latestPage == 0) {
+            int lo = 1, hi = 1;
+            while (hasData(hi)) {
+                lo = hi;
+                if (hi > 1_000_000) break;
+                hi *= 2;
+            }
+            while (lo + 1 < hi) {
+                int mid = lo + (hi - lo) / 2;
+                if (hasData(mid)) lo = mid; else hi = mid;
+            }
+            latestPage = lo;
+            log.info("긴급재난문자 최신 페이지 탐색: page={}", latestPage);
+        } else if (hasData(latestPage + 1)) {
+            latestPage++;   // 새 데이터로 다음 페이지가 생김
+        }
+        return latestPage;
+    }
+
+    private boolean hasData(int pageNo) {
+        JsonNode body = fetchBody(pageNo);
+        return body != null && body.isArray() && !body.isEmpty();
     }
 
     // 위험 판정은 정부 공식 긴급단계를 그대로 쓴다(권위 출처). 단계가 비어있는 메시지만 AI 보조 추정.
