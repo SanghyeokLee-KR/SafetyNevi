@@ -28,7 +28,8 @@ public class DisasterMessageController {
                                    @RequestParam(defaultValue = "전국") String area,
                                    @RequestParam(defaultValue = "전체") String disasterType) {
 
-        Pageable pageable = PageRequest.of(page, 8, Sort.by("dmid").descending());
+        // 발령시각(sentDate) 최신순. 같은 시각이면 저장순(dmid)으로 안정 정렬.
+        Pageable pageable = PageRequest.of(page, 8, Sort.by(Sort.Order.desc("sentDate"), Sort.Order.desc("dmid")));
 
         Specification<DisasterMessage> spec = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
 
