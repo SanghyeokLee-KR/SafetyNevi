@@ -82,5 +82,20 @@
         }
     }
 
+    // 새로고침·페이지 이동을 해도 구독은 유지된다(서비스워커가 페이지와 독립적으로 푸시를 받음).
+    // 이미 구독돼 있으면 버튼에 표시하고, 서버가 재시작 등으로 잊었을 수 있으니 다시 등록해 둔다.
+    navigator.serviceWorker.getRegistration().then(function (registration) {
+        if (!registration) return;
+        registration.pushManager.getSubscription().then(function (subscription) {
+            if (!subscription) return;
+            btn.textContent = '✓ 알림 구독중';
+            fetch('/api/push/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(subscription),
+            });
+        });
+    });
+
     btn.addEventListener('click', subscribe);
 })();
