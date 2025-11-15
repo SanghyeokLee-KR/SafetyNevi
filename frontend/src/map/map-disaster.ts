@@ -1,5 +1,6 @@
 // 재난 구역을 지도에 그리고 WebSocket으로 생성/삭제를 실시간 반영
 import { map } from './map-core.js';
+import { prependDisasterMessage } from './map-disaster-feed.js';
 
 let disasterMarkerImages: Record<string, any> = {};
 let zoneGraphics = new Map<any, any[]>();   // 재난 id -> 해당 구역의 그래픽(원/폴리곤/마커) 배열
@@ -55,6 +56,7 @@ export function connectDisasterSocket() {
     client.connect({}, () => {
         client.subscribe('/topic/disaster/new', (msg) => drawZone(JSON.parse(msg.body), true));
         client.subscribe('/topic/disaster/delete', (msg) => removeZone(JSON.parse(msg.body)));
+        client.subscribe('/topic/disaster-message', (msg) => prependDisasterMessage(JSON.parse(msg.body)));
     });
 }
 

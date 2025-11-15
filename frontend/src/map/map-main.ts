@@ -4,6 +4,7 @@ import { setupTabNavigation, setupCheckboxLogic, setupDetailViewEvents, setupGlo
 import { setupMarkerImages, setupMapEventListeners } from './map-marker.js';
 import { loadCurrentLocationAndWeather } from './map-weather.js';
 import { setupDisasterMarkerImages, loadDisasterZones, connectDisasterSocket } from './map-disaster.js';
+import { loadRecentDisasterMessages } from './map-disaster-feed.js';
 import { setupSearchLogic } from './map-search.js';
 import { setupRouteLogic } from './map-route.js';
 import { setupMyPlaceLogic } from './map-myplace.js';
@@ -37,4 +38,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 재난은 초기 1회 로드 후 소켓으로 push 수신 (폴링 대신)
     loadDisasterZones();
     connectDisasterSocket();
+    loadRecentDisasterMessages();   // 사이드바 실시간 재난문자 피드
 });

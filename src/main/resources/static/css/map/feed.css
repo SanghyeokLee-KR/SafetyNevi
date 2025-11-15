@@ -1,0 +1,118 @@
+/* 지도 사이드바 '실시간 재난문자' 피드 */
+
+.kb-feed-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 라이브 표시 점 (맥박) */
+.kb-feed-live {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--danger, #e5484d);
+    animation: kb-feed-pulse 1.8s ease-out infinite;
+}
+
+@keyframes kb-feed-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(229, 72, 77, 0.5); }
+    70%  { box-shadow: 0 0 0 7px rgba(229, 72, 77, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(229, 72, 77, 0); }
+}
+
+.kb-feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 6px 0 18px;
+}
+
+.kb-feed-empty {
+    color: #9aa1ac;
+    font-size: 13px;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.kb-feed-card {
+    position: relative;
+    background: #fff;
+    border: 1px solid #eef0f3;
+    border-left: 3px solid var(--accent, #7b8694);
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.kb-feed-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.09);
+    transform: translateY(-1px);
+}
+
+.kb-feed-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 5px;
+}
+
+.kb-feed-badge {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--accent, #7b8694);
+    padding: 2px 7px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.kb-feed-area {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2b2f36;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kb-feed-time {
+    flex-shrink: 0;
+    font-size: 11px;
+    color: #9aa1ac;
+    white-space: nowrap;
+}
+
+.kb-feed-body {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #5a616b;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* 재난 종류별 강조색 */
+.kb-feed-card[data-type="fire"]  { --accent: #e5484d; }
+.kb-feed-card[data-type="water"] { --accent: #2f80ed; }
+.kb-feed-card[data-type="heat"]  { --accent: #f2762e; }
+.kb-feed-card[data-type="snow"]  { --accent: #4aa3df; }
+.kb-feed-card[data-type="quake"] { --accent: #a9742f; }
+.kb-feed-card[data-type="dry"]   { --accent: #c9a227; }
+.kb-feed-card[data-type="dust"]  { --accent: #8a8f98; }
+.kb-feed-card[data-type="etc"]   { --accent: #7b8694; }
+
+/* 소켓으로 새로 들어온 카드 */
+.kb-feed-new {
+    animation: kb-feed-in 0.6s ease;
+}
+
+@keyframes kb-feed-in {
+    0%   { opacity: 0; transform: translateY(-10px); background: #fff6f6; }
+    100% { opacity: 1; transform: translateY(0); background: #fff; }
+}

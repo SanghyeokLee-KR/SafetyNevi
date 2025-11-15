@@ -2,6 +2,7 @@ package com.inha.pro.safetynevi.controller.crawling;
 
 import com.inha.pro.safetynevi.dao.crawling.DisasterMessageRepository;
 import com.inha.pro.safetynevi.dto.crawling.DisasterMessage;
+import com.inha.pro.safetynevi.dto.crawling.DisasterMessageDto;
 import com.inha.pro.safetynevi.specs.DisasterMessageSpecs;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +13,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 @Controller
 public class DisasterMessageController {
@@ -54,5 +58,16 @@ public class DisasterMessageController {
         model.addAttribute("selectedType", disasterType);
 
         return "disaster/disasterMessage";
+    }
+
+    // 지도 사이드바 실시간 피드용 — 최신 재난문자 20건(JSON)
+    @ResponseBody
+    @GetMapping("/api/disaster-messages/recent")
+    public List<DisasterMessageDto> recentMessages() {
+        Pageable pageable = PageRequest.of(0, 20, Sort.by(Sort.Order.desc("sentDate"), Sort.Order.desc("dmid")));
+        return disasterMessageRepository.findAll(pageable).stream()
+                .map(m -> new DisasterMessageDto(m.getDisasterType(), m.getEmergencyLevel(),
+                        m.getArea(), m.getSentDate(), m.getContent()))
+                .toList();
     }
 }
