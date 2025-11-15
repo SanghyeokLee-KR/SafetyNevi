@@ -50,7 +50,7 @@ public class SecurityConfig {
                                 "font-src 'self' data: cdn.jsdelivr.net; " +
                                 "img-src 'self' data: blob: http: https:; " +
                                 "connect-src 'self' dapi.kakao.com *.daumcdn.net *.kakao.com; " +
-                                "frame-src 'self' www.youtube.com *.daumcdn.net *.daum.net; " +
+                                "frame-src 'self' www.youtube.com *.daumcdn.net *.daum.net *.kakao.com; " +
                                 "object-src 'none'; base-uri 'self'; form-action 'self'"
                         ))
                 )
@@ -67,6 +67,7 @@ public class SecurityConfig {
                         // 공개 API (시설 조회, 경로 탐색, 날씨, 게시글 목록)
                         .requestMatchers("/api/check/**", "/api/find/**").permitAll()
                         .requestMatchers("/api/facilities/**", "/api/route/**", "/api/weather/**", "/api/disaster-zones/**").permitAll()
+                        .requestMatchers("/api/disaster-messages/**").permitAll()
                         .requestMatchers("/api/board").permitAll()
 
                         // 재난 웹푸시 구독 (비로그인도 허용) + 백그라운드 수신용 서비스워커
