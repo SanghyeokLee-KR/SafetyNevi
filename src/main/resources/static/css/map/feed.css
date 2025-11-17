@@ -6,6 +6,20 @@
     gap: 8px;
 }
 
+/* 전체 목록(/disasterMessage)으로 가는 링크 — 실시간 피드엔 페이징 대신 이걸 둠 */
+.kb-feed-all {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--primary, #2563eb);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.kb-feed-all:hover {
+    text-decoration: underline;
+}
+
 /* 라이브 표시 점 (맥박) */
 .kb-feed-live {
     width: 8px;
