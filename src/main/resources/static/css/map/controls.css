@@ -36,6 +36,7 @@ body.dark-mode .kb-filter-btn.active { background-color: var(--primary); border-
     .kb-map-controls.kb-tools-open {
         display: flex; flex-direction: column; gap: 8px;
         position: fixed; left: 0; right: 0; bottom: 0; top: auto; width: 100%;
+        box-sizing: border-box;
         background: #fff; border-radius: 18px 18px 0 0;
         padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px));
         box-shadow: 0 -4px 24px rgba(0,0,0,0.2);
