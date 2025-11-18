@@ -44,7 +44,7 @@ public class PushController {
         }
         String userId = (principal != null) ? principal.getName() : null;
         webPushService.subscribe(request.endpoint(), request.keys().p256dh(), request.keys().auth(),
-                userId, http.getHeader("User-Agent"));
+                request.region(), userId, http.getHeader("User-Agent"));
         return ResponseEntity.ok().build();
     }
 

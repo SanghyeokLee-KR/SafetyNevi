@@ -43,7 +43,7 @@ public class WebPushService {
 
     // 구독 저장. 같은 endpoint 가 다시 오면 갱신(upsert).
     @Transactional
-    public void subscribe(String endpoint, String p256dh, String auth, String userId, String userAgent) {
+    public void subscribe(String endpoint, String p256dh, String auth, String region, String userId, String userAgent) {
         if (endpoint == null || endpoint.isBlank()) return;
         PushSubscription sub = subscriptionRepository.findByEndpoint(endpoint).orElseGet(PushSubscription::new);
         sub.setEndpoint(endpoint);
@@ -51,8 +51,10 @@ public class WebPushService {
         sub.setAuth(auth);
         sub.setUserId(userId);
         sub.setUserAgent(userAgent);
+        // 관심 지역(시/도). 새로고침 재동기화처럼 region 이 안 오면 기존 선택을 유지한다.
+        if (region != null && !region.isBlank()) sub.setAreaName(region);
         subscriptionRepository.save(sub);
-        log.info("웹푸시 구독 등록: user={}", userId == null ? "익명" : userId);
+        log.info("웹푸시 구독 등록: user={}, region={}", userId == null ? "익명" : userId, sub.getAreaName());
     }
 
     // 구독 해지
@@ -62,13 +64,13 @@ public class WebPushService {
         subscriptionRepository.findByEndpoint(endpoint).ifPresent(subscriptionRepository::delete);
     }
 
-    // 새 재난 발생 시 등록된 모든 구독으로 푸시. (지역 구독은 다음 단계 — 지금은 전체 발송)
+    // 새 재난 발생 시, 재난 지역과 같은 시/도를 구독한(또는 전국 구독) 기기로만 푸시.
     // 외부 푸시 서비스로의 HTTP 호출이라 트랜잭션 밖에서 — DB 커넥션을 쥔 채 네트워크를 기다리지 않도록.
     public void notifyNewDisaster(DisasterZoneResponse zone) {
         PushService service = push();
         if (service == null) return;   // 미설정 → no-op
 
-        List<PushSubscription> subs = subscriptionRepository.findAll();
+        List<PushSubscription> subs = filterByRegion(subscriptionRepository.findAll(), zone.getAreaName());
         if (subs.isEmpty()) return;
 
         byte[] payload = buildPayload(zone);
@@ -98,6 +100,43 @@ public class WebPushService {
             log.info("웹푸시 만료 구독 정리: {}건", dead.size());
         }
         log.info("웹푸시 재난 발송: 대상 {}건, 성공 {}건", subs.size(), success);
+    }
+
+    // 재난 지역의 시/도를 모르면(원형 재난 등) 전체에, 알면 같은 시/도·전국 구독자에게만.
+    private List<PushSubscription> filterByRegion(List<PushSubscription> subs, String disasterArea) {
+        String province = provinceOf(disasterArea);
+        if (province == null) return subs;
+        List<PushSubscription> matched = new ArrayList<>();
+        for (PushSubscription s : subs) {
+            String region = s.getAreaName();
+            if (region == null || region.isBlank() || "전국".equals(region) || province.equals(provinceOf(region))) {
+                matched.add(s);
+            }
+        }
+        return matched;
+    }
+
+    // 주소/지역명에서 시/도를 짧은 형태로 추출. 못 찾으면 null.
+    private static String provinceOf(String area) {
+        if (area == null || area.isBlank()) return null;
+        if (area.contains("서울")) return "서울";
+        if (area.contains("부산")) return "부산";
+        if (area.contains("대구")) return "대구";
+        if (area.contains("인천")) return "인천";
+        if (area.contains("광주")) return "광주";
+        if (area.contains("대전")) return "대전";
+        if (area.contains("울산")) return "울산";
+        if (area.contains("세종")) return "세종";
+        if (area.contains("경기")) return "경기";
+        if (area.contains("강원")) return "강원";
+        if (area.contains("충청북") || area.contains("충북")) return "충북";
+        if (area.contains("충청남") || area.contains("충남")) return "충남";
+        if (area.contains("전라북") || area.contains("전북")) return "전북";
+        if (area.contains("전라남") || area.contains("전남")) return "전남";
+        if (area.contains("경상북") || area.contains("경북")) return "경북";
+        if (area.contains("경상남") || area.contains("경남")) return "경남";
+        if (area.contains("제주")) return "제주";
+        return null;
     }
 
     private byte[] buildPayload(DisasterZoneResponse zone) {
