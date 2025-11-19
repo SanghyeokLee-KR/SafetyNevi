@@ -58,6 +58,36 @@ export function connectDisasterSocket() {
         client.subscribe('/topic/disaster/delete', (msg) => removeZone(JSON.parse(msg.body)));
         client.subscribe('/topic/disaster-message', (msg) => prependDisasterMessage(JSON.parse(msg.body)));
     });
+
+    // 사이드바 피드에서 지역 클릭 → 지도를 그 지역으로 이동
+    document.addEventListener('feed:focus-area', (e: any) => focusOnArea(e.detail));
+}
+
+// 행정구역명으로 지도를 그 지역 중심으로 이동 (피드 카드 클릭용)
+async function focusOnArea(areaName: string) {
+    if (!areaName || !map) return;
+    try {
+        if (!sigunguGeoJson) {
+            const res = await fetch('/geojson/skorea-municipalities-2018-geo.json');
+            if (res.ok) sigunguGeoJson = await res.json(); else return;
+        }
+        const features = findGeoJsonFeatures(areaName);
+        if (features.length === 0) return;
+
+        let latSum = 0, lngSum = 0, count = 0;
+        features.forEach(f => {
+            const rings = f.geometry.type === 'Polygon'
+                ? [f.geometry.coordinates[0]]
+                : f.geometry.coordinates.map((c: any) => c[0]);
+            rings.forEach((ring: any) => { latSum += ring[0][1]; lngSum += ring[0][0]; count++; });
+        });
+        if (count === 0) return;
+
+        map.setLevel(9);
+        map.panTo(new kakao.maps.LatLng(latSum / count, lngSum / count));
+    } catch (e) {
+        console.error('지역 포커스 실패:', e);
+    }
 }
 
 // 재난 하나를 그리고 id로 그래픽을 보관 (이미 그려져 있으면 무시)

@@ -1,8 +1,10 @@
 // 지도 사이드바의 '실시간 재난문자' 피드. 진입 시 최근분을 REST로 불러오고,
 // 새 메시지는 소켓(map-disaster.ts가 /topic/disaster-message 구독)으로 받아 맨 위에 끼운다.
+// 카드를 누르면 'feed:focus-area' 이벤트를 쏴 map-disaster.ts가 지도를 그 지역으로 옮긴다.
 import { escapeHtml } from '../common/escape.js';
 
 const MAX_CARDS = 30;
+let clickAttached = false;
 
 // 재난 종류 → 강조색 클래스(CSS에서 data-type으로 매칭)
 const TYPE_CLASS: Record<string, string> = {
@@ -38,7 +40,7 @@ function relativeTime(sentDate: string): string {
 function cardHtml(msg: any): string {
     const cls = typeClass(msg.disasterType || '');
     return '' +
-        '<div class="kb-feed-card" data-type="' + cls + '">' +
+        '<div class="kb-feed-card" data-type="' + cls + '" data-area="' + escapeHtml(msg.area || '') + '">' +
         '  <div class="kb-feed-head">' +
         '    <span class="kb-feed-badge">' + escapeHtml(msg.disasterType || '기타') + '</span>' +
         '    <span class="kb-feed-area">' + escapeHtml(msg.area || '') + '</span>' +
@@ -48,10 +50,27 @@ function cardHtml(msg: any): string {
         '</div>';
 }
 
+// 카드 클릭 → 그 지역으로 지도 이동(이벤트로 map-disaster.ts에 위임). 모바일은 지도가 보이게 사이드바도 닫는다.
+function attachClickHandler(list: HTMLElement) {
+    if (clickAttached) return;
+    clickAttached = true;
+    list.addEventListener('click', (e) => {
+        const card = (e.target as HTMLElement).closest('.kb-feed-card') as HTMLElement | null;
+        const area = card ? card.dataset.area : null;
+        if (!area) return;
+        document.dispatchEvent(new CustomEvent('feed:focus-area', { detail: area }));
+        if (window.innerWidth <= 768) {
+            const closeBtn = document.querySelector('.kb-menu-icon') as HTMLElement | null;
+            if (closeBtn) closeBtn.click();
+        }
+    });
+}
+
 // 진입 시 최근 재난문자 로드
 export async function loadRecentDisasterMessages() {
     const list = document.getElementById('kb-feed-list');
     if (!list) return;
+    attachClickHandler(list);
     try {
         const res = await fetch('/api/disaster-messages/recent');
         if (!res.ok) return;
