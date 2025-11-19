@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -31,7 +30,7 @@ public class CrawlingService {
     private final DisasterService disasterService;
     private final AiClientService aiClientService;
     private final SchedulerLockService lockService;
-    private final SimpMessagingTemplate messagingTemplate;   // 지도 사이드바 실시간 피드 push
+    private final MessageBroadcaster messageBroadcaster;   // 지도 사이드바 실시간 피드 push (단일=직접 STOMP, 운영=Kafka)
 
     // 키 미설정 시에도 앱은 기동되도록 빈 기본값(이 경우 API 호출은 graceful 실패)
     @Value("${api.disaster.serviceKey:}")
@@ -130,8 +129,7 @@ public class CrawlingService {
 
             if (!firstRun) {
                 // 새 메시지를 지도 사이드바 실시간 피드로 push (최초 적재분은 제외)
-                messagingTemplate.convertAndSend("/topic/disaster-message",
-                        new DisasterMessageDto(type, emergencyLevel, area, sentDate, content));
+                messageBroadcaster.broadcast(new DisasterMessageDto(type, emergencyLevel, area, sentDate, content));
                 analyzeAndTriggerDisaster(message);
             }
         }
