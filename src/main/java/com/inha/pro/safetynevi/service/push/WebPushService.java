@@ -102,8 +102,8 @@ public class WebPushService {
         log.info("웹푸시 재난 발송: 대상 {}건, 성공 {}건", subs.size(), success);
     }
 
-    // 재난 지역의 시/도를 모르면(원형 재난 등) 전체에, 알면 같은 시/도·전국 구독자에게만.
-    private List<PushSubscription> filterByRegion(List<PushSubscription> subs, String disasterArea) {
+    // 재난 지역의 시/도를 모르면(원형 재난 등) 전체에, 알면 같은 시/도·전국 구독자에게만. (테스트용 package-private)
+    static List<PushSubscription> filterByRegion(List<PushSubscription> subs, String disasterArea) {
         String province = provinceOf(disasterArea);
         if (province == null) return subs;
         List<PushSubscription> matched = new ArrayList<>();
@@ -116,8 +116,8 @@ public class WebPushService {
         return matched;
     }
 
-    // 주소/지역명에서 시/도를 짧은 형태로 추출. 못 찾으면 null.
-    private static String provinceOf(String area) {
+    // 주소/지역명에서 시/도를 짧은 형태로 추출. 못 찾으면 null. (테스트용 package-private)
+    static String provinceOf(String area) {
         if (area == null || area.isBlank()) return null;
         if (area.contains("서울")) return "서울";
         if (area.contains("부산")) return "부산";
