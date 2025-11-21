@@ -128,6 +128,17 @@
 }
 
 @keyframes kb-feed-in {
-    0%   { opacity: 0; transform: translateY(-10px); background: #fff6f6; }
-    100% { opacity: 1; transform: translateY(0); background: #fff; }
+    0%   { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
+
+/* 다크모드(야간) — 카드가 하드코딩 흰색이라 야간에 깨지던 것 보정 */
+body.dark-mode .kb-feed-card {
+    background: #2a2a2a;
+    border-color: #444;
+}
+body.dark-mode .kb-feed-area { color: #e0e0e0; }
+body.dark-mode .kb-feed-body { color: #aaa; }
+body.dark-mode .kb-feed-time,
+body.dark-mode .kb-feed-empty { color: #888; }
+body.dark-mode .kb-feed-card:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); }
