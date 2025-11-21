@@ -5,6 +5,7 @@ import { escapeHtml } from '../common/escape.js';
 
 const MAX_CARDS = 30;
 let clickAttached = false;
+let timerSet = false;
 
 // 재난 종류 → 강조색 클래스(CSS에서 data-type으로 매칭)
 const TYPE_CLASS: Record<string, string> = {
@@ -40,7 +41,7 @@ function relativeTime(sentDate: string): string {
 function cardHtml(msg: any): string {
     const cls = typeClass(msg.disasterType || '');
     return '' +
-        '<div class="kb-feed-card" data-type="' + cls + '" data-area="' + escapeHtml(msg.area || '') + '">' +
+        '<div class="kb-feed-card" data-type="' + cls + '" data-area="' + escapeHtml(msg.area || '') + '" data-time="' + escapeHtml(msg.sentDate || '') + '">' +
         '  <div class="kb-feed-head">' +
         '    <span class="kb-feed-badge">' + escapeHtml(msg.disasterType || '기타') + '</span>' +
         '    <span class="kb-feed-area">' + escapeHtml(msg.area || '') + '</span>' +
@@ -66,14 +67,30 @@ function attachClickHandler(list: HTMLElement) {
     });
 }
 
+// 1분마다 카드의 상대시간을 다시 계산해 갱신("방금"→"1분 전" 등)
+function setupTimeRefresh() {
+    if (timerSet) return;
+    timerSet = true;
+    setInterval(function () {
+        const list = document.getElementById('kb-feed-list');
+        if (!list) return;
+        list.querySelectorAll('.kb-feed-card').forEach(function (card) {
+            const t = (card as HTMLElement).dataset.time;
+            const el = card.querySelector('.kb-feed-time');
+            if (t && el) el.textContent = relativeTime(t);
+        });
+    }, 60000);
+}
+
 // 진입 시 최근 재난문자 로드
 export async function loadRecentDisasterMessages() {
     const list = document.getElementById('kb-feed-list');
     if (!list) return;
     attachClickHandler(list);
+    setupTimeRefresh();
     try {
         const res = await fetch('/api/disaster-messages/recent');
-        if (!res.ok) return;
+        if (!res.ok) throw new Error('status ' + res.status);
         const messages = await res.json();
         if (!messages.length) {
             list.innerHTML = '<div class="kb-feed-empty">표시할 재난문자가 없습니다.</div>';
@@ -82,6 +99,7 @@ export async function loadRecentDisasterMessages() {
         list.innerHTML = messages.map(cardHtml).join('');
     } catch (e) {
         console.error('재난문자 피드 로드 실패:', e);
+        list.innerHTML = '<div class="kb-feed-empty">재난문자를 불러오지 못했어요.</div>';
     }
 }
 
