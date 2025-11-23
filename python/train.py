@@ -355,6 +355,22 @@ def evaluate_risk(df_risk):
     print("\n[위험도 DANGER/SAFE] 홀드아웃(20%, 실제 분포 유지) 성능:")
     print(classification_report(y_te, pipe.predict(X_te), zero_division=0))
 
+    # 임계값별 DANGER precision/recall — 운영 SAFETY_DANGER_THRESHOLD(main.py) 선택용.
+    # 기본 0.5는 과경보(낮은 precision)가 있으니, 표를 보고 precision을 더 원하면 임계값을 올린다.
+    classes = list(pipe.classes_)
+    di = classes.index("DANGER")
+    p_danger = pipe.predict_proba(X_te)[:, di]
+    y_danger = (y_te.values == "DANGER")
+    print("  임계값별 DANGER precision/recall:")
+    for t in [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]:
+        pred = p_danger >= t
+        tp = int((pred & y_danger).sum())
+        fp = int((pred & ~y_danger).sum())
+        fn = int((~pred & y_danger).sum())
+        prec = tp / (tp + fp) if (tp + fp) else 0.0
+        rec = tp / (tp + fn) if (tp + fn) else 0.0
+        print(f"    t={t:.1f}  precision={prec:.2f}  recall={rec:.2f}  (예측 DANGER {int(pred.sum())}건)")
+
 
 def train_and_save_models(df):
     print("\n모델 학습 시작...")

@@ -1,5 +1,6 @@
 from pathlib import Path
 import logging
+import os
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
@@ -15,6 +16,9 @@ app = FastAPI(title="SafetyNevi AI")
 # 모델은 이 파일과 같은 폴더에서 절대경로로 로드한다 (어느 CWD에서 켜도 되게).
 # 못 읽어도 서버는 뜨되 not-ready 상태로 두고, /predict 는 503 (자바 쪽이 타임아웃으로 폴백함).
 BASE_DIR = Path(__file__).resolve().parent
+# 위험(DANGER) 판정 임계값. 기본 0.5. 과경보가 신경 쓰이면 운영에서 올려(예: 0.7) precision↑/recall↓.
+# train.py 가 임계값별 precision/recall 을 출력하니 데이터 보고 고르면 된다.
+DANGER_THRESHOLD = float(os.getenv("SAFETY_DANGER_THRESHOLD", "0.5"))
 model_disaster = None
 model_safety = None
 
@@ -62,10 +66,12 @@ def predict(req: Req):
 
     try:
         disaster = model_disaster.predict([text])[0]
-        safety = model_safety.predict([text])[0]
-        # confidence 는 '위험도 결정'의 확신도만 쓴다. 종류모델 확률과 섞지 않음.
-        safety_conf = float(max(model_safety.predict_proba([text])[0]))
-        return Res(disasterType=str(disaster), safety=str(safety), confidence=safety_conf)
+        # 위험도는 argmax(predict) 대신 DANGER 확률에 임계값을 적용한다 — 임계값을 올리면 과경보↓.
+        proba = model_safety.predict_proba([text])[0]
+        classes = list(model_safety.classes_)
+        p_danger = float(proba[classes.index("DANGER")]) if "DANGER" in classes else 0.0
+        safety = "DANGER" if p_danger >= DANGER_THRESHOLD else "SAFE"
+        return Res(disasterType=str(disaster), safety=safety, confidence=p_danger)
     except Exception as e:
         log.error("추론 오류: %s", e)
         # 추론이 깨져도 서버는 죽지 않게 안전 기본값 (자바도 SAFE 폴백과 일치)
