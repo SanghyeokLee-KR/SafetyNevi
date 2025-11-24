@@ -25,6 +25,63 @@ function typeClass(type: string): string {
     return 'etc';
 }
 
+// 지역명에서 시/도 추출 — 서버 WebPushService.provinceOf와 같은 규칙(피드 지역 필터용)
+const PROVINCE_RULES: [string, string][] = [
+    ['서울', '서울'], ['부산', '부산'], ['대구', '대구'], ['인천', '인천'], ['광주', '광주'],
+    ['대전', '대전'], ['울산', '울산'], ['세종', '세종'], ['경기', '경기'], ['강원', '강원'],
+    ['충청북', '충북'], ['충북', '충북'], ['충청남', '충남'], ['충남', '충남'],
+    ['전라북', '전북'], ['전북', '전북'], ['전라남', '전남'], ['전남', '전남'],
+    ['경상북', '경북'], ['경북', '경북'], ['경상남', '경남'], ['경남', '경남'], ['제주', '제주'],
+];
+
+function provinceOf(area: string): string | null {
+    if (!area) return null;
+    for (const [needle, prov] of PROVINCE_RULES) {
+        if (area.indexOf(needle) !== -1) return prov;
+    }
+    return null;
+}
+
+let feedRegion = '전국';
+let regionAttached = false;
+
+// 선택한 시/도에 해당하는 카드만 보이게. 걸러진 게 없으면 안내 한 줄.
+function applyRegionFilter() {
+    const list = document.getElementById('kb-feed-list');
+    if (!list) return;
+    let visible = 0;
+    list.querySelectorAll('.kb-feed-card').forEach((c) => {
+        const card = c as HTMLElement;
+        const ok = feedRegion === '전국' || provinceOf(card.dataset.area || '') === feedRegion;
+        card.style.display = ok ? '' : 'none';
+        if (ok) visible++;
+    });
+    let note = list.querySelector('.kb-feed-note') as HTMLElement | null;
+    if (visible === 0 && feedRegion !== '전국') {
+        if (!note) {
+            note = document.createElement('div');
+            note.className = 'kb-feed-note';
+            list.appendChild(note);
+        }
+        note.textContent = feedRegion + ' 지역의 최근 재난문자가 없어요.';
+        note.style.display = '';
+    } else if (note) {
+        note.style.display = 'none';
+    }
+}
+
+// 지역 select 변경 → 필터 다시 적용 (한 번만 바인딩)
+function setupRegionFilter() {
+    if (regionAttached) return;
+    const sel = document.getElementById('kb-feed-region') as HTMLSelectElement | null;
+    if (!sel) return;
+    regionAttached = true;
+    sel.addEventListener('change', () => {
+        feedRegion = sel.value;
+        applyRegionFilter();
+    });
+}
+
 // "2026/06/14 18:43:29" → "3시간 전" 형태의 상대시간
 function relativeTime(sentDate: string): string {
     if (!sentDate) return '';
@@ -88,6 +145,7 @@ export async function loadRecentDisasterMessages() {
     if (!list) return;
     attachClickHandler(list);
     setupTimeRefresh();
+    setupRegionFilter();
     try {
         const res = await fetch('/api/disaster-messages/recent');
         if (!res.ok) throw new Error('status ' + res.status);
@@ -97,6 +155,7 @@ export async function loadRecentDisasterMessages() {
             return;
         }
         list.innerHTML = messages.map(cardHtml).join('');
+        applyRegionFilter();
     } catch (e) {
         console.error('재난문자 피드 로드 실패:', e);
         list.innerHTML = '<div class="kb-feed-empty">재난문자를 불러오지 못했어요.</div>';
@@ -122,4 +181,5 @@ export function prependDisasterMessage(msg: any) {
     while (list.children.length > MAX_CARDS) {
         list.removeChild(list.lastChild as Node);
     }
+    applyRegionFilter();   // 현재 지역 필터를 새 카드에도 반영
 }

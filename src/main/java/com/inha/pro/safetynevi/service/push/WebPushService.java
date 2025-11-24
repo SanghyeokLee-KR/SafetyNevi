@@ -116,8 +116,8 @@ public class WebPushService {
         return matched;
     }
 
-    // 주소/지역명에서 시/도를 짧은 형태로 추출. 못 찾으면 null. (테스트용 package-private)
-    static String provinceOf(String area) {
+    // 주소/지역명에서 시/도를 짧은 형태로 추출. 못 찾으면 null. (지역 구독 매칭·회원 기본지역에서 공용)
+    public static String provinceOf(String area) {
         if (area == null || area.isBlank()) return null;
         if (area.contains("서울")) return "서울";
         if (area.contains("부산")) return "부산";

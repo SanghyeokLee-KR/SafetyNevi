@@ -3,6 +3,7 @@
 .kb-feed-title {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 8px;
 }
 
@@ -18,6 +19,17 @@
 
 .kb-feed-all:hover {
     text-decoration: underline;
+}
+
+/* 지역 필터 select (피드 헤더, 작게) */
+.kb-feed-region {
+    font-size: 12px;
+    padding: 3px 6px;
+    border: 1px solid #d5d9e0;
+    border-radius: 6px;
+    background: #fff;
+    color: #2b2f36;
+    cursor: pointer;
 }
 
 /* 라이브 표시 점 (맥박) */
@@ -47,6 +59,14 @@
     font-size: 13px;
     text-align: center;
     padding: 20px 0;
+}
+
+/* 지역 필터 결과 없음 안내 — 빈 상태와 같은 톤 */
+.kb-feed-note {
+    color: #9aa1ac;
+    font-size: 13px;
+    text-align: center;
+    padding: 16px 0;
 }
 
 .kb-feed-card {
@@ -140,5 +160,11 @@ body.dark-mode .kb-feed-card {
 body.dark-mode .kb-feed-area { color: #e0e0e0; }
 body.dark-mode .kb-feed-body { color: #aaa; }
 body.dark-mode .kb-feed-time,
-body.dark-mode .kb-feed-empty { color: #888; }
+body.dark-mode .kb-feed-empty,
+body.dark-mode .kb-feed-note { color: #888; }
+body.dark-mode .kb-feed-region {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #e0e0e0;
+}
 body.dark-mode .kb-feed-card:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); }

@@ -1,8 +1,11 @@
 package com.inha.pro.safetynevi.controller.crawling;
 
 import com.inha.pro.safetynevi.dao.crawling.DisasterMessageRepository;
+import com.inha.pro.safetynevi.dao.member.MemberRepository;
 import com.inha.pro.safetynevi.dto.crawling.DisasterMessage;
 import com.inha.pro.safetynevi.dto.crawling.DisasterMessageDto;
+import com.inha.pro.safetynevi.entity.member.Member;
+import com.inha.pro.safetynevi.service.push.WebPushService;
 import com.inha.pro.safetynevi.specs.DisasterMessageSpecs;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,19 +18,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
 public class DisasterMessageController {
 
     private final DisasterMessageRepository disasterMessageRepository;
+    private final MemberRepository memberRepository;
 
-    public DisasterMessageController(DisasterMessageRepository disasterMessageRepository) {
+    public DisasterMessageController(DisasterMessageRepository disasterMessageRepository,
+                                     MemberRepository memberRepository) {
         this.disasterMessageRepository = disasterMessageRepository;
+        this.memberRepository = memberRepository;
     }
 
     @GetMapping("/disasterMessage")
-    public String disasterMessages(Model model,
+    public String disasterMessages(Model model, Principal principal,
                                    @RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "전국") String area,
                                    @RequestParam(defaultValue = "전체") String disasterType) {
@@ -56,6 +63,15 @@ public class DisasterMessageController {
         model.addAttribute("disasterTypes", disasterMessageRepository.findDistinctDisasterTypes());
         model.addAttribute("selectedArea", area);
         model.addAttribute("selectedType", disasterType);
+
+        // 로그인 회원이면 가입 주소의 시/도를 푸시 구독 기본 지역으로 (없으면 전국)
+        String myProvince = "전국";
+        if (principal != null) {
+            Member me = memberRepository.findById(principal.getName()).orElse(null);
+            String p = (me != null) ? WebPushService.provinceOf(me.getAreaName()) : null;
+            if (p != null) myProvince = p;
+        }
+        model.addAttribute("myProvince", myProvince);
 
         return "disaster/disasterMessage";
     }

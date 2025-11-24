@@ -154,5 +154,12 @@
 <!-- 재난 웹푸시 구독 (표준 Web Push). 외부 SDK 없이 브라우저 PushManager 사용 -->
 <script src="/js/common/csrf.js"></script>
 <script src="/js/push/push.js"></script>
+<script th:inline="javascript">
+    // 로그인 회원이면 가입 지역(시/도)을 구독 기본값으로 미리 선택
+    (function () {
+        var sel = document.getElementById('push-region');
+        if (sel) sel.value = /*[[${myProvince}]]*/ '전국';
+    })();
+</script>
 </body>
 </html>
