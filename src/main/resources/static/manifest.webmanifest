@@ -1,0 +1,14 @@
+{
+  "name": "안전네비 (SafetyNevi)",
+  "short_name": "안전네비",
+  "description": "재난 발생 시 가장 가까운 안전으로. 실시간 재난문자·대피소 안내.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "/img/logo/app-icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/img/logo/app-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

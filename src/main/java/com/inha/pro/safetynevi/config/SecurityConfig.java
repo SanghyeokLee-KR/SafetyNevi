@@ -72,7 +72,7 @@ public class SecurityConfig {
 
                         // 재난 웹푸시 구독 (비로그인도 허용) + 백그라운드 수신용 서비스워커
                         .requestMatchers("/api/push/**").permitAll()
-                        .requestMatchers("/push-sw.js").permitAll()
+                        .requestMatchers("/push-sw.js", "/sw-register.js", "/manifest.webmanifest").permitAll()
 
                         // 관리자 전용
                         .requestMatchers("/admin/**", "/api/admin/**", "/dashboardChart").hasRole("ADMIN")
