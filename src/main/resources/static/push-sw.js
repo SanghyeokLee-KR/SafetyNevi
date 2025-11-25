@@ -1,6 +1,6 @@
 // 안전네비 서비스워커 — 웹푸시 수신 + PWA 오프라인 캐싱(앱 셸·재난 대피요령).
 
-const CACHE = 'safetynevi-v1';
+const CACHE = 'safetynevi-v2';
 // 통신이 끊겨도 열려야 하는 것들(대피요령 + 셸). 일부가 없어도 설치가 깨지지 않게 개별 캐시.
 const PRECACHE = [
     '/disasterGuide',
@@ -29,8 +29,9 @@ self.addEventListener('activate', function (event) {
     );
 });
 
-// 같은 출처 GET 만 캐시. API(/api)는 항상 네트워크(최신 데이터), 그 외는 stale-while-revalidate.
-// 오프라인이면 캐시로 폴백 → 한 번 본 페이지·대피요령은 통신 없이도 열린다.
+// 같은 출처 GET 만 캐시. API(/api)는 항상 네트워크.
+// 페이지 이동(navigate, HTML)은 network-first — 로그인 상태·관심지역 등 매 요청 서버 렌더가 항상 최신이게(오프라인이면 캐시 폴백).
+// 그 외 정적 리소스(css/js/img)는 stale-while-revalidate — 빠르게 띄우고 뒤에서 갱신.
 self.addEventListener('fetch', function (event) {
     const req = event.request;
     if (req.method !== 'GET') return;
@@ -38,6 +39,23 @@ self.addEventListener('fetch', function (event) {
     if (url.origin !== self.location.origin) return;
     if (url.pathname.startsWith('/api/')) return;
 
+    // HTML 페이지 이동: 네트워크 우선. 끊겼을 때만 캐시(없으면 대피요령 셸)로 폴백.
+    if (req.mode === 'navigate') {
+        event.respondWith(
+            fetch(req).then(function (res) {
+                if (res && res.ok) {
+                    const copy = res.clone();
+                    caches.open(CACHE).then(function (c) { c.put(req, copy); });
+                }
+                return res;
+            }).catch(function () {
+                return caches.match(req).then(function (c) { return c || caches.match('/disasterGuide'); });
+            })
+        );
+        return;
+    }
+
+    // 정적 리소스: 캐시 우선 + 백그라운드 갱신
     event.respondWith(
         caches.match(req).then(function (cached) {
             const network = fetch(req).then(function (res) {
