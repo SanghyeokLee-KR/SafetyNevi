@@ -98,7 +98,7 @@ function relativeTime(sentDate: string): string {
 function cardHtml(msg: any): string {
     const cls = typeClass(msg.disasterType || '');
     return '' +
-        '<div class="kb-feed-card" data-type="' + cls + '" data-area="' + escapeHtml(msg.area || '') + '" data-time="' + escapeHtml(msg.sentDate || '') + '">' +
+        '<div class="kb-feed-card" role="button" tabindex="0" data-type="' + cls + '" data-area="' + escapeHtml(msg.area || '') + '" data-time="' + escapeHtml(msg.sentDate || '') + '">' +
         '  <div class="kb-feed-head">' +
         '    <span class="kb-feed-badge">' + escapeHtml(msg.disasterType || '기타') + '</span>' +
         '    <span class="kb-feed-area">' + escapeHtml(msg.area || '') + '</span>' +
@@ -108,20 +108,40 @@ function cardHtml(msg: any): string {
         '</div>';
 }
 
-// 카드 클릭 → 그 지역으로 지도 이동(이벤트로 map-disaster.ts에 위임). 모바일은 지도가 보이게 사이드바도 닫는다.
+// 카드 활성화(클릭/엔터·스페이스 공통) → 그 지역으로 지도 이동(이벤트로 map-disaster.ts에 위임).
+// 모바일은 지도가 보이게 사이드바도 닫는다.
+function activateCard(card: HTMLElement) {
+    const area = card.dataset.area;
+    if (!area) return;
+    document.dispatchEvent(new CustomEvent('feed:focus-area', { detail: area }));
+    if (window.innerWidth <= 768) {
+        const closeBtn = document.querySelector('.kb-menu-icon') as HTMLElement | null;
+        if (closeBtn) closeBtn.click();
+    }
+}
+
+// 카드는 마우스뿐 아니라 키보드(Tab→Enter/Space)로도 눌러야 한다(role=button, tabindex=0).
 function attachClickHandler(list: HTMLElement) {
     if (clickAttached) return;
     clickAttached = true;
     list.addEventListener('click', (e) => {
         const card = (e.target as HTMLElement).closest('.kb-feed-card') as HTMLElement | null;
-        const area = card ? card.dataset.area : null;
-        if (!area) return;
-        document.dispatchEvent(new CustomEvent('feed:focus-area', { detail: area }));
-        if (window.innerWidth <= 768) {
-            const closeBtn = document.querySelector('.kb-menu-icon') as HTMLElement | null;
-            if (closeBtn) closeBtn.click();
-        }
+        if (card) activateCard(card);
     });
+    list.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        const card = (e.target as HTMLElement).closest('.kb-feed-card') as HTMLElement | null;
+        if (card) { e.preventDefault(); activateCard(card); }
+    });
+}
+
+// 새 재난문자가 오면 화면에 안 보이는 라이브 영역에 한 줄 넣어 스크린리더가 읽게 한다(긴급정보).
+function announceNew(msg: any) {
+    const region = document.getElementById('kb-feed-announce');
+    if (!region) return;
+    const type = msg.disasterType || '재난';
+    const area = msg.area || '';
+    region.textContent = '새 재난문자. ' + (area ? area + ' ' : '') + type + '.';
 }
 
 // 1분마다 카드의 상대시간을 다시 계산해 갱신("방금"→"1분 전" 등)
@@ -182,4 +202,5 @@ export function prependDisasterMessage(msg: any) {
         list.removeChild(list.lastChild as Node);
     }
     applyRegionFilter();   // 현재 지역 필터를 새 카드에도 반영
+    if (card.style.display !== 'none') announceNew(msg);   // 보이는(관심지역) 새 글만 음성 안내
 }

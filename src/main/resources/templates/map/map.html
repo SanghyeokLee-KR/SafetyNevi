@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>SafetyNevi - 내 주변 대피소</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- CSS 연결 -->
     <link rel="stylesheet" href="/css/map/base.css"/>
@@ -458,6 +458,8 @@
                 <div id="kb-feed-list" class="kb-feed-list">
                     <div class="kb-feed-empty">불러오는 중…</div>
                 </div>
+                <!-- 새 재난문자 도착을 스크린리더에 알리는 영역(시각적으로 숨김) -->
+                <div id="kb-feed-announce" class="sr-only" aria-live="polite" aria-atomic="true"></div>
             </div>
         </div>
     </div>

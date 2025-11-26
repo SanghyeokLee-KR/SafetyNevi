@@ -1,5 +1,18 @@
 /* 지도 사이드바 '실시간 재난문자' 피드 */
 
+/* 시각적으로만 숨김(스크린리더는 읽음) — 새 재난문자 음성 안내용 */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 .kb-feed-title {
     display: flex;
     align-items: center;
@@ -55,7 +68,7 @@
 }
 
 .kb-feed-empty {
-    color: #9aa1ac;
+    color: #5c6470;
     font-size: 13px;
     text-align: center;
     padding: 20px 0;
@@ -63,7 +76,7 @@
 
 /* 지역 필터 결과 없음 안내 — 빈 상태와 같은 톤 */
 .kb-feed-note {
-    color: #9aa1ac;
+    color: #5c6470;
     font-size: 13px;
     text-align: center;
     padding: 16px 0;
@@ -84,6 +97,12 @@
 .kb-feed-card:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.09);
     transform: translateY(-1px);
+}
+
+/* 키보드 포커스(Tab)일 때만 또렷한 외곽선 */
+.kb-feed-card:focus-visible {
+    outline: 2px solid var(--primary, #2563eb);
+    outline-offset: 2px;
 }
 
 .kb-feed-head {
@@ -118,7 +137,7 @@
 .kb-feed-time {
     flex-shrink: 0;
     font-size: 11px;
-    color: #9aa1ac;
+    color: #5c6470;
     white-space: nowrap;
 }
 
@@ -142,6 +161,16 @@
 .kb-feed-card[data-type="dust"]  { --accent: #8a8f98; }
 .kb-feed-card[data-type="etc"]   { --accent: #7b8694; }
 
+/* 배지 배경은 흰 글씨 대비(WCAG AA 4.5:1↑)를 위해 테두리보다 진한 톤을 따로 쓴다. 색 구분은 유지. */
+.kb-feed-card[data-type="fire"]  .kb-feed-badge { background: #c81e1e; }
+.kb-feed-card[data-type="water"] .kb-feed-badge { background: #1d4ed8; }
+.kb-feed-card[data-type="heat"]  .kb-feed-badge { background: #c2410c; }
+.kb-feed-card[data-type="snow"]  .kb-feed-badge { background: #0369a1; }
+.kb-feed-card[data-type="quake"] .kb-feed-badge { background: #92400e; }
+.kb-feed-card[data-type="dry"]   .kb-feed-badge { background: #854d0e; }
+.kb-feed-card[data-type="dust"]  .kb-feed-badge { background: #4b5563; }
+.kb-feed-card[data-type="etc"]   .kb-feed-badge { background: #475569; }
+
 /* 소켓으로 새로 들어온 카드 */
 .kb-feed-new {
     animation: kb-feed-in 0.6s ease;
@@ -161,7 +190,7 @@ body.dark-mode .kb-feed-area { color: #e0e0e0; }
 body.dark-mode .kb-feed-body { color: #aaa; }
 body.dark-mode .kb-feed-time,
 body.dark-mode .kb-feed-empty,
-body.dark-mode .kb-feed-note { color: #888; }
+body.dark-mode .kb-feed-note { color: #9a9a9a; }
 body.dark-mode .kb-feed-region {
     background: #2a2a2a;
     border-color: #444;

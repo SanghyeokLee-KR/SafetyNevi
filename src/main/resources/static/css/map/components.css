@@ -14,7 +14,7 @@
     font-size: 20px; font-weight: 800; color: var(--text-color); margin: 0; letter-spacing: -0.5px;
 }
 .kb-report-link {
-    font-size: 12px; color: #999; cursor: pointer; text-decoration: none;
+    font-size: 12px; color: #5c6470; cursor: pointer; text-decoration: none;
 }
 .kb-report-link:hover { color: var(--primary); text-decoration: underline; }
 

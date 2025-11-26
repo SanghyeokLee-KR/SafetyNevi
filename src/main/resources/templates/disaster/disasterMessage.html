@@ -69,14 +69,14 @@
     <main class="app-content">
         <div class="filter-container">
             <form th:action="@{/disasterMessage}" method="get">
-                <select name="area" onchange="this.form.submit()">
+                <select name="area" onchange="this.form.submit()" aria-label="지역 선택">
                     <option value="전국">전국</option>
                     <option th:each="prefix : ${areaPrefixes}"
                             th:value="${prefix}"
                             th:text="${prefix}"
                             th:selected="${prefix == selectedArea}"></option>
                 </select>
-                <select name="disasterType" onchange="this.form.submit()">
+                <select name="disasterType" onchange="this.form.submit()" aria-label="재난 종류 선택">
                     <option value="전체">전체</option>
                     <option th:each="type : ${disasterTypes}"
                             th:value="${type}"
