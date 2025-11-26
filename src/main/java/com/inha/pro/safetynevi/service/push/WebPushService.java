@@ -14,6 +14,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -45,14 +46,20 @@ public class WebPushService {
     @Transactional
     public void subscribe(String endpoint, String p256dh, String auth, String region, String userId, String userAgent) {
         if (endpoint == null || endpoint.isBlank()) return;
+        // endpoint 는 클라이언트가 보내고, 재난 때 서버가 그 주소로 직접 발송한다.
+        // 내부망/로컬로 향하는 SSRF 를 막기 위해 공인 https 주소만 받는다.
+        if (!isSafePushEndpoint(endpoint)) {
+            log.warn("웹푸시 구독 거부 — 허용되지 않는 endpoint 형식");
+            return;
+        }
         PushSubscription sub = subscriptionRepository.findByEndpoint(endpoint).orElseGet(PushSubscription::new);
         sub.setEndpoint(endpoint);
         sub.setP256dh(p256dh);
         sub.setAuth(auth);
         sub.setUserId(userId);
-        sub.setUserAgent(userAgent);
-        // 관심 지역(시/도). 새로고침 재동기화처럼 region 이 안 오면 기존 선택을 유지한다.
-        if (region != null && !region.isBlank()) sub.setAreaName(region);
+        sub.setUserAgent(truncate(userAgent, 300));
+        // 관심 지역(시/도). 모르는 값은 전국(null)으로 정규화. 재동기화처럼 region 이 안 오면 기존 선택 유지.
+        if (region != null && !region.isBlank()) sub.setAreaName(normalizeRegion(region));
         subscriptionRepository.save(sub);
         log.info("웹푸시 구독 등록: user={}, region={}", userId == null ? "익명" : userId, sub.getAreaName());
     }
@@ -137,6 +144,42 @@ public class WebPushService {
         if (area.contains("경상남") || area.contains("경남")) return "경남";
         if (area.contains("제주")) return "제주";
         return null;
+    }
+
+    // 관심 지역을 알려진 시/도 또는 "전국"으로만 정규화. 그 외/모르는 값은 null(=전국, 모든 지역)로 본다.
+    static String normalizeRegion(String region) {
+        if (region == null || region.isBlank()) return null;
+        if ("전국".equals(region.trim())) return "전국";
+        return provinceOf(region);
+    }
+
+    // 구독 endpoint 안전성 — https + 공인 도메인만 허용. IP 리터럴/로컬호스트는 내부망 SSRF 우려로 거부.
+    // (완전한 SSRF 방어는 네트워크 egress 차단이 정석. 앱 단에선 명백한 내부 주소를 막는다.)
+    static boolean isSafePushEndpoint(String endpoint) {
+        if (endpoint == null) return false;
+        final URI uri;
+        try {
+            uri = URI.create(endpoint.trim());
+        } catch (Exception e) {
+            return false;
+        }
+        if (uri.getScheme() == null || !"https".equalsIgnoreCase(uri.getScheme())) return false;
+        String host = uri.getHost();
+        if (host == null || host.isBlank()) return false;
+        String h = host.toLowerCase();
+        if (h.equals("localhost") || h.endsWith(".localhost")) return false;
+        return !isIpLiteral(h);
+    }
+
+    private static boolean isIpLiteral(String host) {
+        if (host.indexOf(':') >= 0) return true;                 // IPv6 리터럴
+        return host.matches("\\d{1,3}(\\.\\d{1,3}){3}");          // IPv4 점10진
+    }
+
+    // 컬럼 길이를 넘는 입력은 잘라 저장(저장 실패 방지).
+    private static String truncate(String s, int max) {
+        if (s == null) return null;
+        return s.length() <= max ? s : s.substring(0, max);
     }
 
     private byte[] buildPayload(DisasterZoneResponse zone) {

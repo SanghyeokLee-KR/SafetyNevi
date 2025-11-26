@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-// 지역 구독 매칭(provinceOf·filterByRegion) 단위 테스트. 순수 로직이라 DB·목 불필요.
+// 지역 구독 매칭(provinceOf·filterByRegion·normalizeRegion)과 구독 endpoint 보안 단위 테스트. 순수 로직이라 DB·목 불필요.
 class WebPushServiceTest {
 
     @Test
@@ -51,6 +51,33 @@ class WebPushServiceTest {
                 WebPushService.filterByRegion(List.of(incheon, daejeon), "어딘가");
 
         assertEquals(2, result.size());
+    }
+
+    @Test
+    void isSafePushEndpoint_공인_https만_허용하고_내부주소는_막는다() {
+        // 정상 푸시 서비스 (브라우저 PushManager 가 발급하는 형태)
+        assertTrue(WebPushService.isSafePushEndpoint("https://fcm.googleapis.com/fcm/send/abc123"));
+        assertTrue(WebPushService.isSafePushEndpoint("https://updates.push.services.mozilla.com/wpush/v2/xyz"));
+
+        // SSRF 우려 — http·로컬·내부망·메타데이터
+        assertFalse(WebPushService.isSafePushEndpoint("http://fcm.googleapis.com/x"), "http 거부");
+        assertFalse(WebPushService.isSafePushEndpoint("https://localhost/x"), "localhost 거부");
+        assertFalse(WebPushService.isSafePushEndpoint("https://127.0.0.1/x"), "루프백 IP 거부");
+        assertFalse(WebPushService.isSafePushEndpoint("https://10.0.0.5/x"), "사설 IP 거부");
+        assertFalse(WebPushService.isSafePushEndpoint("https://169.254.169.254/latest/meta-data/"), "메타데이터 IP 거부");
+        assertFalse(WebPushService.isSafePushEndpoint("https://[::1]/x"), "IPv6 루프백 거부");
+        assertFalse(WebPushService.isSafePushEndpoint(""), "빈 값 거부");
+        assertFalse(WebPushService.isSafePushEndpoint(null), "null 거부");
+    }
+
+    @Test
+    void normalizeRegion_알려진_시도와_전국만_남긴다() {
+        assertEquals("전국", WebPushService.normalizeRegion("전국"));
+        assertEquals("인천", WebPushService.normalizeRegion("인천광역시 미추홀구"));
+        assertEquals("경북", WebPushService.normalizeRegion("경상북도 고령군"));
+        assertNull(WebPushService.normalizeRegion(""), "빈 값은 전국(null)");
+        assertNull(WebPushService.normalizeRegion(null));
+        assertNull(WebPushService.normalizeRegion("<script>alert(1)</script>"), "모르는 값은 전국(null)으로");
     }
 
     private PushSubscription sub(String region) {
