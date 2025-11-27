@@ -129,6 +129,18 @@
     </div>
 
     <div class="dashboard-section">
+        <div class="section-header">🔔 재난 알림 테스트</div>
+        <p style="margin: 0 0 14px; color: #555; font-size: 14px;">
+            구독 중인 모든 기기로 테스트 푸시를 보냅니다. 알림 발송 경로 점검용입니다.
+        </p>
+        <button id="btn-test-push" type="button" class="shortcut-btn" style="border: 0; cursor: pointer;">
+            <span class="icon">🔔</span>
+            <span>테스트 알림 보내기</span>
+        </button>
+        <span id="test-push-result" style="margin-left: 12px; font-size: 14px; color: #555;"></span>
+    </div>
+
+    <div class="dashboard-section">
         <div class="section-header">💻 시스템 상태</div>
         <div class="system-status-list">
             <div class="status-item">
@@ -172,6 +184,23 @@
             error: function (xhr, status, error) {
                 console.error('AJAX 요청 실패:', status, error);
             }
+        });
+
+        // 재난 알림 테스트 발송 (관리자 전용) — 구독 기기로 테스트 푸시를 쏴 발송 경로를 점검
+        $('#btn-test-push').on('click', function () {
+            const $btn = $(this), $res = $('#test-push-result');
+            $btn.prop('disabled', true);
+            $res.text('보내는 중…');
+            $.ajax({
+                url: '/api/admin/push/test',
+                method: 'POST',
+                dataType: 'json',
+                success: function (r) {
+                    $res.text(r.enabled ? (r.sent + '개 기기로 보냈습니다.') : '푸시가 비활성 상태입니다 (VAPID 키 확인).');
+                },
+                error: function () { $res.text('발송 실패 — 서버 로그를 확인하세요.'); },
+                complete: function () { $btn.prop('disabled', false); }
+            });
         });
     });
 

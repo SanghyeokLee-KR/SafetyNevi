@@ -80,11 +80,27 @@ public class WebPushService {
         List<PushSubscription> subs = filterByRegion(subscriptionRepository.findAll(), zone.getAreaName());
         if (subs.isEmpty()) return;
 
-        byte[] payload = buildPayload(zone);
+        int success = sendAll(service, subs, buildPayload(zone));
+        log.info("웹푸시 재난 발송: 대상 {}건, 성공 {}건", subs.size(), success);
+    }
+
+    // 관리자 테스트 발송 — 구독한 모든 기기로 '테스트' 알림을 보내 발송 경로를 점검한다. 성공 건수 반환.
+    public int sendTestNotification() {
+        PushService service = push();
+        if (service == null) return 0;   // 미설정 → no-op
+
+        List<PushSubscription> subs = subscriptionRepository.findAll();
+        if (subs.isEmpty()) return 0;
+
+        int success = sendAll(service, subs, testPayload());
+        log.info("웹푸시 테스트 발송: 대상 {}건, 성공 {}건", subs.size(), success);
+        return success;
+    }
+
+    // 구독마다 한 번씩 발송(Web Push 는 멀티캐스트가 없다). 만료(404/410)된 구독은 정리. 성공 건수 반환.
+    private int sendAll(PushService service, List<PushSubscription> subs, byte[] payload) {
         List<PushSubscription> dead = new ArrayList<>();
         int success = 0;
-
-        // Web Push 는 멀티캐스트가 없어 구독마다 한 번씩 보낸다. 만료(404/410)된 구독은 정리.
         for (PushSubscription sub : subs) {
             try {
                 Notification notification = new Notification(sub.getEndpoint(), sub.getP256dh(), sub.getAuth(), payload);
@@ -101,12 +117,11 @@ public class WebPushService {
                 log.warn("웹푸시 발송 오류: {}", e.getMessage());
             }
         }
-
         if (!dead.isEmpty()) {
             subscriptionRepository.deleteAll(dead);
             log.info("웹푸시 만료 구독 정리: {}건", dead.size());
         }
-        log.info("웹푸시 재난 발송: 대상 {}건, 성공 {}건", subs.size(), success);
+        return success;
     }
 
     // 재난 지역의 시/도를 모르면(원형 재난 등) 전체에, 알면 같은 시/도·전국 구독자에게만. (테스트용 package-private)
@@ -194,6 +209,18 @@ public class WebPushService {
             return objectMapper.writeValueAsBytes(data);
         } catch (JsonProcessingException e) {
             return "{\"title\":\"안전네비 재난 알림\"}".getBytes(StandardCharsets.UTF_8);
+        }
+    }
+
+    private byte[] testPayload() {
+        Map<String, String> data = new LinkedHashMap<>();
+        data.put("title", "[테스트] 안전네비 알림");
+        data.put("body", "재난 알림이 정상 동작합니다. (관리자 테스트 발송)");
+        data.put("url", "/disasterMessage");
+        try {
+            return objectMapper.writeValueAsBytes(data);
+        } catch (JsonProcessingException e) {
+            return "{\"title\":\"안전네비 테스트\"}".getBytes(StandardCharsets.UTF_8);
         }
     }
 }

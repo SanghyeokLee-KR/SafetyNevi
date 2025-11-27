@@ -45,4 +45,22 @@ class SecurityRulesTest {
         // springdoc OpenAPI 문서가 인증 없이 200 (Swagger 동작 + permitAll 규칙 검증)
         mvc.perform(get("/v3/api-docs")).andExpect(status().isOk());
     }
+
+    @Test
+    void disasterMessagesRecentIsPublic() throws Exception {
+        // 지도 사이드바 실시간 피드용 — 비로그인도 최근 재난문자를 받는다(공개 데이터)
+        mvc.perform(get("/api/disaster-messages/recent")).andExpect(status().isOk());
+    }
+
+    @Test
+    void pushConfigIsPublic() throws Exception {
+        // 웹푸시 구독에 필요한 VAPID 공개키 조회 — 비로그인도 허용
+        mvc.perform(get("/api/push/config")).andExpect(status().isOk());
+    }
+
+    @Test
+    void adminPushTestRequiresAuth() throws Exception {
+        // 관리자 테스트 발송(/api/admin/**) — 비로그인은 로그인 페이지로 리다이렉트
+        mvc.perform(get("/api/admin/push/test")).andExpect(status().is3xxRedirection());
+    }
 }
