@@ -21,6 +21,11 @@ public class InMemoryRateLimiter implements RateLimiter {
 
     @Override
     public boolean isOverLimit(String key) {
+        return isOverLimit(key, maxRequests);
+    }
+
+    @Override
+    public boolean isOverLimit(String key, int maxPerMinute) {
         long now = System.currentTimeMillis();
         Window w = counters.computeIfAbsent(key, k -> new Window(now));
         synchronized (w) {
@@ -29,7 +34,7 @@ public class InMemoryRateLimiter implements RateLimiter {
                 w.count = 0;
             }
             w.count++;
-            return w.count > maxRequests;
+            return w.count > maxPerMinute;
         }
     }
 

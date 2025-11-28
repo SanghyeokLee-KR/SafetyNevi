@@ -20,6 +20,11 @@ public class RedisRateLimiter implements RateLimiter {
 
     @Override
     public boolean isOverLimit(String key) {
+        return isOverLimit(key, maxRequests);
+    }
+
+    @Override
+    public boolean isOverLimit(String key, int maxPerMinute) {
         // 분 단위 키에 INCR, 처음 만들 때만 TTL 1분 → 만료는 Redis가 알아서 (따로 정리 안해도 됨)
         long minute = System.currentTimeMillis() / 60_000;
         String redisKey = "ratelimit:" + key + ":" + minute;
@@ -27,6 +32,6 @@ public class RedisRateLimiter implements RateLimiter {
         if (count != null && count == 1L) {
             redis.expire(redisKey, Duration.ofMinutes(1));
         }
-        return count != null && count > maxRequests;
+        return count != null && count > maxPerMinute;
     }
 }
