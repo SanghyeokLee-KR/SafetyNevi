@@ -1,0 +1,12 @@
+# SafetyNevi
+# 공개 콘텐츠(홈·지도·재난문자·행동요령·공지)는 수집 허용, 인증/관리/데이터 경로는 차단.
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /actuator
+Disallow: /h2-console
+Disallow: /myInfo
+Disallow: /login
+Disallow: /signup
+Disallow: /findAccount
