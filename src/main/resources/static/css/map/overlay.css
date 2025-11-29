@@ -67,13 +67,23 @@ body.dark-mode .overlay-title { color: #fff; }
 }
 
 .safety-score-panel {
-    position: absolute; top: 138px; left: 15px; background: rgba(255, 255, 255, 0.95);
-    padding: 8px 12px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    z-index: 15; display: flex; align-items: center; gap: 10px; transition: top 0.3s;
+    position: absolute; top: 138px; left: 15px; width: 228px; background: rgba(255, 255, 255, 0.97);
+    padding: 10px 12px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    z-index: 15; display: flex; flex-direction: column; gap: 8px; transition: top 0.3s;
 }
-.score-circle { width: 36px; height: 36px; border-radius: 50%; background: #ddd; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
-.score-text { font-size: 11px; color: #555; line-height: 1.3; }
-.score-text strong { display: block; font-size: 13px; color: #333; margin-bottom: 2px; }
+.ss-top { display: flex; align-items: center; gap: 10px; }
+.score-circle { width: 40px; height: 40px; flex: 0 0 40px; border-radius: 50%; background: #999; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; }
+.score-text { font-size: 11px; color: #555; line-height: 1.35; }
+.score-text strong { display: block; font-size: 13px; color: #222; margin-bottom: 1px; }
+.ss-hazard { font-size: 12px; font-weight: 700; color: #b02a37; background: #fdecea; border-radius: 8px; padding: 6px 8px; }
+.ss-cta { border: 0; background: #2563eb; color: #fff; font-size: 12px; font-weight: 700; border-radius: 8px; padding: 7px 10px; cursor: pointer; }
+.ss-cta:hover { background: #1d4ed8; }
+.ss-why { font-size: 11px; color: #555; }
+.ss-why summary { cursor: pointer; color: #2563eb; outline: none; }
+.ss-why ul { margin: 6px 0 0; padding-left: 16px; }
+.ss-why li { margin: 1px 0; }
+.ss-here { border: 1px solid #d0d5dd; background: #fff; color: #344054; font-size: 11px; border-radius: 8px; padding: 6px 8px; cursor: pointer; }
+.ss-here:hover { background: #f2f4f7; }
 
 @media (max-width: 768px) {
     .safety-score-panel { top: 138px; left: 10px; padding: 6px 10px; }

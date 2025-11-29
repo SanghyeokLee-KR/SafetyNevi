@@ -52,13 +52,22 @@
     <!-- 지도 영역 -->
     <div id="map"></div>
 
-    <!-- 안전 점수 패널 -->
-    <div id="safety-score-panel" class="safety-score-panel" style="display:none;">
-        <div class="score-circle" id="safety-score-val">--</div>
-        <div class="score-text">
-            <strong id="safety-grade">분석 중...</strong>
-            <span>주변 안전 시설 현황</span>
+    <!-- 대피 접근성 점수 패널 (지점 기준) -->
+    <div id="safety-score-panel" class="safety-score-panel" style="display:none;" aria-live="polite">
+        <div class="ss-hazard" id="ss-hazard" style="display:none;">⚠ <span id="ss-hazard-name"></span> 위험구역 안</div>
+        <div class="ss-top">
+            <div class="score-circle" id="safety-score-val" aria-label="대피 접근성 점수">--</div>
+            <div class="score-text">
+                <strong id="safety-grade">평가 중…</strong>
+                <span id="ss-headline">대피 접근성</span>
+            </div>
         </div>
+        <button type="button" id="ss-shelter-btn" class="ss-cta" style="display:none;">가까운 대피소 보기</button>
+        <details class="ss-why">
+            <summary>왜 이 점수?</summary>
+            <ul id="ss-breakdown"></ul>
+        </details>
+        <button type="button" id="ss-here-btn" class="ss-here">📍 지도 중심 기준으로 평가</button>
     </div>
 
     <!-- 재검색 버튼 -->

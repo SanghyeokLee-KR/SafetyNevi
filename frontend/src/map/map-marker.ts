@@ -38,16 +38,14 @@ export async function updateMarkers() {
     clusterer.clear();
     if(currentOverlay) currentOverlay.setMap(null);
 
-    // 선택된 필터가 없으면 안전 점수만 초기화 후 종료
+    // 선택된 필터가 없으면 마커만 비우고 종료 (안전점수는 지점 기준이라 별개)
     if (facilityTypes.length === 0) {
-        if(window.calculateSafetyScore) window.calculateSafetyScore([]);
         return;
     }
 
     // 너무 줌아웃하면 시설이 수만 개라 마커를 그리지 않는다 (확대 유도)
     if (map.getLevel() > 8) {
         showToast("지도를 확대하면 주변 시설이 표시됩니다.");
-        if(window.calculateSafetyScore) window.calculateSafetyScore([]);
         return;
     }
 
@@ -61,8 +59,6 @@ export async function updateMarkers() {
         if (allFacilities.length > 0) {
             drawMarkers(allFacilities);
         }
-
-        if(window.calculateSafetyScore) window.calculateSafetyScore(allFacilities);
 
     } catch (error) {
         console.error('Facility data load failed:', error);
@@ -178,42 +174,100 @@ export function setupMapEventListeners() {
         cb.addEventListener('change', () => updateMarkers());
     });
 
-    window.calculateSafetyScore = calculateSafetyScore;
+    // 대피 접근성: 지점 기준(내 위치 → 실패 시 지도 중심) 1회 평가. 줌·필터로 바뀌지 않음.
+    initSafetyScore();
+    document.getElementById('ss-here-btn')?.addEventListener('click', () => {
+        const c = map.getCenter();
+        evaluateSafetyScore(c.getLat(), c.getLng(), false);
+    });
+    document.getElementById('ss-shelter-btn')?.addEventListener('click', () => {
+        if (nearestShelterPos) {
+            map.setCenter(new kakao.maps.LatLng(nearestShelterPos.lat, nearestShelterPos.lng));
+            map.setLevel(3);
+        }
+    });
+
     updateMarkers();
 }
 
-function calculateSafetyScore(facilities) {
+// ── 대피 접근성 점수 (서버 /api/safety-score · 지점 기준) ──────────────
+// 구버전: 화면에 보이는 시설 개수 합산 → 줌·필터로 점수가 흔들림.
+// 신버전: 내 위치(또는 지도 중심) 한 지점을 서버가 거리·위험구역 기반으로 평가.
+const GRADE_COLOR: Record<string, string> = {
+    "우수": "#28a745", "양호": "#2563eb", "보통": "#ffc107", "주의": "#d9534f",
+};
+let nearestShelterPos: { lat: number; lng: number } | null = null;
+
+function initSafetyScore() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            pos => evaluateSafetyScore(pos.coords.latitude, pos.coords.longitude, true),
+            () => { const c = map.getCenter(); evaluateSafetyScore(c.getLat(), c.getLng(), false); },
+            { timeout: 5000, maximumAge: 60000 }
+        );
+    } else {
+        const c = map.getCenter();
+        evaluateSafetyScore(c.getLat(), c.getLng(), false);
+    }
+}
+
+async function evaluateSafetyScore(lat, lng, fromMyLocation) {
+    const panel = document.getElementById('safety-score-panel');
+    if (!panel) return;
+    try {
+        const res = await fetch(`/api/safety-score?lat=${lat}&lng=${lng}`);
+        if (!res.ok) throw new Error('safety-score ' + res.status);
+        renderSafetyScore(await res.json(), fromMyLocation);
+    } catch (e) {
+        console.error('대피 접근성 점수 조회 실패:', e);
+        panel.style.display = 'none';
+    }
+}
+
+function renderSafetyScore(data, fromMyLocation) {
     const panel = document.getElementById('safety-score-panel');
     const valEl = document.getElementById('safety-score-val');
     const gradeEl = document.getElementById('safety-grade');
-    if (!panel) return;
+    if (!panel || !valEl || !gradeEl) return;
 
-    // 분석할 시설이 없으면(검색 전·줌아웃·필터 해제) 패널을 숨긴다 — '취약 0'이 경고처럼 뜨는 것 방지
-    if (!facilities || facilities.length === 0) {
-        panel.style.display = 'none';
-        return;
+    const color = GRADE_COLOR[data.grade] || '#999';
+    valEl.innerText = String(data.score);
+    valEl.style.backgroundColor = color;
+    valEl.setAttribute('aria-label', `대피 접근성 ${data.score}점, ${data.grade}`);
+    gradeEl.innerText = `대피 접근성 ${data.grade}`;
+    gradeEl.style.color = color;
+
+    // 행동 헤드라인: 가장 가까운 운영 대피소 + 도보 추정시간
+    const headlineEl = document.getElementById('ss-headline');
+    const shelterBtn = document.getElementById('ss-shelter-btn');
+    if (data.nearestShelter) {
+        const s = data.nearestShelter;
+        const dist = s.distanceM < 1000 ? `${s.distanceM}m` : `${(s.distanceM / 1000).toFixed(1)}km`;
+        if (headlineEl) headlineEl.innerText = `가장 가까운 대피소 ${dist} · 도보 ${s.walkMinutes}분`;
+        nearestShelterPos = { lat: s.lat, lng: s.lng };
+        if (shelterBtn) shelterBtn.style.display = 'block';
+    } else {
+        if (headlineEl) headlineEl.innerText = (fromMyLocation ? '내 주변' : '이 지점') + ' 5km 내 운영 대피소 없음';
+        nearestShelterPos = null;
+        if (shelterBtn) shelterBtn.style.display = 'none';
     }
 
-    let score = 0;
-    facilities.forEach(f => {
-        const t = (f.type || "").toLowerCase();
-        if (t === 'police' || t === 'fire') score += 10;
-        else if (t === 'hospital') score += 5;
-        else if (t === 'shelter') score += 2;
-    });
-    score = Math.min(score, 99);
+    // 현재 위험구역 노출 배너
+    const hazardEl = document.getElementById('ss-hazard');
+    const hazardNameEl = document.getElementById('ss-hazard-name');
+    if (hazardEl) hazardEl.style.display = data.hazardActive ? 'block' : 'none';
+    if (hazardNameEl) hazardNameEl.innerText = data.hazardName || '';
 
-    if(valEl) valEl.innerText = String(score);
-
-    if(gradeEl) {
-        let color, text;
-        if (score >= 80) { text = "매우 안전"; color = "#28a745"; }
-        else if (score >= 50) { text = "보통"; color = "#ffc107"; }
-        else { text = "취약"; color = "#d9534f"; }
-
-        gradeEl.innerText = text;
-        gradeEl.style.color = color;
-        if(valEl) valEl.style.backgroundColor = color;
+    // "왜 이 점수" 근거
+    const breakdownEl = document.getElementById('ss-breakdown');
+    if (breakdownEl) {
+        breakdownEl.innerHTML = '';
+        (data.breakdown || []).forEach(line => {
+            const li = document.createElement('li');
+            li.innerText = line;
+            breakdownEl.appendChild(li);
+        });
     }
+
     panel.style.display = 'flex';
 }

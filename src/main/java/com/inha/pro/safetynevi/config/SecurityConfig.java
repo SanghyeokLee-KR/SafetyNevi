@@ -67,6 +67,7 @@ public class SecurityConfig {
                         // 공개 API (시설 조회, 경로 탐색, 날씨, 게시글 목록)
                         .requestMatchers("/api/check/**", "/api/find/**").permitAll()
                         .requestMatchers("/api/facilities/**", "/api/route/**", "/api/weather/**", "/api/disaster-zones/**").permitAll()
+                        .requestMatchers("/api/safety-score").permitAll()
                         .requestMatchers("/api/disaster-messages/**").permitAll()
                         .requestMatchers("/api/board").permitAll()
 
