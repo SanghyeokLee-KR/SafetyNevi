@@ -63,4 +63,23 @@ class SecurityRulesTest {
         // 관리자 테스트 발송(/api/admin/**) — 비로그인은 로그인 페이지로 리다이렉트
         mvc.perform(get("/api/admin/push/test")).andExpect(status().is3xxRedirection());
     }
+
+    @Test
+    void robotsTxtIsPublic() throws Exception {
+        // 검색엔진 수집용 — 인증 없이 200 (SecurityConfig permitAll + 정적 서빙)
+        mvc.perform(get("/robots.txt")).andExpect(status().isOk());
+    }
+
+    @Test
+    void llmsTxtIsPublic() throws Exception {
+        // LLM/에이전트용 사이트 요약 — 인증 없이 200
+        mvc.perform(get("/llms.txt")).andExpect(status().isOk());
+    }
+
+    @Test
+    void safetyScoreIsPublic() throws Exception {
+        // 대피 접근성 점수 — 비로그인도 지점 기준 조회 가능(공개 데이터)
+        mvc.perform(get("/api/safety-score").param("lat", "37.5").param("lng", "127.0"))
+                .andExpect(status().isOk());
+    }
 }
