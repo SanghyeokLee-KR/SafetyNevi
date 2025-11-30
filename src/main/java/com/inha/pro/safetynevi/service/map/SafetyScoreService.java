@@ -131,9 +131,9 @@ public class SafetyScoreService {
         return "주의";
     }
 
-    // 직선거리 × 1.3(우회) ÷ 약 67m/분(도보 4km/h), 최소 1분
+    // 직선거리 × 1.3(우회) ÷ 약 80m/분(도보 4.8km/h), 최소 1분
     private int walkMinutes(double meters) {
-        return Math.max(1, (int) Math.round(meters * 1.3 / 67));
+        return Math.max(1, (int) Math.round(meters * 1.3 / 80));
     }
 
     private String fmtDist(double m) {

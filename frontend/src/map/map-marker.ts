@@ -231,23 +231,39 @@ function renderSafetyScore(data, fromMyLocation) {
     if (!panel || !valEl || !gradeEl) return;
 
     const color = GRADE_COLOR[data.grade] || '#999';
-    valEl.innerText = String(data.score);
-    valEl.style.backgroundColor = color;
-    valEl.setAttribute('aria-label', `대피 접근성 ${data.score}점, ${data.grade}`);
-    gradeEl.innerText = `대피 접근성 ${data.grade}`;
-    gradeEl.style.color = color;
 
-    // 행동 헤드라인: 가장 가까운 운영 대피소 + 도보 추정시간
+    // 점수 링 게이지(0~100 비율만큼 채움) + 가운데 숫자
+    const ring = document.getElementById('safety-score-ring');
+    if (ring) {
+        const R = 19, C = 2 * Math.PI * R;
+        const pct = Math.max(0, Math.min(100, data.score)) / 100;
+        ring.style.strokeDasharray = String(C);
+        ring.style.strokeDashoffset = String(C * (1 - pct));
+        ring.style.stroke = color;
+    }
+    valEl.innerText = String(data.score);
+    valEl.setAttribute('aria-label', `대피 접근성 ${data.score}점, ${data.grade}`);
+
+    // 등급 칩(연한 색 배경)
+    gradeEl.innerText = data.grade;
+    gradeEl.style.color = color;
+    gradeEl.style.backgroundColor = color + '1f';
+
+    // 기준 라벨(내 위치 / 지도 중심)
+    const ctxEl = document.getElementById('ss-context');
+    if (ctxEl) ctxEl.innerText = fromMyLocation ? '내 위치 기준' : '지도 중심 기준';
+
+    // 행동 헤드라인(히어로): 가장 가까운 운영 대피소 + 도보 추정시간
     const headlineEl = document.getElementById('ss-headline');
     const shelterBtn = document.getElementById('ss-shelter-btn');
     if (data.nearestShelter) {
         const s = data.nearestShelter;
         const dist = s.distanceM < 1000 ? `${s.distanceM}m` : `${(s.distanceM / 1000).toFixed(1)}km`;
-        if (headlineEl) headlineEl.innerText = `가장 가까운 대피소 ${dist} · 도보 ${s.walkMinutes}분`;
+        if (headlineEl) headlineEl.innerText = `대피소 ${dist} · 도보 ${s.walkMinutes}분`;
         nearestShelterPos = { lat: s.lat, lng: s.lng };
         if (shelterBtn) shelterBtn.style.display = 'block';
     } else {
-        if (headlineEl) headlineEl.innerText = (fromMyLocation ? '내 주변' : '이 지점') + ' 5km 내 운영 대피소 없음';
+        if (headlineEl) headlineEl.innerText = '5km 내 운영 대피소 없음';
         nearestShelterPos = null;
         if (shelterBtn) shelterBtn.style.display = 'none';
     }

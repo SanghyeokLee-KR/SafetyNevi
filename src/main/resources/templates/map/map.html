@@ -56,18 +56,26 @@
     <div id="safety-score-panel" class="safety-score-panel" style="display:none;" aria-live="polite">
         <div class="ss-hazard" id="ss-hazard" style="display:none;">⚠ <span id="ss-hazard-name"></span> 위험구역 안</div>
         <div class="ss-top">
-            <div class="score-circle" id="safety-score-val" aria-label="대피 접근성 점수">--</div>
-            <div class="score-text">
-                <strong id="safety-grade">평가 중…</strong>
-                <span id="ss-headline">대피 접근성</span>
+            <div class="ss-gauge">
+                <svg viewBox="0 0 44 44" class="ss-ring" aria-hidden="true">
+                    <circle class="ss-ring-bg" cx="22" cy="22" r="19"></circle>
+                    <circle class="ss-ring-fg" id="safety-score-ring" cx="22" cy="22" r="19"></circle>
+                </svg>
+                <span class="ss-gauge-num" id="safety-score-val" aria-label="대피 접근성 점수">--</span>
+            </div>
+            <div class="ss-info">
+                <span class="ss-context" id="ss-context">평가 중…</span>
+                <strong class="ss-headline" id="ss-headline">대피 접근성</strong>
+                <span class="ss-grade" id="safety-grade"></span>
             </div>
         </div>
         <button type="button" id="ss-shelter-btn" class="ss-cta" style="display:none;">가까운 대피소 보기</button>
         <details class="ss-why">
             <summary>왜 이 점수?</summary>
             <ul id="ss-breakdown"></ul>
+            <p class="ss-cap">100점 만점 · 가까운 대피소·시설 거리 기준</p>
         </details>
-        <button type="button" id="ss-here-btn" class="ss-here">📍 지도 중심 기준으로 평가</button>
+        <button type="button" id="ss-here-btn" class="ss-here">↻ 지도 중심으로 다시 평가</button>
     </div>
 
     <!-- 재검색 버튼 -->
