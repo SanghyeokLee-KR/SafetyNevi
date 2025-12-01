@@ -12,6 +12,7 @@
     <meta property="og:description" content="전국 긴급재난문자를 실시간으로 모아 지역별로 보여줍니다.">
     <meta property="og:locale" content="ko_KR">
     <link rel="stylesheet" href="/css/disaster/disasterMessage.css"/>
+    <link rel="stylesheet" href="/css/common/safety-card.css"/>
     <link rel="icon" type="image/png" href="/img/logo/favicon.png">
     <link rel="manifest" href="/manifest.webmanifest">
     <meta name="theme-color" content="#2563eb">
@@ -72,6 +73,23 @@
         <button id="btn-push-subscribe" type="button" class="push-subscribe-btn">🔔 재난 알림 받기</button>
         <span class="push-hint">선택한 지역의 긴급재난문자를 브라우저를 닫아도 푸시로 받아요.</span>
     </div>
+
+    <section id="safety-card" class="safety-card" aria-label="내 동네 대피 접근성">
+        <div class="safety-card__gauge">
+            <svg viewBox="0 0 44 44" width="56" height="56" aria-hidden="true">
+                <circle class="sc-ring-bg" cx="22" cy="22" r="19" fill="none" stroke-width="4"></circle>
+                <circle id="sc-ring" class="sc-ring-fg" cx="22" cy="22" r="19" fill="none"
+                        stroke-width="4" stroke-linecap="round" transform="rotate(-90 22 22)"></circle>
+            </svg>
+            <span id="sc-num" class="safety-card__num">--</span>
+        </div>
+        <div class="safety-card__body">
+            <span class="safety-card__title">내 동네 대피 접근성</span>
+            <strong id="sc-headline" class="safety-card__headline">평가 중…</strong>
+            <span id="sc-sub" class="safety-card__sub"></span>
+        </div>
+        <a href="/map" class="safety-card__cta">지도에서 보기</a>
+    </section>
 
     <main class="app-content">
         <div class="filter-container">
@@ -161,6 +179,7 @@
 <!-- 재난 웹푸시 구독 (표준 Web Push). 외부 SDK 없이 브라우저 PushManager 사용 -->
 <script src="/js/common/csrf.js"></script>
 <script src="/js/push/push.js"></script>
+<script src="/js/common/safety-card.js" defer></script>
 <script th:inline="javascript">
     // 로그인 회원이면 가입 지역(시/도)을 구독 기본값으로 미리 선택
     (function () {

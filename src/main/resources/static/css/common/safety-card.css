@@ -1,0 +1,54 @@
+/* ============================================================
+   내 동네 대피 접근성 카드 (홈·재난문자 페이지 공용)
+   /api/safety-score 결과를 점수 링 + 가까운 대피소 + 지도 이동으로 보여준다.
+   ============================================================ */
+.safety-card {
+    display: none;                 /* JS가 데이터 로드 후 .is-ready로 표시 */
+    align-items: center;
+    gap: 14px;
+    width: min(440px, calc(100% - 32px));   /* 좌우 16px 여백 보장 + 중앙정렬 */
+    margin: 4px auto 0;
+    padding: 14px 16px;
+    box-sizing: border-box;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--e1);
+    text-align: left;
+}
+.safety-card.is-ready { display: flex; }
+
+/* 점수 링 게이지 */
+.safety-card__gauge { position: relative; flex: 0 0 auto; width: 56px; height: 56px; }
+.safety-card__gauge svg { display: block; }
+.sc-ring-bg { stroke: var(--gray-200); }
+.sc-ring-fg { stroke: var(--primary); transition: stroke-dashoffset var(--dur-lg) var(--ease); }
+.safety-card__num {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 700; color: var(--text);
+}
+
+/* 본문 */
+.safety-card__body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.safety-card__title { font-size: 12px; font-weight: 600; color: var(--text-subtle); }
+.safety-card__headline {
+    font-size: 15px; font-weight: 700; color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.safety-card__sub { font-size: 12.5px; color: var(--text-muted); }
+
+/* 지도로 이동 CTA */
+.safety-card__cta {
+    flex: 0 0 auto; align-self: center;
+    padding: 8px 14px; border-radius: var(--r-pill);
+    background: var(--primary-soft); color: var(--primary-strong);
+    font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap;
+    transition: background var(--dur) var(--ease);
+}
+.safety-card__cta:hover { background: var(--primary-softer); }
+
+@media (max-width: 480px) {
+    .safety-card { gap: 12px; padding: 12px 14px; }
+    .safety-card__cta { padding: 7px 12px; }
+}

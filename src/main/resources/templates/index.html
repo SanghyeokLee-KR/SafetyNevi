@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/css/base/tokens.css">
     <link rel="stylesheet" href="/css/base/components.css">
     <link rel="stylesheet" href="/css/index/index.css">
+    <link rel="stylesheet" href="/css/common/safety-card.css">
     <link rel="icon" type="image/png" href="/img/logo/favicon.png">
     <link rel="manifest" href="/manifest.webmanifest">
     <meta name="theme-color" content="#2563eb">
@@ -36,6 +37,23 @@
                 <button type="submit">로그아웃</button>
             </form>
         </div>
+
+        <section id="safety-card" class="safety-card" aria-label="내 동네 대피 접근성">
+            <div class="safety-card__gauge">
+                <svg viewBox="0 0 44 44" width="56" height="56" aria-hidden="true">
+                    <circle class="sc-ring-bg" cx="22" cy="22" r="19" fill="none" stroke-width="4"></circle>
+                    <circle id="sc-ring" class="sc-ring-fg" cx="22" cy="22" r="19" fill="none"
+                            stroke-width="4" stroke-linecap="round" transform="rotate(-90 22 22)"></circle>
+                </svg>
+                <span id="sc-num" class="safety-card__num">--</span>
+            </div>
+            <div class="safety-card__body">
+                <span class="safety-card__title">내 동네 대피 접근성</span>
+                <strong id="sc-headline" class="safety-card__headline">평가 중…</strong>
+                <span id="sc-sub" class="safety-card__sub"></span>
+            </div>
+            <a href="/map" class="safety-card__cta">지도에서 보기</a>
+        </section>
 
         <nav class="nav-grid">
             <a sec:authorize="isAnonymous()" href="/login" class="nav-card">
@@ -99,6 +117,8 @@
         }
     });
 </script>
+
+<script src="/js/common/safety-card.js" defer></script>
 
 </body>
 </html>
