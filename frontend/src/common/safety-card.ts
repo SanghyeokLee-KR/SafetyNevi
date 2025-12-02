@@ -52,18 +52,26 @@ function renderSafetyCard(data) {
     card.classList.add("is-ready");
 }
 
+// 콜드 스타트(서버 갓 켜짐)에서 한 번 실패해도 자가복구하도록 가벼운 재시도.
+// 끝까지 실패하면 null → 카드는 그냥 숨김(보조 카드라 조용히).
+async function fetchScore(url: string, tries = 3, delay = 600): Promise<any> {
+    for (let i = 0; i < tries; i++) {
+        try {
+            const res = await fetch(url);
+            if (res.ok) return await res.json();
+        } catch (e) { /* 재시도 */ }
+        if (i < tries - 1) await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+    }
+    return null;
+}
+
 function initSafetyCard() {
     const card = document.getElementById("safety-card");
     if (!card || !navigator.geolocation) return;   // 카드 없거나 위치 미지원 → 표시 안 함
     navigator.geolocation.getCurrentPosition(
         async pos => {
-            try {
-                const res = await fetch(`/api/safety-score?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`);
-                if (!res.ok) return;
-                renderSafetyCard(await res.json());
-            } catch (e) {
-                // 조회 실패 → 카드 숨김 유지
-            }
+            const data = await fetchScore(`/api/safety-score?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`);
+            if (data) renderSafetyCard(data);
         },
         () => { /* 위치 거부 → 카드 숨김 유지 */ },
         { timeout: 6000, maximumAge: 120000 }

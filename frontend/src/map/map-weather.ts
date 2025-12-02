@@ -1,6 +1,7 @@
 // 현재 위치 파악 후 해당 좌표의 날씨·주소 표시
 import { map } from './map-core.js';
 import { toggleLoading, showToast } from './map-ui.js';
+import { fetchRetry } from '../common/fetch-retry.js';
 
 export function loadCurrentLocationAndWeather() {
     showToast("내 위치를 찾는 중입니다...");
@@ -66,11 +67,14 @@ function displayMarker(locPosition) {
 
 async function fetchWeatherAndAddress(lat, lon) {
     try {
-        const response = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
-        if (!response.ok) return;
-        const weatherDto = await response.json();
-        updateWeatherUI(weatherDto);
-    } catch (error) { console.error(error); }
+        const response = await fetchRetry(`/api/weather?lat=${lat}&lon=${lon}`);
+        updateWeatherUI(await response.json());
+    } catch (error) {
+        console.error('날씨·주소 로드 실패:', error);
+        // 끝까지 실패하면 가짜 로딩('위치 확인 중…')에 머물지 않도록 명확히 표시
+        const addrEl = document.querySelector<HTMLElement>('#current-address');
+        if (addrEl && addrEl.innerText.indexOf('확인 중') !== -1) addrEl.innerText = '위치 확인 실패 · 새로고침';
+    }
 }
 
 function updateWeatherUI(data: any) {

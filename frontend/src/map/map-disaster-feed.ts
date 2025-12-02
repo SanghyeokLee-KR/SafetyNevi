@@ -2,6 +2,7 @@
 // 새 메시지는 소켓(map-disaster.ts가 /topic/disaster-message 구독)으로 받아 맨 위에 끼운다.
 // 카드를 누르면 'feed:focus-area' 이벤트를 쏴 map-disaster.ts가 지도를 그 지역으로 옮긴다.
 import { escapeHtml } from '../common/escape.js';
+import { fetchRetry } from '../common/fetch-retry.js';
 
 const MAX_CARDS = 30;
 let clickAttached = false;
@@ -167,8 +168,7 @@ export async function loadRecentDisasterMessages() {
     setupTimeRefresh();
     setupRegionFilter();
     try {
-        const res = await fetch('/api/disaster-messages/recent');
-        if (!res.ok) throw new Error('status ' + res.status);
+        const res = await fetchRetry('/api/disaster-messages/recent');
         const messages = await res.json();
         if (!messages.length) {
             list.innerHTML = '<div class="kb-feed-empty">표시할 재난문자가 없습니다.</div>';

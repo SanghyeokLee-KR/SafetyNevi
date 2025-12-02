@@ -2,6 +2,7 @@
 import { map, clusterer } from './map-core.js';
 import { updateSidebar, showToast } from './map-ui.js';
 import { escapeHtml } from '../common/escape.js';
+import { fetchRetry } from '../common/fetch-retry.js';
 
 let markerImages: Record<string, any> = {};
 let currentOverlay: any = null;
@@ -215,8 +216,7 @@ async function evaluateSafetyScore(lat, lng, fromMyLocation) {
     const panel = document.getElementById('safety-score-panel');
     if (!panel) return;
     try {
-        const res = await fetch(`/api/safety-score?lat=${lat}&lng=${lng}`);
-        if (!res.ok) throw new Error('safety-score ' + res.status);
+        const res = await fetchRetry(`/api/safety-score?lat=${lat}&lng=${lng}`);
         renderSafetyScore(await res.json(), fromMyLocation);
     } catch (e) {
         console.error('대피 접근성 점수 조회 실패:', e);
