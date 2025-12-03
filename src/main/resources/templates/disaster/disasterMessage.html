@@ -92,8 +92,9 @@
     </section>
 
     <main class="app-content">
-        <div class="filter-container">
-            <form th:action="@{/disasterMessage}" method="get">
+        <div class="filter-bar">
+            <h2 class="filter-bar__title">실시간 재난문자</h2>
+            <form class="filter-bar__controls" th:action="@{/disasterMessage}" method="get">
                 <select name="area" onchange="this.form.submit()" aria-label="지역 선택">
                     <option value="전국">전국</option>
                     <option th:each="prefix : ${areaPrefixes}"
@@ -111,7 +112,7 @@
             </form>
         </div>
 
-        <div class="grid-container">
+        <div class="grid-container" th:if="${paging.hasContent()}">
             <div class="msg-card" th:each="msg : ${paging.content}">
                 <div class="card-top">
                     <th:block th:switch="${msg.disasterType}">
@@ -133,6 +134,15 @@
                     <p th:text="${msg.content}">내용</p>
                 </div>
             </div>
+        </div>
+
+        <div class="feed-empty" th:if="${!paging.hasContent()}">
+            <svg class="feed-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline>
+                <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+            </svg>
+            <p class="feed-empty__title">표시할 재난문자가 없습니다</p>
+            <p class="feed-empty__desc">잠시 후 다시 확인하거나 지역·종류 필터를 바꿔보세요.</p>
         </div>
 
         <div class="pagination-box" th:if="${paging.totalPages > 0}">
