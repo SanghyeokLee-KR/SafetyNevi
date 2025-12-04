@@ -15,6 +15,9 @@ html, body { margin: 0; }
 .home-tagline { color: var(--text-muted); font-size: 15px; margin: 10px 0 36px; }
 
 .home-greeting { display: flex; align-items: center; gap: 8px; margin-bottom: 26px; color: var(--text-muted); font-size: 14px; }
+
+/* 안전 카드(홈): 위 태그라인/인사말과 아래 메뉴 그리드에서 충분히 띄움 */
+.home-main .safety-card { margin: 4px auto 32px; }
 .home-logout { display: inline; }
 .home-logout button {
     border: none; background: none; color: var(--text-subtle); cursor: pointer;

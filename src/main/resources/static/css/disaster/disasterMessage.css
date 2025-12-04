@@ -24,10 +24,13 @@ html, body {
 .app-content {
     flex: 1;
     width: 100%;
-    max-width: 820px;
+    max-width: 720px;
     margin: 0 auto;
     padding: 8px 16px 48px;
 }
+
+/* 안전 카드: 이 페이지에선 콘텐츠 폭에 맞춘 배너(홈의 컴팩트 카드와 달리 좌우 끝 정렬) */
+.app-content > .safety-card { width: 100%; max-width: none; margin: 2px 0 18px; }
 
 /* 필터 바 */
 .filter-bar {

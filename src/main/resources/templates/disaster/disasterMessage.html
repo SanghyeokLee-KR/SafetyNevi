@@ -21,8 +21,9 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <style>
         .push-bar {
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; justify-content: flex-start;
             gap: 12px; flex-wrap: wrap; padding: 12px 16px;
+            max-width: 720px; width: 100%; margin: 0 auto;
         }
         .push-subscribe-btn {
             display: inline-flex; align-items: center; gap: 6px;
@@ -74,24 +75,23 @@
         <span class="push-hint">선택한 지역의 긴급재난문자를 브라우저를 닫아도 푸시로 받아요.</span>
     </div>
 
-    <section id="safety-card" class="safety-card" aria-label="내 동네 대피 접근성">
-        <div class="safety-card__gauge">
-            <svg viewBox="0 0 44 44" width="56" height="56" aria-hidden="true">
-                <circle class="sc-ring-bg" cx="22" cy="22" r="19" fill="none" stroke-width="4"></circle>
-                <circle id="sc-ring" class="sc-ring-fg" cx="22" cy="22" r="19" fill="none"
-                        stroke-width="4" stroke-linecap="round" transform="rotate(-90 22 22)"></circle>
-            </svg>
-            <span id="sc-num" class="safety-card__num">--</span>
-        </div>
-        <div class="safety-card__body">
-            <span class="safety-card__title">내 동네 대피 접근성</span>
-            <strong id="sc-headline" class="safety-card__headline">평가 중…</strong>
-            <span id="sc-sub" class="safety-card__sub"></span>
-        </div>
-        <a href="/map" class="safety-card__cta">지도에서 보기</a>
-    </section>
-
     <main class="app-content">
+        <section id="safety-card" class="safety-card" aria-label="내 동네 대피 접근성">
+            <div class="safety-card__gauge">
+                <svg viewBox="0 0 44 44" width="56" height="56" aria-hidden="true">
+                    <circle class="sc-ring-bg" cx="22" cy="22" r="19" fill="none" stroke-width="4"></circle>
+                    <circle id="sc-ring" class="sc-ring-fg" cx="22" cy="22" r="19" fill="none"
+                            stroke-width="4" stroke-linecap="round" transform="rotate(-90 22 22)"></circle>
+                </svg>
+                <span id="sc-num" class="safety-card__num">--</span>
+            </div>
+            <div class="safety-card__body">
+                <span class="safety-card__title">내 동네 대피 접근성</span>
+                <strong id="sc-headline" class="safety-card__headline">평가 중…</strong>
+                <span id="sc-sub" class="safety-card__sub"></span>
+            </div>
+            <a href="/map" class="safety-card__cta">지도에서 보기</a>
+        </section>
         <div class="filter-bar">
             <h2 class="filter-bar__title">실시간 재난문자</h2>
             <form class="filter-bar__controls" th:action="@{/disasterMessage}" method="get">
