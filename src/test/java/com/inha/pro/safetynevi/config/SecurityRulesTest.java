@@ -53,6 +53,14 @@ class SecurityRulesTest {
     }
 
     @Test
+    void disasterMessagesOlderIsPublic() throws Exception {
+        // 사이드바 피드 무한 스크롤(과거분) — 비로그인도 공개 데이터로 조회 가능
+        mvc.perform(get("/api/disaster-messages/older")
+                        .param("beforeDate", "2026/01/01 00:00:00").param("beforeId", "999999"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void pushConfigIsPublic() throws Exception {
         // 웹푸시 구독에 필요한 VAPID 공개키 조회 — 비로그인도 허용
         mvc.perform(get("/api/push/config")).andExpect(status().isOk());

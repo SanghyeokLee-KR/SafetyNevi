@@ -4,9 +4,16 @@
 import { escapeHtml } from '../common/escape.js';
 import { fetchRetry } from '../common/fetch-retry.js';
 
-const MAX_CARDS = 30;
 let clickAttached = false;
 let timerSet = false;
+
+// 무한 스크롤 상태: 가장 오래된(맨 아래) 카드의 커서 + 진행 플래그
+const PAGE_SIZE = 20;
+let oldestDate: string | null = null;
+let oldestId: number | null = null;
+let loadingMore = false;
+let reachedEnd = false;
+let feedObserver: IntersectionObserver | null = null;
 
 // 재난 종류 → 강조색 클래스(CSS에서 data-type으로 매칭)
 const TYPE_CLASS: Record<string, string> = {
@@ -99,7 +106,7 @@ function relativeTime(sentDate: string): string {
 function cardHtml(msg: any): string {
     const cls = typeClass(msg.disasterType || '');
     return '' +
-        '<div class="kb-feed-card" role="button" tabindex="0" data-type="' + cls + '" data-area="' + escapeHtml(msg.area || '') + '" data-time="' + escapeHtml(msg.sentDate || '') + '">' +
+        '<div class="kb-feed-card" role="button" tabindex="0" data-id="' + (msg.id != null ? msg.id : '') + '" data-type="' + cls + '" data-area="' + escapeHtml(msg.area || '') + '" data-time="' + escapeHtml(msg.sentDate || '') + '">' +
         '  <div class="kb-feed-head">' +
         '    <span class="kb-feed-badge">' + escapeHtml(msg.disasterType || '기타') + '</span>' +
         '    <span class="kb-feed-area">' + escapeHtml(msg.area || '') + '</span>' +
@@ -160,10 +167,81 @@ function setupTimeRefresh() {
     }, 60000);
 }
 
+// 피드가 스크롤되는 실제 컨테이너(사이드바)를 런타임에 찾는다 — IntersectionObserver root로 씀.
+function findScrollParent(el: HTMLElement | null): HTMLElement {
+    let node = el ? el.parentElement : null;
+    while (node && node !== document.body) {
+        const oy = getComputedStyle(node).overflowY;
+        if (oy === 'auto' || oy === 'scroll' || oy === 'overlay') return node;
+        node = node.parentElement;
+    }
+    return (document.scrollingElement as HTMLElement) || document.documentElement;
+}
+
+// 센티넬(맨 아래) 상태 표시: 로딩 스피너 / 끝 안내 / 숨김
+function setSentinel(state: '' | 'loading' | 'end') {
+    const s = document.getElementById('kb-feed-sentinel');
+    if (!s) return;
+    s.className = 'kb-feed-sentinel' + (state ? ' is-' + state : '');
+    s.textContent = state === 'loading' ? '불러오는 중…' : state === 'end' ? '마지막 재난문자입니다' : '';
+}
+
+// 센티넬이 보이면 과거 문자를 이어 로드. 화면이 짧으면 re-observe로 자동으로 한 번 더 채운다.
+function setupInfiniteScroll(list: HTMLElement) {
+    const sentinel = document.getElementById('kb-feed-sentinel');
+    if (!sentinel) return;
+    if (feedObserver) feedObserver.disconnect();
+    feedObserver = new IntersectionObserver((entries) => {
+        if (entries[0] && entries[0].isIntersecting) loadOlder();
+    }, { root: findScrollParent(list), rootMargin: '160px 0px' });
+    feedObserver.observe(sentinel);
+}
+
+// 커서(가장 오래된 카드)보다 과거 문자 PAGE_SIZE건을 이어붙임
+async function loadOlder() {
+    if (loadingMore || reachedEnd || oldestId == null || oldestDate == null) return;
+    const list = document.getElementById('kb-feed-list');
+    if (!list) return;
+    loadingMore = true;
+    setSentinel('loading');
+    try {
+        const url = '/api/disaster-messages/older?beforeDate=' + encodeURIComponent(oldestDate)
+            + '&beforeId=' + oldestId + '&size=' + PAGE_SIZE;
+        const older = await (await fetchRetry(url)).json();
+        if (older.length) {
+            list.insertAdjacentHTML('beforeend', older.map(cardHtml).join(''));
+            const last = older[older.length - 1];
+            oldestDate = last.sentDate;
+            oldestId = last.id;
+            applyRegionFilter();
+        }
+        if (older.length < PAGE_SIZE) {
+            reachedEnd = true;
+            const sentinel = document.getElementById('kb-feed-sentinel');
+            if (feedObserver && sentinel) feedObserver.unobserve(sentinel);
+            setSentinel(list.querySelector('.kb-feed-card') ? 'end' : '');
+        }
+    } catch (e) {
+        console.error('과거 재난문자 로드 실패:', e);
+    } finally {
+        loadingMore = false;
+        if (!reachedEnd) {
+            setSentinel('');
+            // 화면이 아직 안 찼으면 센티넬이 계속 보일 테니 re-observe로 한 번 더 트리거
+            const sentinel = document.getElementById('kb-feed-sentinel');
+            if (feedObserver && sentinel) { feedObserver.unobserve(sentinel); feedObserver.observe(sentinel); }
+        }
+    }
+}
+
 // 진입 시 최근 재난문자 로드
 export async function loadRecentDisasterMessages() {
     const list = document.getElementById('kb-feed-list');
     if (!list) return;
+    // 상태 초기화(재호출 대비)
+    oldestDate = null; oldestId = null; loadingMore = false; reachedEnd = false;
+    if (feedObserver) { feedObserver.disconnect(); feedObserver = null; }
+    setSentinel('');
     attachClickHandler(list);
     setupTimeRefresh();
     setupRegionFilter();
@@ -175,7 +253,16 @@ export async function loadRecentDisasterMessages() {
             return;
         }
         list.innerHTML = messages.map(cardHtml).join('');
+        const last = messages[messages.length - 1];
+        oldestDate = last.sentDate;
+        oldestId = last.id;
+        reachedEnd = messages.length < PAGE_SIZE;
         applyRegionFilter();
+        if (reachedEnd) {
+            setSentinel('end');
+        } else {
+            setupInfiniteScroll(list);
+        }
     } catch (e) {
         console.error('재난문자 피드 로드 실패:', e);
         list.innerHTML = '<div class="kb-feed-empty">재난문자를 불러오지 못했어요.</div>';
@@ -198,9 +285,7 @@ export function prependDisasterMessage(msg: any) {
     card.classList.add('kb-feed-new');
     list.prepend(card);
 
-    while (list.children.length > MAX_CARDS) {
-        list.removeChild(list.lastChild as Node);
-    }
+    // (무한 스크롤로 아래에 과거분이 쌓이므로 옛 캡 제거 — 새 글은 위에만 끼운다)
     applyRegionFilter();   // 현재 지역 필터를 새 카드에도 반영
     if (card.style.display !== 'none') announceNew(msg);   // 보이는(관심지역) 새 글만 음성 안내
 }

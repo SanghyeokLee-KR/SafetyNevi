@@ -3,7 +3,7 @@ package com.inha.pro.safetynevi.controller.crawling;
 import com.inha.pro.safetynevi.dao.crawling.DisasterMessageRepository;
 import com.inha.pro.safetynevi.dao.member.MemberRepository;
 import com.inha.pro.safetynevi.dto.crawling.DisasterMessage;
-import com.inha.pro.safetynevi.dto.crawling.DisasterMessageDto;
+import com.inha.pro.safetynevi.dto.crawling.FeedMessageDto;
 import com.inha.pro.safetynevi.entity.member.Member;
 import com.inha.pro.safetynevi.service.push.WebPushService;
 import com.inha.pro.safetynevi.specs.DisasterMessageSpecs;
@@ -76,14 +76,29 @@ public class DisasterMessageController {
         return "disaster/disasterMessage";
     }
 
-    // 지도 사이드바 실시간 피드용 — 최신 재난문자 20건(JSON)
+    // 지도 사이드바 실시간 피드용 — 최신 재난문자 20건(JSON). id(dmid)는 무한 스크롤 커서용.
     @ResponseBody
     @GetMapping("/api/disaster-messages/recent")
-    public List<DisasterMessageDto> recentMessages() {
+    public List<FeedMessageDto> recentMessages() {
         Pageable pageable = PageRequest.of(0, 20, Sort.by(Sort.Order.desc("sentDate"), Sort.Order.desc("dmid")));
         return disasterMessageRepository.findAll(pageable).stream()
-                .map(m -> new DisasterMessageDto(m.getDisasterType(), m.getEmergencyLevel(),
-                        m.getArea(), m.getSentDate(), m.getContent()))
+                .map(this::toFeedDto)
                 .toList();
+    }
+
+    // 사이드바 피드 무한 스크롤 — 커서(beforeDate·beforeId)보다 과거 문자 size건(기본 20, 최대 50)
+    @ResponseBody
+    @GetMapping("/api/disaster-messages/older")
+    public List<FeedMessageDto> olderMessages(@RequestParam String beforeDate,
+                                              @RequestParam Long beforeId,
+                                              @RequestParam(defaultValue = "20") int size) {
+        int capped = Math.min(Math.max(size, 1), 50);
+        return disasterMessageRepository.findOlderThan(beforeDate, beforeId, PageRequest.of(0, capped)).stream()
+                .map(this::toFeedDto)
+                .toList();
+    }
+
+    private FeedMessageDto toFeedDto(DisasterMessage m) {
+        return new FeedMessageDto(m.getDmid(), m.getDisasterType(), m.getArea(), m.getSentDate(), m.getContent());
     }
 }
