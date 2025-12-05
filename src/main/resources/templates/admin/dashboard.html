@@ -3,44 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>관리자 - 대시보드</title>
+    <title>관리자 · 대시보드 — 안전네비</title>
     <link rel="stylesheet" href="/css/admin/layout.css">
     <link rel="stylesheet" href="/css/admin/components.css">
     <link rel="stylesheet" href="/css/admin/dashboard.css">
     <link rel="icon" type="image/png" href="/img/logo/favicon.png">
-    <style>
-        /* 차트 카드 스타일 추가 */
-        .chart-card {
-            background-color: #ffffff; /* 흰색 배경 */
-            border-radius: 15px;       /* 둥근 모서리 */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
-            padding: 30px;             /* 내부 여백 */
-            margin-top: 30px;          /* 위쪽 요소와의 간격 */
-            margin-bottom: 30px;       /* 아래쪽 요소와의 간격 */
-        }
-
-        .chart-header {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-        }
-
-        /* 아이콘 등 장식용 (선택사항) */
-        .chart-header::before {
-            content: '📊';
-            margin-right: 10px;
-            font-size: 1.2rem;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 400px;
-            width: 100%;
-        }
-    </style>
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <script src="/js/common/csrf.js"></script>
@@ -49,22 +16,21 @@
 
 <aside class="admin-sidebar">
     <div class="sidebar-header">
-        <span style="margin-left: 10px;">🛡️ SafetyNevi</span>
+        <span class="sidebar-brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>안전네비 관리자</span>
+        </span>
     </div>
     <ul class="sidebar-menu">
-        <li><a href="/admin" class="menu-item active"><span class="icon">📊</span> <span>대시보드</span></a></li>
-        <li><a href="/admin/members" class="menu-item"><span class="icon">👥</span> <span>회원 관리</span></a></li>
-        <li><a href="/admin/boards" class="menu-item"><span class="icon">📝</span> <span>게시물 관리</span></a></li>
-        <li><a href="/admin/notice/create" class="menu-item"><span class="icon">📢</span> <span>공지 생성</span></a></li>
-        <li>
-            <a href="/admin/inquiries" class="menu-item">
-                <span class="icon">💌</span> <span>문의 관리</span>
-            </a>
-        </li>
-        <li><a href="/admin/reports" class="menu-item"><span class="icon">🚩</span> <span>신고 관리</span></a></li>
-        <li><a href="/admin/disaster" class="menu-item"><span class="icon">🚨</span> <span>재난 관리</span></a></li>
+        <li><a href="/admin" class="menu-item active"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span> <span>대시보드</span></a></li>
+        <li><a href="/admin/members" class="menu-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> <span>회원 관리</span></a></li>
+        <li><a href="/admin/boards" class="menu-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span> <span>게시물 관리</span></a></li>
+        <li><a href="/admin/notice/create" class="menu-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span> <span>공지 관리</span></a></li>
+        <li><a href="/admin/inquiries" class="menu-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg></span> <span>문의 관리</span></a></li>
+        <li><a href="/admin/reports" class="menu-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></span> <span>신고 관리</span></a></li>
+        <li><a href="/admin/disaster" class="menu-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span> <span>재난 관리</span></a></li>
         <li style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
-            <a href="/" class="menu-item"><span class="icon">🏠</span> <span>서비스 홈</span></a>
+            <a href="/" class="menu-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> <span>서비스 홈</span></a>
         </li>
     </ul>
 </aside>
@@ -74,208 +40,174 @@
         <div>
             <div class="page-title">대시보드</div>
             <div class="page-subtitle">
-                오늘 날짜: <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy년 MM월 dd일')}"></span>
+                <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy년 M월 d일')}">오늘</span> · 운영 현황 한눈에 보기
             </div>
         </div>
     </div>
 
-    <div class="dashboard-grid">
-        <div class="stat-card admin-card card-blue">
-            <div class="stat-header">
-                <span class="stat-title">전체 회원 수</span>
-                <div class="stat-icon-bg">👥</div>
+    <!-- 지표 카드 -->
+    <div class="stat-grid">
+        <div class="stat-card admin-card">
+            <div class="stat-top">
+                <span class="stat-label">전체 회원</span>
+                <span class="stat-ic ic-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
             </div>
             <div class="stat-value" th:text="${memberCount}">0</div>
+            <div class="stat-foot">누적 가입자</div>
         </div>
-        <div class="stat-card admin-card card-green">
-            <div class="stat-header">
-                <span class="stat-title">누적 게시글</span>
-                <div class="stat-icon-bg">📝</div>
+        <div class="stat-card admin-card">
+            <div class="stat-top">
+                <span class="stat-label">오늘 가입</span>
+                <span class="stat-ic ic-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            </div>
+            <div class="stat-value" id="stat-today">—</div>
+            <div class="stat-foot">오늘 신규 회원</div>
+        </div>
+        <div class="stat-card admin-card">
+            <div class="stat-top">
+                <span class="stat-label">누적 게시글</span>
+                <span class="stat-ic ic-indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
             </div>
             <div class="stat-value" th:text="${boardCount}">0</div>
+            <div class="stat-foot">전체 게시물</div>
         </div>
-        <div class="stat-card admin-card card-red">
-            <div class="stat-header">
-                <span class="stat-title">발효 중인 재난</span>
-                <div class="stat-icon-bg">🚨</div>
+        <div class="stat-card admin-card">
+            <div class="stat-top">
+                <span class="stat-label">발효 중 재난</span>
+                <span class="stat-ic ic-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
             </div>
             <div class="stat-value" th:text="${disasterCount}">0</div>
+            <div class="stat-foot">현재 활성 재난</div>
         </div>
     </div>
 
-    <div class="chart-card">
-        <div class="chart-header">지역별 가입자 분포</div>
-        <div class="chart-container">
-            <canvas id="regionChart"></canvas>
-        </div>
-    </div>
-
-    <div class="dashboard-section">
-        <div class="section-header">🚀 빠른 실행</div>
-        <div class="shortcut-grid">
-            <a href="/admin/disaster" class="shortcut-btn">
-                <span class="icon">🚨</span>
-                <span>재난 상황 생성</span>
-            </a>
-            <a href="/admin/members" class="shortcut-btn">
-                <span class="icon">👥</span>
-                <span>회원 관리 / 탈퇴</span>
-            </a>
-            <a href="/map" target="_blank" class="shortcut-btn">
-                <span class="icon">🗺️</span>
-                <span>지도 모니터링</span>
-            </a>
-        </div>
-    </div>
-
-    <div class="dashboard-section">
-        <div class="section-header">🔔 재난 알림 테스트</div>
-        <p style="margin: 0 0 14px; color: #555; font-size: 14px;">
-            구독 중인 모든 기기로 테스트 푸시를 보냅니다. 알림 발송 경로 점검용입니다.
-        </p>
-        <button id="btn-test-push" type="button" class="shortcut-btn" style="border: 0; cursor: pointer;">
-            <span class="icon">🔔</span>
-            <span>테스트 알림 보내기</span>
-        </button>
-        <span id="test-push-result" style="margin-left: 12px; font-size: 14px; color: #555;"></span>
-    </div>
-
-    <div class="dashboard-section">
-        <div class="section-header">💻 시스템 상태</div>
-        <div class="system-status-list">
-            <div class="status-item">
-                <div class="status-dot"></div>
-                <div class="status-text">서버: <strong>정상 가동 중</strong></div>
+    <!-- 차트 + 사이드 패널 -->
+    <div class="dash-cols">
+        <section class="admin-card chart-card">
+            <div class="card-head">
+                <span class="card-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+                    지역별 가입자 분포
+                </span>
             </div>
-            <div class="status-item">
-                <div class="status-dot"></div>
-                <div class="status-text">DB: <strong>Oracle Connected</strong></div>
-            </div>
-            <div class="status-item">
-                <div class="status-dot"></div>
-                <div class="status-text">API: <strong>연동 완료</strong></div>
-            </div>
+            <div class="chart-container"><canvas id="regionChart"></canvas></div>
+        </section>
+
+        <div class="dash-side">
+            <section class="admin-card">
+                <div class="card-head"><span class="card-title">빠른 실행</span></div>
+                <div class="quick-list">
+                    <a href="/admin/disaster" class="quick-item">
+                        <span class="quick-ic ic-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+                        <span>재난 상황 생성</span><span class="quick-arr">›</span>
+                    </a>
+                    <a href="/admin/members" class="quick-item">
+                        <span class="quick-ic ic-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+                        <span>회원 관리</span><span class="quick-arr">›</span>
+                    </a>
+                    <a href="/map" target="_blank" class="quick-item">
+                        <span class="quick-ic ic-indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></span>
+                        <span>지도 모니터링</span><span class="quick-arr">›</span>
+                    </a>
+                </div>
+            </section>
+
+            <section class="admin-card">
+                <div class="card-head"><span class="card-title">시스템 상태</span></div>
+                <ul class="status-list">
+                    <li class="status-row">
+                        <span class="status-name">서버</span>
+                        <span class="status-val" id="health-server"><span class="dot dot-gray"></span>확인 중…</span>
+                    </li>
+                    <li class="status-row">
+                        <span class="status-name">웹푸시(VAPID)</span>
+                        <span class="status-val" id="health-push"><span class="dot dot-gray"></span>확인 중…</span>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="admin-card">
+                <div class="card-head"><span class="card-title">재난 알림 테스트</span></div>
+                <p class="muted-text">구독 중인 기기로 테스트 푸시를 보내 발송 경로를 점검합니다.</p>
+                <button id="btn-test-push" type="button" class="btn-primary-full">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                    테스트 알림 보내기
+                </button>
+                <p id="test-push-result" class="muted-text" style="margin-top:10px;"></p>
+            </section>
         </div>
     </div>
-
 </main>
 
-</body>
-
-<script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-    $(document).ready(function () {
-        $.ajax({
-            url: '/dashboardChart',
-            method: 'POST',
-            dataType: 'json',
-            success: function (response) {
-                // console.log('대시보드 데이터 :', response); // 디버깅용
+    // 지역 분포 차트 + 오늘 가입 수 (POST는 csrf.js가 토큰 자동 부착)
+    fetch('/dashboardChart', { method: 'POST' })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+            drawRegionChart(d.areaCounts || {});
+            var t = document.getElementById('stat-today');
+            if (t) t.textContent = (d.todayCount != null ? d.todayCount : 0);
+        })
+        .catch(function (e) { console.error('대시보드 차트 로드 실패:', e); });
 
-                // 1. 텍스트 데이터 업데이트 (상단 카드용 ID가 있다면 해제해서 사용)
-                // $('#memberCount').text(response.totalCount);
-                // $('#todayMemberCount').text(response.todayCount);
+    // 시스템 상태 — 실제 헬스 체크
+    function setHealth(el, up, label) {
+        if (!el) return;
+        el.innerHTML = '<span class="dot ' + (up ? 'dot-up' : 'dot-down') + '"></span>' + label;
+    }
+    fetch('/actuator/health')
+        .then(function (r) { return r.ok ? r.json() : { status: 'DOWN' }; })
+        .then(function (h) { setHealth(document.getElementById('health-server'), h.status === 'UP', h.status === 'UP' ? '정상 가동' : '점검 필요'); })
+        .catch(function () { setHealth(document.getElementById('health-server'), false, '응답 없음'); });
+    fetch('/api/push/config')
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (c) {
+            var ok = !!(c && (c.publicKey || c.enabled));
+            setHealth(document.getElementById('health-push'), ok, ok ? '연동 완료' : '비활성');
+        })
+        .catch(function () { setHealth(document.getElementById('health-push'), false, '응답 없음'); });
 
-                // 2. 차트 그리기 함수 호출
-                drawRegionChart(response.areaCounts);
-            },
-            error: function (xhr, status, error) {
-                console.error('AJAX 요청 실패:', status, error);
-            }
+    // 재난 알림 테스트 발송
+    var btn = document.getElementById('btn-test-push');
+    if (btn) {
+        btn.addEventListener('click', function () {
+            var res = document.getElementById('test-push-result');
+            btn.disabled = true;
+            if (res) res.textContent = '보내는 중…';
+            fetch('/api/admin/push/test', { method: 'POST' })
+                .then(function (r) { return r.json(); })
+                .then(function (r) {
+                    if (res) res.textContent = r.enabled ? (r.sent + '개 기기로 보냈습니다.') : '푸시가 비활성 상태입니다 (VAPID 키 확인).';
+                })
+                .catch(function () { if (res) res.textContent = '발송 실패 — 서버 로그를 확인하세요.'; })
+                .finally(function () { btn.disabled = false; });
         });
+    }
 
-        // 재난 알림 테스트 발송 (관리자 전용) — 구독 기기로 테스트 푸시를 쏴 발송 경로를 점검
-        $('#btn-test-push').on('click', function () {
-            const $btn = $(this), $res = $('#test-push-result');
-            $btn.prop('disabled', true);
-            $res.text('보내는 중…');
-            $.ajax({
-                url: '/api/admin/push/test',
-                method: 'POST',
-                dataType: 'json',
-                success: function (r) {
-                    $res.text(r.enabled ? (r.sent + '개 기기로 보냈습니다.') : '푸시가 비활성 상태입니다 (VAPID 키 확인).');
-                },
-                error: function () { $res.text('발송 실패 — 서버 로그를 확인하세요.'); },
-                complete: function () { $btn.prop('disabled', false); }
-            });
-        });
-    });
-
-    // 지역별 차트 그리기 함수
     function drawRegionChart(areaData) {
-        const labels = Object.keys(areaData); // ["서울", "경기", ...]
-        const dataValues = Object.values(areaData); // [10, 5, ...]
-
-        const ctx = document.getElementById('regionChart').getContext('2d');
-
-        // ==========================================
-        // 🌟 [수정됨] 색상 팔레트 정의
-        // ==========================================
-        // 다양한 파스텔톤 색상을 미리 배열로 준비합니다.
-        // 지역 데이터 개수가 이 색상 개수보다 많으면 다시 첫 번째 색상부터 반복됩니다.
-        const colorPalette = [
-            'rgba(255, 99, 132, 0.7)',  // 빨강
-            'rgba(54, 162, 235, 0.7)',  // 파랑
-            'rgba(255, 206, 86, 0.7)',  // 노랑
-            'rgba(75, 192, 192, 0.7)',  // 청록
-            'rgba(153, 102, 255, 0.7)', // 보라
-            'rgba(255, 159, 64, 0.7)',  // 주황
-            'rgba(233, 30, 99, 0.7)',   // 핫핑크
-            'rgba(0, 188, 212, 0.7)',   // 하늘색
-            'rgba(205, 220, 57, 0.7)',  // 라임색
-            'rgba(96, 125, 139, 0.7)',  // 블루그레이
-            'rgba(121, 85, 72, 0.7)'    // 갈색
-        ];
-
+        var labels = Object.keys(areaData);
+        var values = Object.values(areaData);
+        var ctx = document.getElementById('regionChart').getContext('2d');
+        // 브랜드 계열(블루·인디고·시안) 큐레이션 팔레트 — 무지개보다 정돈된 느낌
+        var palette = ['#2563EB', '#3B82F6', '#60A5FA', '#1D4ED8', '#0EA5E9', '#38BDF8', '#6366F1', '#818CF8', '#0891B2', '#22D3EE', '#475569'];
+        var colors = labels.map(function (_, i) { return palette[i % palette.length]; });
         new Chart(ctx, {
             type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: ' 가입자 수',
-                    data: dataValues,
-                    // ==========================================
-                    // 🌟 [수정됨] backgroundColor에 배열을 할당
-                    // ==========================================
-                    backgroundColor: colorPalette,
-                    borderRadius: 5, // 막대 끝 둥글게
-                    barThickness: 'flex', // 막대 두께 자동 조절 (너무 얇지 않게)
-                    maxBarThickness: 50   // 최대 두께 제한
-                }]
-            },
+            data: { labels: labels, datasets: [{ label: ' 가입자 수', data: values, backgroundColor: colors, borderRadius: 6, barThickness: 'flex', maxBarThickness: 46 }] },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: false // 범례 숨김 (색이 다 다르므로 범례가 지저분해질 수 있음)
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        padding: 10,
-                        cornerRadius: 8,
-                        titleFont: { weight: 'bold' }
-                    }
+                    legend: { display: false },
+                    tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', padding: 10, cornerRadius: 8, titleFont: { weight: 'bold' } }
                 },
                 scales: {
-                    x: {
-                        grid: { display: false, drawBorder: false },
-                        ticks: { font: { size: 12 }, color: '#555' }
-                    },
-                    y: {
-                        grid: { display: false, drawBorder: false },
-                        ticks: {
-                            display: false, // Y축 숫자 숨김 (깔끔하게)
-                            beginAtZero: true,
-                            stepSize: 1
-                        }
-                    }
+                    x: { grid: { display: false, drawBorder: false }, ticks: { font: { size: 12 }, color: '#64748B' } },
+                    y: { grid: { color: '#EEF1F6', drawBorder: false }, ticks: { precision: 0, color: '#94A3B8', font: { size: 11 } }, beginAtZero: true }
                 }
             }
         });
     }
 </script>
+</body>
 </html>

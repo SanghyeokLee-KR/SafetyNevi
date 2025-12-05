@@ -44,3 +44,20 @@
 }
 .form-input:focus, .form-select:focus { outline: none; border-color: var(--primary-color); box-shadow: var(--ring); }
 .input-group { display: flex; gap: 10px; }
+
+/* 공용 페이지네이션 — 모든 목록 페이지가 같은 페이저를 쓴다 */
+.admin-pagination {
+    display: flex; justify-content: center; align-items: center;
+    gap: 6px; margin-top: 28px; flex-wrap: wrap;
+}
+.admin-pagination a, .admin-pagination span {
+    min-width: 38px; height: 38px; padding: 0 12px; box-sizing: border-box;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border); border-radius: var(--r-sm);
+    background: var(--surface); color: var(--text-muted);
+    font-size: 13px; font-weight: 600; text-decoration: none;
+    transition: var(--transition);
+}
+.admin-pagination a:hover { background: var(--surface-2); border-color: var(--gray-300); color: var(--text); }
+.admin-pagination .active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.admin-pagination .disabled { opacity: .4; pointer-events: none; }
