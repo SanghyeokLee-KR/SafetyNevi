@@ -17,17 +17,9 @@ public class AdminInquiryController {
     private final InquiryService isvc;
 
     @GetMapping
-    public String adminInquiryList(Model model) {
-
-        List<InquiryDTO> unansweredList = isvc.getUnansweredInquiries();   // 미답변
-        List<InquiryDTO> answeredList = isvc.getRecentAnsweredInquiries(); // 답변완료 최근 5건
-
-        model.addAttribute("unansweredList", unansweredList);
-        model.addAttribute("answeredList", answeredList);
-
-        // 사이드바에서 현재 메뉴 활성화하려고 넘김
-        model.addAttribute("requestURI", "/admin/inquiries");
-
+    public String adminInquiryList(Model model, @RequestParam(defaultValue = "0") int page) {
+        model.addAttribute("unansweredList", isvc.getUnansweredInquiries());     // 미답변(전체)
+        model.addAttribute("answeredPage", isvc.getAnsweredInquiries(page, 10)); // 답변완료(페이징)
         return "admin/inquiries";
     }
 

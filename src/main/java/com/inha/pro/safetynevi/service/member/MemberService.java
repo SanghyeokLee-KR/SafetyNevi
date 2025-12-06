@@ -8,6 +8,10 @@ import com.inha.pro.safetynevi.dto.member.MemberSignupDto;
 import com.inha.pro.safetynevi.entity.member.*;
 import com.inha.pro.safetynevi.util.LoginAttemptService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -166,6 +170,13 @@ public class MemberService {
     @Transactional(readOnly = true)
     public List<MemberResponse> findAllMemberResponses() {
         return memberRepository.findAll().stream().map(MemberResponse::from).toList();
+    }
+
+    // 관리자 회원 목록 페이징 (가입 최신순)
+    @Transactional(readOnly = true)
+    public Page<MemberResponse> findMemberResponses(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("joinDate")));
+        return memberRepository.findAll(pageable).map(MemberResponse::from);
     }
 
     @Transactional(readOnly = true)

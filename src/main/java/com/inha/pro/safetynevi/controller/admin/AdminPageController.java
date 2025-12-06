@@ -47,14 +47,14 @@ public class AdminPageController {
     }
 
     @GetMapping("/members")
-    public String members(Model model) {
-        List<MemberResponse> members = memberService.findAllMemberResponses();
-        model.addAttribute("members", members);
+    public String members(Model model, @RequestParam(defaultValue = "0") int page) {
+        model.addAttribute("members", memberService.findMemberResponses(page, 10));
         return "admin/members";
     }
 
     @GetMapping("/boards")
-    public String boards(Model model) {
+    public String boards(Model model, @RequestParam(defaultValue = "0") int page) {
+        model.addAttribute("boards", boardService.getBoardRows(page, 10));
         return "admin/boards";
     }
 

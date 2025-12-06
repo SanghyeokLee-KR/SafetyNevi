@@ -2,11 +2,16 @@ package com.inha.pro.safetynevi.service.map;
 
 import com.inha.pro.safetynevi.dao.member.MemberRepository;
 import com.inha.pro.safetynevi.dao.map.*;
+import com.inha.pro.safetynevi.dto.map.AdminBoardRow;
 import com.inha.pro.safetynevi.dto.map.BoardDto;
 import com.inha.pro.safetynevi.entity.board.*;
 import com.inha.pro.safetynevi.entity.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +37,20 @@ public class BoardService {
 
     @Value("${file.upload.dir}")
     private String uploadDir;
+
+    // 관리자 게시물 목록 페이징 (최신순). open-in-view=false라 트랜잭션 안에서 행 DTO로 미리 변환한다.
+    @Transactional(readOnly = true)
+    public Page<AdminBoardRow> getBoardRows(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+        return boardRepository.findAll(pageable).map(b -> new AdminBoardRow(
+                b.getId(),
+                b.getCategory(),
+                b.getTitle(),
+                b.getWriter() != null
+                        ? (b.getWriter().getNickname() != null ? b.getWriter().getNickname() : b.getWriter().getUserId())
+                        : "-",
+                b.getCreatedAt()));
+    }
 
     @Transactional(readOnly = true)
     public List<BoardDto> getAllBoards(String currentUserId) {

@@ -3,78 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>관리자 - 게시물 관리</title>
-
-    <!-- 공통 CSS -->
+    <title>관리자 · 게시물 관리 — 안전네비</title>
     <link rel="stylesheet" th:href="@{/css/admin/layout.css}">
     <link rel="stylesheet" th:href="@{/css/admin/components.css}">
-
-    <!-- 이 페이지 전용 CSS -->
-    <link rel="stylesheet" th:href="@{/css/admin/boards.css}">
-
     <link rel="icon" type="image/png" th:href="@{/img/logo/favicon.png}">
-    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <script src="/js/common/csrf.js"></script>
 </head>
 <body>
 
-<aside class="admin-sidebar">
-    <div class="sidebar-header">
-        <span style="margin-left: 10px;">🛡️ SafetyNevi</span>
-    </div>
-    <ul class="sidebar-menu">
-        <li>
-            <a href="/admin" class="menu-item" th:classappend="${requestURI == '/admin'} ? 'active'">
-                <span class="icon">📊</span> <span>대시보드</span>
-            </a>
-        </li>
-        <li>
-            <a href="/admin/members" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/members')} ? 'active'">
-                <span class="icon">👥</span> <span>회원 관리</span>
-            </a>
-        </li>
-        <li>
-            <a href="/admin/boards" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/boards')} ? 'active'">
-                <span class="icon">📝</span> <span>게시물 관리</span>
-            </a>
-        </li>
-        <li>
-            <a href="/admin/notice/create" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/notice')} ? 'active'">
-                <span class="icon">📢</span> <span>공지 생성</span>
-            </a>
-        </li>
-        <li>
-            <a href="/admin/inquiries" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/inquiries')} ? 'active'">
-                <span class="icon">💌</span> <span>문의 관리</span>
-            </a>
-        </li>
-        <li>
-            <a href="/admin/reports" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/reports')} ? 'active'">
-                <span class="icon">🚩</span> <span>신고 관리</span>
-            </a>
-        </li>
-        <li>
-            <a href="/admin/disaster" class="menu-item" th:classappend="${requestURI != null && requestURI.startsWith('/admin/disaster')} ? 'active'">
-                <span class="icon">🚨</span> <span>재난 관리</span>
-            </a>
-        </li>
-        <li style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
-            <a href="/" class="menu-item">
-                <span class="icon">🏠</span> <span>서비스 홈</span>
-            </a>
-        </li>
-    </ul>
-</aside>
+<aside class="admin-sidebar" th:replace="~{admin/fragments/sidebar :: sidebar('boards')}"></aside>
 
 <main class="admin-content">
     <div class="page-header">
         <div>
             <div class="page-title">게시물 관리</div>
-            <div class="page-subtitle">사용자가 작성한 커뮤니티 게시글을 모니터링하고 삭제합니다.</div>
-        </div>
-        <!-- 인라인 스타일 제거됨: boards.css의 .input-group 사용 -->
-        <div class="input-group">
-            <input type="text" class="form-input" placeholder="제목 또는 작성자 검색">
-            <button class="btn-search">검색</button>
+            <div class="page-subtitle">총 <strong th:text="${boards.totalElements}">0</strong>건 · 부적절한 게시글을 확인하고 삭제합니다.</div>
         </div>
     </div>
 
@@ -82,50 +27,53 @@
         <table class="admin-table">
             <thead>
             <tr>
-                <th style="width: 80px;">No.</th>
-                <th>카테고리</th>
+                <th style="width:70px;">No.</th>
+                <th style="width:110px;">카테고리</th>
                 <th>제목</th>
-                <th>작성자</th>
-                <th>작성일</th>
-                <th>조회수</th>
-                <th>관리</th>
+                <th style="width:140px;">작성자</th>
+                <th style="width:130px;">작성일</th>
+                <th style="width:90px; text-align:right;">관리</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>102</td>
-                <!-- 인라인 스타일 제거 및 클래스 추가 (.free) -->
-                <td><span class="status-badge free">자유</span></td>
-                <td class="board-title">대피소 위치 정보가 정확하지 않은 것 같아요</td>
-                <td>user01</td>
-                <td>2024-11-29</td>
-                <td>45</td>
-                <td>
-                    <button class="btn-danger-soft">🗑️ 삭제</button>
+            <tr th:each="b : ${boards.content}">
+                <td style="color:var(--text-subtle);" th:text="${b.id}">1</td>
+                <td><span class="role-badge user" th:text="${b.category != null ? b.category : '기타'}">자유</span></td>
+                <td style="font-weight:600;" th:text="${b.title}">게시글 제목</td>
+                <td th:text="${b.writer}">작성자</td>
+                <td th:text="${b.createdAt != null ? #temporals.format(b.createdAt, 'yyyy-MM-dd') : '-'}">2024-01-01</td>
+                <td style="text-align:right;">
+                    <button class="btn-danger-soft" th:data-id="${b.id}"
+                            onclick="deleteBoard(this.getAttribute('data-id'))">삭제</button>
                 </td>
             </tr>
-            <tr>
-                <td>101</td>
-                <!-- 인라인 스타일 제거 및 클래스 추가 (.info) -->
-                <td><span class="status-badge info">정보</span></td>
-                <td class="board-title">이번 태풍 대비 행동요령 공유합니다</td>
-                <td>safe_guard</td>
-                <td>2024-11-28</td>
-                <td>120</td>
-                <td>
-                    <button class="btn-danger-soft">🗑️ 삭제</button>
-                </td>
-            </tr>
-
-            <tr th:if="${boards == null}">
-                <td colspan="7" class="no-data-msg">
-                    등록된 게시물이 없습니다.
-                </td>
+            <tr th:if="${boards.totalElements == 0}">
+                <td colspan="6" style="text-align:center; padding:48px; color:var(--text-subtle);">등록된 게시물이 없습니다.</td>
             </tr>
             </tbody>
         </table>
     </div>
+
+    <div class="admin-pagination" th:if="${boards.totalPages > 1}">
+        <a th:href="@{/admin/boards(page=${boards.number - 1})}" th:classappend="${boards.first} ? 'disabled'">이전</a>
+        <a th:each="p : ${#numbers.sequence(0, boards.totalPages - 1)}"
+           th:if="${p >= boards.number - 2 and p <= boards.number + 2}"
+           th:href="@{/admin/boards(page=${p})}" th:text="${p + 1}"
+           th:classappend="${p == boards.number} ? 'active'">1</a>
+        <a th:href="@{/admin/boards(page=${boards.number + 1})}" th:classappend="${boards.last} ? 'disabled'">다음</a>
+    </div>
 </main>
 
+<script>
+    function deleteBoard(id) {
+        if (!confirm('이 게시글을 삭제하시겠습니까? 되돌릴 수 없습니다.')) return;
+        fetch('/api/admin/board/' + id, { method: 'DELETE' })
+            .then(function (res) {
+                if (res.ok) { location.reload(); }
+                else { res.text().then(function (m) { alert('삭제 실패: ' + m); }); }
+            })
+            .catch(function () { alert('서버 통신 오류가 발생했습니다.'); });
+    }
+</script>
 </body>
 </html>

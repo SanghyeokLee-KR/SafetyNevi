@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -204,6 +205,14 @@ public class InquiryService {
     public List<InquiryDTO> getRecentAnsweredInquiries() {
         List<InquiryEntity> entities = irepo.findTop5ByStatusOrderByAnswerDateDesc(InquiryEntity.InquiryStatus.COMPLETED);
         return entities.stream().map(InquiryDTO::toDto).toList();
+    }
+
+    // 관리자 화면용 - 답변 완료 페이징
+    @Transactional(readOnly = true)
+    public Page<InquiryDTO> getAnsweredInquiries(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return irepo.findByStatusOrderByAnswerDateDesc(InquiryEntity.InquiryStatus.COMPLETED, pageable)
+                .map(InquiryDTO::toDto);
     }
 
     @Transactional
