@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     loadActiveDisasters();
+    document.getElementById('btn-refresh-disasters')?.addEventListener('click', () => loadActiveDisasters());
 
     tbody?.addEventListener('click', async (e) => {
         const target = e.target as HTMLElement;

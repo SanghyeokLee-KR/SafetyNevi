@@ -22,7 +22,7 @@
             <div class="page-title">재난 시뮬레이션 및 관리</div>
             <div class="page-subtitle">실제 상황을 가정해 재난 경보를 생성하고 관리합니다.</div>
         </div>
-        <button onclick="loadActiveDisasters()" class="btn-search" style="display:inline-flex; align-items:center; gap:7px;">
+        <button id="btn-refresh-disasters" type="button" class="btn-search" style="display:inline-flex; align-items:center; gap:7px;">
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
             현황 새로고침
         </button>
@@ -112,7 +112,7 @@
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script type="text/javascript" th:src="@{'//dapi.kakao.com/v2/maps/sdk.js?appkey=' + ${kakaoJsKey} + '&libraries=services'}"></script>
-<script src="/js/admin/disaster.js"></script>
+<script type="module" src="/js/admin/disaster.js"></script>
 
 </body>
 </html>
