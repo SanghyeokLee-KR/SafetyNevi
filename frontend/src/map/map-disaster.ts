@@ -61,6 +61,10 @@ export function connectDisasterSocket() {
 
     // 사이드바 피드에서 지역 클릭 → 지도를 그 지역으로 이동
     document.addEventListener('feed:focus-area', (e: any) => focusOnArea(e.detail));
+
+    // 비상 대피 배너의 '대피 경로' 버튼 → 안전 대피소 길찾기 (map-route.ts가 evac:start 를 받아 처리)
+    const evacBtn = document.getElementById('kb-evac-go');
+    if (evacBtn) evacBtn.addEventListener('click', () => document.dispatchEvent(new CustomEvent('evac:start')));
 }
 
 // 행정구역명으로 지도를 그 지역 중심으로 이동 (피드 카드 클릭용)
@@ -106,6 +110,7 @@ async function drawZone(zone, alert) {
     }
 
     zoneGraphics.set(zone.id, graphics);
+    updateEvacBanner();
     if (alert) showDisasterAlert(zone);
 }
 
@@ -115,6 +120,21 @@ function removeZone(id) {
     if (arr) {
         arr.forEach(g => g.setMap(null));
         zoneGraphics.delete(id);
+        updateEvacBanner();
+    }
+}
+
+// 활성 재난 수에 따라 비상 대피 배너를 보이고/숨긴다.
+function updateEvacBanner() {
+    const banner = document.getElementById('kb-evac-banner') as HTMLElement | null;
+    if (!banner) return;
+    const n = zoneGraphics.size;
+    const textEl = document.getElementById('kb-evac-text');
+    if (n > 0) {
+        if (textEl) textEl.textContent = '인근에 재난 ' + n + '건 발생 — 지금 대피하세요';
+        banner.hidden = false;
+    } else {
+        banner.hidden = true;
     }
 }
 

@@ -70,6 +70,13 @@ export function setupRouteLogic() {
         safetyBtn.parentNode.replaceChild(newBtn, safetyBtn);
         newBtn.addEventListener('click', findSafeRoutes);
     }
+
+    // 비상 배너의 '대피 경로'(evac:start) → 길찾기 탭으로 전환 후 안전 대피소 탐색
+    document.addEventListener('evac:start', () => {
+        const routeTab = document.querySelector('.kb-tab-button[data-tab="route"]') as HTMLElement | null;
+        if (routeTab) routeTab.click();
+        findSafeRoutes();
+    });
 }
 
 // 주소로 먼저 찾고, 실패하면 키워드(장소명) 검색으로 폴백
@@ -321,10 +328,14 @@ function renderRouteResults(routes) {
         if (route.recommendationType.includes("최적")) badgeColor = '#28a745';
         else if (route.recommendationType.includes("최단")) badgeColor = '#f0ad4e';
 
+        const warn = route.safe === false
+            ? `<div style="font-size:12px; color:#d9534f; font-weight:600; margin-top:5px;">⚠️ 이 경로는 위험구역을 지날 수 있어요</div>`
+            : '';
         item.innerHTML = `
              <div style="margin-bottom:5px;"><span style="background:${badgeColor}; color:white; font-size:11px; padding:3px 6px; border-radius:4px; font-weight:bold;">${escapeHtml(route.recommendationType)}</span></div>
              <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">${index + 1}. ${escapeHtml(route.name)}</div>
              <div style="font-size:13px; color:#555;">거리: ${formatDistance(route.distanceMeter)} | 도보 ${route.timeWalk}분</div>
+             ${warn}
          `;
 
         item.addEventListener('click', () => {

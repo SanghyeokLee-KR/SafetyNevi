@@ -27,4 +27,7 @@ public class RouteDto {
     // 시설 부가 정보
     private String operatingStatus;
     private Integer maxCapacity;
+
+    // 재난 상황에서 이 대피소까지의 경로가 위험구역을 지나지 않는지(=안전한 대피로). 재난 없으면 기본 true.
+    private boolean safe;
 }

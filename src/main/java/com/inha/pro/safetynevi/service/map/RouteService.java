@@ -3,8 +3,10 @@ package com.inha.pro.safetynevi.service.map;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inha.pro.safetynevi.dao.map.ShelterRepository;
+import com.inha.pro.safetynevi.dto.calamity.DisasterZoneResponse;
 import com.inha.pro.safetynevi.dto.map.RouteDto;
 import com.inha.pro.safetynevi.entity.Shelter;
+import com.inha.pro.safetynevi.service.calamity.DisasterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,18 +24,32 @@ import java.util.stream.Collectors;
 public class RouteService {
 
     private final ShelterRepository shelterRepository;
+    private final DisasterService disasterService;
 
     private static final double WALK_SPEED_KMPH = 4.0;
     private static final double CAR_SPEED_KMPH = 30.0; // 도심 재난상황 가정한 평균치
 
-    // 현재 위치 기준 추천 대피소 3곳 뽑기
+    // 현재 위치 기준 추천 대피소 3곳 뽑기. 활성 재난이 있으면 위험구역을 피한 '안전한' 대피소·경로를 우선한다.
     public List<RouteDto> getOptimalShelters(double currentLat, double currentLon) {
         // 전국 풀스캔 대신 주변만 박스쿼리로 조회, 모자라면 범위 확대
         List<Shelter> nearbyShelters = findNearbyShelters(currentLat, currentLon);
+        List<DisasterZoneResponse> hazards = activeCircleHazards();   // 위치·반경 있는 원형 재난만
+        boolean hasHazard = !hazards.isEmpty();
 
-        List<RouteDto> candidates = nearbyShelters.stream()
+        // 위험구역 '안'에 있는 대피소는 후보에서 제외 — 거기로 대피시키면 안 된다. (전부 위험구역이면 어쩔 수 없이 유지)
+        List<Shelter> usable = nearbyShelters;
+        if (hasHazard) {
+            List<Shelter> outside = nearbyShelters.stream()
+                    .filter(s -> !insideAnyHazard(s.getLatitude(), s.getLongitude(), hazards))
+                    .collect(Collectors.toList());
+            if (!outside.isEmpty()) usable = outside;
+        }
+
+        List<RouteDto> candidates = usable.stream()
                 .map(shelter -> {
                     double dist = calculateDistance(currentLat, currentLon, shelter.getLatitude(), shelter.getLongitude());
+                    boolean safePath = !hasHazard
+                            || !pathCrossesAnyHazard(currentLat, currentLon, shelter.getLatitude(), shelter.getLongitude(), hazards);
                     return RouteDto.builder()
                             .facilityId(shelter.getId())
                             .name(shelter.getName())
@@ -45,32 +61,41 @@ public class RouteService {
                             .distanceMeter(dist)
                             .timeWalk(calculateTime(dist, WALK_SPEED_KMPH))
                             .timeCar(calculateTime(dist, CAR_SPEED_KMPH))
+                            .safe(safePath)
                             .build();
                 })
                 .collect(Collectors.toList());
 
+        // 재난 시: 경로가 위험구역을 안 지나는 후보가 하나라도 있으면 그쪽만 추천 풀로 (없으면 전체 — 포위된 상황)
+        List<RouteDto> pool = candidates;
+        if (hasHazard) {
+            List<RouteDto> safePool = candidates.stream().filter(RouteDto::isSafe).collect(Collectors.toList());
+            if (!safePool.isEmpty()) pool = safePool;
+        }
+        final List<RouteDto> poolF = pool;
+
         List<RouteDto> results = new ArrayList<>();
 
         // 1순위: 운영중인 곳 중 제일 가까운 데
-        candidates.stream()
+        poolF.stream()
                 .filter(s -> isOperating(s.getOperatingStatus()))
                 .min(Comparator.comparingDouble(RouteDto::getDistanceMeter))
                 .ifPresent(best -> {
-                    best.setRecommendationType("✅ 최적 추천 (운영중)");
+                    best.setRecommendationType(hasHazard ? "✅ 안전 대피소 (위험구역 우회)" : "✅ 최적 추천 (운영중)");
                     results.add(best);
                 });
 
         // 2순위: 운영상태 상관없이 그냥 최단거리 (급하면 가까운 게 최고)
-        candidates.stream()
+        poolF.stream()
                 .filter(s -> results.stream().noneMatch(r -> r.getFacilityId().equals(s.getFacilityId()))) // 이미 뽑힌건 빼고
                 .min(Comparator.comparingDouble(RouteDto::getDistanceMeter))
                 .ifPresent(nearest -> {
-                    nearest.setRecommendationType("⚡ 최단 거리");
+                    nearest.setRecommendationType(hasHazard ? "⚡ 최단 안전경로" : "⚡ 최단 거리");
                     results.add(nearest);
                 });
 
         // 3순위: 좀 멀어도 수용인원 큰 대형 시설
-        candidates.stream()
+        poolF.stream()
                 .filter(s -> results.stream().noneMatch(r -> r.getFacilityId().equals(s.getFacilityId())))
                 .sorted(Comparator.comparingInt(RouteDto::getMaxCapacity).reversed())
                 .findFirst()
@@ -80,6 +105,50 @@ public class RouteService {
                 });
 
         return results;
+    }
+
+    // 현재 활성 재난 중 위치·반경이 있는 '원형' 재난만. (지역(폴리곤) 재난은 좌표 우회가 모호해 제외) 조회 실패해도 길찾기는 동작.
+    private List<DisasterZoneResponse> activeCircleHazards() {
+        try {
+            return disasterService.getActiveDisasterZones().stream()
+                    .filter(z -> z.getLatitude() != null && z.getLongitude() != null
+                            && z.getRadius() != null && z.getRadius() > 0)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.warn("재난 구역 조회 실패 — 재난 미반영으로 길찾기 진행: {}", e.getMessage());
+            return List.of();
+        }
+    }
+
+    // 지점이 어느 위험구역(원) 안에 있는가
+    private boolean insideAnyHazard(double lat, double lon, List<DisasterZoneResponse> hazards) {
+        for (DisasterZoneResponse z : hazards) {
+            if (calculateDistance(lat, lon, z.getLatitude(), z.getLongitude()) <= z.getRadius()) return true;
+        }
+        return false;
+    }
+
+    // 출발→대피소 직선 경로가 위험구역(원)을 통과하는가 (점-선분 최단거리 < 반경)
+    private boolean pathCrossesAnyHazard(double sLat, double sLon, double eLat, double eLon, List<DisasterZoneResponse> hazards) {
+        for (DisasterZoneResponse z : hazards) {
+            if (distancePointToSegmentMeters(z.getLatitude(), z.getLongitude(), sLat, sLon, eLat, eLon) <= z.getRadius()) return true;
+        }
+        return false;
+    }
+
+    // 점 P에서 선분 AB까지의 최단거리(m). 단거리라 등거리 직사각 근사(위도별 경도 보정). (테스트용 package-private static)
+    static double distancePointToSegmentMeters(double pLat, double pLon, double aLat, double aLon, double bLat, double bLon) {
+        double mPerDegLat = 111_320.0;
+        double mPerDegLon = 111_320.0 * Math.cos(Math.toRadians((aLat + bLat) / 2.0));
+        double px = pLon * mPerDegLon, py = pLat * mPerDegLat;
+        double ax = aLon * mPerDegLon, ay = aLat * mPerDegLat;
+        double bx = bLon * mPerDegLon, by = bLat * mPerDegLat;
+        double dx = bx - ax, dy = by - ay;
+        double len2 = dx * dx + dy * dy;
+        double t = (len2 == 0) ? 0 : ((px - ax) * dx + (py - ay) * dy) / len2;
+        t = Math.max(0, Math.min(1, t));
+        double cx = ax + t * dx, cy = ay + t * dy;
+        return Math.hypot(px - cx, py - cy);
     }
 
     // 현재 위치 주변 대피소를 박스(위경도 범위)로 조회한다. 반경을 점차 넓혀 후보를 확보하고,
