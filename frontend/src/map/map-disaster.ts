@@ -1,12 +1,14 @@
 // 재난 구역을 지도에 그리고 WebSocket으로 생성/삭제를 실시간 반영
 import { map } from './map-core.js';
 import { prependDisasterMessage } from './map-disaster-feed.js';
+import { getUserLocation } from './map-weather.js';
 
 let disasterMarkerImages: Record<string, any> = {};
 let zoneGraphics = new Map<any, any[]>();   // 재난 id -> 해당 구역의 그래픽(원/폴리곤/마커) 배열
 let sigunguGeoJson: any = null;
 let isModalShowing = false;
 let alertedIds = new Set();     // 경보 모달을 이미 띄운 재난 id
+let activeZones = new Map<any, any>();   // 재난 id -> zone 데이터(배너 거리 계산용)
 
 const disasterNames: Record<string, string> = {
     'fire': '🔥 화재/산불', 'missile': '🚀 미사일/공습', 'lightning': '⚡ 낙뢰',
@@ -38,6 +40,7 @@ export async function loadDisasterZones() {
 
         zoneGraphics.forEach(arr => arr.forEach(g => g.setMap(null)));
         zoneGraphics.clear();
+        activeZones.clear();
 
         for (const zone of zones) {
             await drawZone(zone, false); // 초기 로드는 경보 모달 없이
@@ -65,6 +68,9 @@ export function connectDisasterSocket() {
     // 비상 대피 배너의 '대피 경로' 버튼 → 안전 대피소 길찾기 (map-route.ts가 evac:start 를 받아 처리)
     const evacBtn = document.getElementById('kb-evac-go');
     if (evacBtn) evacBtn.addEventListener('click', () => document.dispatchEvent(new CustomEvent('evac:start')));
+
+    // 내 위치가 (뒤늦게) 잡히면 재난과의 거리를 다시 계산해 배너 갱신
+    document.addEventListener('location:updated', updateEvacBanner);
 }
 
 // 행정구역명으로 지도를 그 지역 중심으로 이동 (피드 카드 클릭용)
@@ -110,6 +116,7 @@ async function drawZone(zone, alert) {
     }
 
     zoneGraphics.set(zone.id, graphics);
+    activeZones.set(zone.id, zone);
     updateEvacBanner();
     if (alert) showDisasterAlert(zone);
 }
@@ -120,22 +127,66 @@ function removeZone(id) {
     if (arr) {
         arr.forEach(g => g.setMap(null));
         zoneGraphics.delete(id);
+        activeZones.delete(id);
         updateEvacBanner();
     }
 }
 
-// 활성 재난 수에 따라 비상 대피 배너를 보이고/숨긴다.
+const NEAR_KM = 10;   // 위험구역 경계로부터 이 거리 안이면 '인근'으로 본다
+
+function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// disasterNames("🔥 화재/산불")에서 이모지 떼고 한글 라벨만
+function typeLabel(type: string): string {
+    const full = disasterNames[(type || '').toLowerCase()];
+    return full ? full.split(' ').slice(1).join(' ') : '재난';
+}
+
+// 비상 배너: 활성 재난이 '실제로 내 근처일 때만' 띄운다. 멀리 있는 재난을 '인근'이라 거짓말하지 않는다.
 function updateEvacBanner() {
     const banner = document.getElementById('kb-evac-banner') as HTMLElement | null;
     if (!banner) return;
-    const n = zoneGraphics.size;
     const textEl = document.getElementById('kb-evac-text');
-    if (n > 0) {
-        if (textEl) textEl.textContent = '인근에 재난 ' + n + '건 발생 — 지금 대피하세요';
-        banner.hidden = false;
-    } else {
-        banner.hidden = true;
+
+    if (activeZones.size === 0) { banner.hidden = true; return; }
+
+    const loc = getUserLocation();
+
+    // 좌표 있는 재난들 중, 내 위치에서 위험구역 '경계'까지 가장 가까운 것
+    let nearest: any = null;
+    if (loc) {
+        activeZones.forEach((zone) => {
+            if (zone.latitude == null || zone.longitude == null) return;
+            const centerKm = haversineKm(loc.lat, loc.lon, zone.latitude, zone.longitude);
+            const radiusKm = (zone.radius || 0) / 1000;
+            const edgeKm = Math.max(0, centerKm - radiusKm);   // 위험구역 안이면 0
+            if (!nearest || edgeKm < nearest.edgeKm) nearest = { zone, edgeKm };
+        });
     }
+
+    let text = '';
+    if (!loc || !nearest) {
+        // 위치를 모르면 '인근'이라 단정할 수 없으니 중립 안내
+        text = '재난이 발생했습니다 — 대피 경로를 확인하세요';
+    } else if (nearest.edgeKm === 0) {
+        text = `현재 위치가 ${typeLabel(nearest.zone.disasterType)} 영향권 — 지금 대피하세요`;
+    } else if (nearest.edgeKm <= NEAR_KM) {
+        const d = nearest.edgeKm < 1 ? Math.round(nearest.edgeKm * 1000) + 'm' : nearest.edgeKm.toFixed(1) + 'km';
+        text = `인근 ${typeLabel(nearest.zone.disasterType)} 발생 · 약 ${d} — 대피 경로 확인`;
+    } else {
+        banner.hidden = true;   // 멀리 있는 재난은 배너로 안 띄움
+        return;
+    }
+
+    if (textEl) textEl.textContent = text;
+    banner.hidden = false;
 }
 
 function showDisasterAlert(zone) {

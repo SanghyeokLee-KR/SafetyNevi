@@ -3,6 +3,13 @@ import { map } from './map-core.js';
 import { toggleLoading, showToast } from './map-ui.js';
 import { fetchRetry } from '../common/fetch-retry.js';
 
+// 내 위치(위경도). 재난 배너 등 다른 모듈이 '재난과의 거리' 계산에 쓴다. 못 찾으면 null 유지(기본 위치는 내 위치로 치지 않음).
+let userLat: number | null = null;
+let userLon: number | null = null;
+export function getUserLocation(): { lat: number; lon: number } | null {
+    return (userLat !== null && userLon !== null) ? { lat: userLat, lon: userLon } : null;
+}
+
 export function loadCurrentLocationAndWeather() {
     showToast("내 위치를 찾는 중입니다...");
 
@@ -21,6 +28,9 @@ export function loadCurrentLocationAndWeather() {
 function successCallback(position) {
     const lat = position.coords.latitude;
     const lon = position.coords.longitude;
+    userLat = lat;
+    userLon = lon;
+    document.dispatchEvent(new CustomEvent('location:updated')); // 배너가 재난과의 거리 다시 계산하도록
     const locPosition = new kakao.maps.LatLng(lat, lon);
 
     displayMarker(locPosition);
