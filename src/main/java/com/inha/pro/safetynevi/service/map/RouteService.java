@@ -107,6 +107,17 @@ public class RouteService {
         return results;
     }
 
+    // 반경(원형 재난) 안에 들어오는 대피소 수 — 관리자 영향 미리보기용.
+    public int countSheltersInRadius(double lat, double lon, double radiusMeters) {
+        double radiusKm = radiusMeters / 1000.0;
+        double latDelta = radiusKm / 111.0;
+        double lonDelta = radiusKm / (111.0 * Math.cos(Math.toRadians(lat)));
+        List<Shelter> box = shelterRepository.findAllInBounds(lat - latDelta, lat + latDelta, lon - lonDelta, lon + lonDelta);
+        return (int) box.stream()
+                .filter(s -> calculateDistance(lat, lon, s.getLatitude(), s.getLongitude()) <= radiusMeters)
+                .count();
+    }
+
     // 현재 활성 재난 중 위치·반경이 있는 '원형' 재난만. (지역(폴리곤) 재난은 좌표 우회가 모호해 제외) 조회 실패해도 길찾기는 동작.
     private List<DisasterZoneResponse> activeCircleHazards() {
         try {

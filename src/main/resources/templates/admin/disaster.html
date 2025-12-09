@@ -51,6 +51,23 @@
     <div class="dashboard-section">
         <div class="section-header">재난 생성 시뮬레이터</div>
 
+        <style>
+            .scenario-presets { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:16px; }
+            .scenario-presets .label { font-size:13px; color:var(--text-subtle, #8a8a8a); }
+            .btn-preset { border:1px solid var(--border, #e5e7eb); background:var(--surface, #fff); color:var(--text, #222); border-radius:999px; padding:6px 13px; font-size:13px; cursor:pointer; }
+            .btn-preset:hover { border-color:var(--primary-color, #2563eb); color:var(--primary-color, #2563eb); }
+            .impact-preview { display:none; margin-bottom:12px; padding:12px 14px; border-radius:var(--r-md, 10px); background:var(--surface-2, #f4f6fa); border:1px solid var(--border, #e5e7eb); font-size:13.5px; color:var(--text, #222); line-height:1.5; }
+            .impact-preview b { color:var(--primary-color, #2563eb); }
+            .btn-ghost { width:100%; margin-bottom:10px; padding:9px; background:var(--surface, #fff); color:var(--text, #222); border:1px solid var(--border, #e5e7eb); border-radius:8px; cursor:pointer; font-weight:600; }
+            .btn-ghost:hover { border-color:var(--primary-color, #2563eb); }
+        </style>
+        <div class="scenario-presets">
+            <span class="label">시나리오 프리셋:</span>
+            <button type="button" class="btn-preset" data-type="fire" data-radius="1000" data-duration="30">🔥 도심 화재</button>
+            <button type="button" class="btn-preset" data-type="quake" data-radius="3000" data-duration="60">🌋 지진</button>
+            <button type="button" class="btn-preset" data-type="heavyRain" data-radius="5000" data-duration="120">🌧️ 집중호우</button>
+        </div>
+
         <div style="background:var(--surface-2); padding:20px; border-radius:var(--r-md); margin-bottom:16px;">
             <label class="form-label">중심 위치 설정 (주소 검색)</label>
             <div class="input-group">
@@ -81,6 +98,8 @@
                     <label class="form-label">지속 시간 (분)</label>
                     <input type="number" id="duration-circle" class="form-input" value="30">
                 </div>
+                <div id="impact-preview" class="impact-preview"></div>
+                <button id="btn-impact-circle" type="button" class="btn-ghost">📊 영향 미리보기</button>
                 <button id="simulate-btn-circle" class="btn-block btn-primary-block">원형 재난 발령</button>
             </div>
 

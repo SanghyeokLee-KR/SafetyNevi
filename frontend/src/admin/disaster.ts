@@ -105,6 +105,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // 시나리오 프리셋 → 원형 폼(유형·반경·지속시간) 채우기
+    document.querySelectorAll('.btn-preset').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const b = btn as HTMLElement;
+            (document.getElementById('type-circle') as HTMLSelectElement).value = b.dataset.type || 'fire';
+            (document.getElementById('radius') as HTMLInputElement).value = b.dataset.radius || '1000';
+            (document.getElementById('duration-circle') as HTMLInputElement).value = b.dataset.duration || '30';
+        });
+    });
+
+    // 영향 미리보기: 이 반경에 닿는 대피소 수 + 알림 대상 구독자 수
+    document.getElementById('btn-impact-circle')?.addEventListener('click', async () => {
+        const lat = mapElements.lat.value, lon = mapElements.lon.value;
+        const radius = (document.getElementById('radius') as HTMLInputElement).value;
+        const box = document.getElementById('impact-preview');
+        if (!lat || !lon) { alert('먼저 주소를 검색해 중심 위치를 설정하세요.'); return; }
+        if (box) { box.style.display = 'block'; box.textContent = '영향 계산 중…'; }
+        try {
+            const res = await fetch(`/api/admin/simulate/impact?lat=${lat}&lon=${lon}&radius=${radius}`);
+            if (!res.ok) throw new Error();
+            const d = await res.json();
+            if (box) box.innerHTML = `예상 영향 — 반경 ${Number(radius).toLocaleString()}m 안 대피소 <b>${d.shelterCount}곳</b> · 알림 대상 구독자 <b>${d.subscriberCount}명</b>`;
+        } catch {
+            if (box) box.textContent = '영향 계산에 실패했습니다. 잠시 후 다시 시도하세요.';
+        }
+    });
+
     // 원형(좌표) 재난
     document.getElementById('simulate-btn-circle')?.addEventListener('click', () => {
         const lat = mapElements.lat.value;
