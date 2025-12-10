@@ -1,5 +1,9 @@
 package com.inha.pro.safetynevi.controller.admin;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
 import com.inha.pro.safetynevi.dao.push.PushSubscriptionRepository;
 import com.inha.pro.safetynevi.dto.calamity.DisasterZoneResponse;
 import com.inha.pro.safetynevi.entity.calamity.DisasterZone;
@@ -8,9 +12,11 @@ import com.inha.pro.safetynevi.service.map.RouteService;
 import com.inha.pro.safetynevi.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Map;
 
 @Slf4j
@@ -53,6 +59,21 @@ public class AdminController {
         int shelters = routeService.countSheltersInRadius(lat, lon, radius);
         long subscribers = subscriptionRepository.count();
         return Map.of("shelterCount", shelters, "subscriberCount", subscribers);
+    }
+
+    // 온보딩 URL을 QR 코드 PNG로 (관리자가 시설/지역에 붙일 용도)
+    @GetMapping(value = "/qr", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<byte[]> qr(@RequestParam String text, @RequestParam(defaultValue = "240") int size) {
+        try {
+            int s = Math.max(80, Math.min(600, size));
+            BitMatrix matrix = new MultiFormatWriter().encode(text, BarcodeFormat.QR_CODE, s, s);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(matrix, "PNG", out);
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(out.toByteArray());
+        } catch (Exception e) {
+            log.warn("QR 생성 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/disaster/{id}")

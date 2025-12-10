@@ -127,6 +127,48 @@
             </div>
         </div>
     </div>
+
+    <div class="dashboard-section">
+        <div class="section-header">QR 온보딩 — 설치 없는 구독 배포</div>
+        <p style="margin:0 0 16px; color:var(--text-subtle, #888); font-size:14px;">
+            시설·지역에 이 QR을 붙여두면, 방문자가 스캔만으로 앱 설치·로그인 없이 그 지역 재난 알림을 구독합니다.
+        </p>
+        <div style="display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap;">
+            <div style="min-width:220px;">
+                <label class="form-label">대상 지역</label>
+                <select id="qr-region" class="form-select" style="max-width:220px;">
+                    <option value="전국">전국</option>
+                    <option value="서울">서울</option>
+                    <option value="부산">부산</option>
+                    <option value="대구">대구</option>
+                    <option value="인천">인천</option>
+                    <option value="광주">광주</option>
+                    <option value="대전">대전</option>
+                    <option value="울산">울산</option>
+                    <option value="세종">세종</option>
+                    <option value="경기">경기</option>
+                    <option value="강원">강원</option>
+                    <option value="충북">충북</option>
+                    <option value="충남">충남</option>
+                    <option value="전북">전북</option>
+                    <option value="전남">전남</option>
+                    <option value="경북">경북</option>
+                    <option value="경남">경남</option>
+                    <option value="제주">제주</option>
+                </select>
+                <p style="margin-top:14px; font-size:13px; color:var(--text-subtle,#888); line-height:1.5;">
+                    스캔 시 열리는 주소:
+                    <a id="qr-url" href="#" target="_blank"
+                       style="display:block; word-break:break-all; color:var(--primary-color,#2563eb); margin-top:4px;"></a>
+                </p>
+            </div>
+            <div style="text-align:center;">
+                <img id="qr-img" alt="온보딩 QR" width="200" height="200"
+                     style="border:1px solid var(--border,#e5e7eb); border-radius:10px; background:#fff; padding:8px;">
+                <div style="font-size:12px; color:var(--text-subtle,#888); margin-top:6px;">휴대폰 카메라로 스캔</div>
+            </div>
+        </div>
+    </div>
 </main>
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>

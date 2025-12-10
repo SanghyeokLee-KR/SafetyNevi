@@ -132,6 +132,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // QR 온보딩: 지역 선택 → 그 지역 온보딩 URL의 QR 이미지 + 링크 갱신
+    const qrRegion = document.getElementById('qr-region') as HTMLSelectElement | null;
+    if (qrRegion) {
+        const updateQr = () => {
+            const onboardUrl = `${location.origin}/onboard?region=${encodeURIComponent(qrRegion.value)}`;
+            const img = document.getElementById('qr-img') as HTMLImageElement | null;
+            const link = document.getElementById('qr-url') as HTMLAnchorElement | null;
+            if (img) img.src = `/api/admin/qr?text=${encodeURIComponent(onboardUrl)}&size=200`;
+            if (link) { link.href = onboardUrl; link.textContent = onboardUrl; }
+        };
+        qrRegion.addEventListener('change', updateQr);
+        updateQr();
+    }
+
     // 원형(좌표) 재난
     document.getElementById('simulate-btn-circle')?.addEventListener('click', () => {
         const lat = mapElements.lat.value;

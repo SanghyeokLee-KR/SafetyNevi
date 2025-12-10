@@ -63,6 +63,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/signup", "/login", "/findAccount").permitAll()
                         .requestMatchers("/map", "/disasterMessage", "/shelterDetail").permitAll()
                         .requestMatchers("/notice", "/noticeDetail", "/disasterGuide").permitAll()
+                        .requestMatchers("/onboard").permitAll()
 
                         // 공개 API (시설 조회, 경로 탐색, 날씨, 게시글 목록)
                         .requestMatchers("/api/check/**", "/api/find/**").permitAll()

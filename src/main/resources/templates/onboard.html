@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>재난 알림 받기 — 안전네비</title>
+    <link rel="icon" type="image/png" href="/img/logo/favicon.png">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Pretendard','Malgun Gothic',-apple-system,sans-serif;
+               background: #f4f6fa; color: #1f2430; display: flex; min-height: 100vh;
+               align-items: center; justify-content: center; padding: 20px; }
+        .onboard-card { background: #fff; border-radius: 18px; box-shadow: 0 8px 30px rgba(0,0,0,.08);
+                        max-width: 380px; width: 100%; padding: 32px 26px; text-align: center; }
+        .onboard-logo { height: 44px; margin-bottom: 18px; }
+        .onboard-card h1 { font-size: 21px; margin: 0 0 6px; }
+        .region-line { font-size: 16px; color: #2563eb; font-weight: 700; margin: 0 0 18px; }
+        .desc { font-size: 14px; color: #5a616b; line-height: 1.6; margin: 0 0 24px; }
+        .subscribe-btn { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+                         padding: 15px; border: 0; border-radius: 12px; background: #e63946; color: #fff;
+                         font-size: 16px; font-weight: 700; cursor: pointer; transition: background .15s, opacity .15s; }
+        .subscribe-btn:hover { background: #d62836; }
+        .subscribe-btn:disabled { opacity: .6; cursor: default; }
+        .hint { font-size: 12.5px; color: #8a909a; line-height: 1.5; margin: 16px 0 0; }
+        .home-link { display: inline-block; margin-top: 18px; font-size: 13px; color: #8a909a; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="onboard-card">
+    <img src="/img/logo/200px-안전네비_로고.png" alt="안전네비" class="onboard-logo">
+    <h1>긴급재난 알림 받기</h1>
+    <p class="region-line" th:text="${!#strings.isEmpty(label) ? label : region + ' 지역'}">인천 지역</p>
+    <p class="desc">앱 설치도, 로그인도 필요 없어요. 이 지역에 긴급재난이 발생하면 휴대폰으로 바로 알려드립니다.</p>
+
+    <input type="hidden" id="push-region" th:value="${region}">
+    <button id="btn-push-subscribe" type="button" class="subscribe-btn">🔔 재난 알림 받기</button>
+
+    <p class="hint">브라우저를 닫아도 받습니다. 권한 요청이 뜨면 '허용'을 눌러주세요.</p>
+    <a href="/" class="home-link">안전네비 홈으로 →</a>
+</div>
+
+<!-- 기존 표준 Web Push 구독 로직 그대로 재사용 (#push-region 값으로 지역 구독) -->
+<script src="/js/common/csrf.js"></script>
+<script src="/js/push/push.js"></script>
+</body>
+</html>

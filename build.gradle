@@ -80,6 +80,10 @@ dependencies {
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
     implementation 'org.apache.httpcomponents:httpcore:4.4.16'
     implementation 'org.bitbucket.b_c:jose4j:0.7.9'
+
+    // QR 코드 생성 (관리자 온보딩 QR) — 표준 ZXing, 서버에서 PNG 렌더
+    implementation 'com.google.zxing:core:3.5.3'
+    implementation 'com.google.zxing:javase:3.5.3'
 }
 
 tasks.named('test') {
