@@ -149,6 +149,13 @@ function typeLabel(type: string): string {
     return full ? full.split(' ').slice(1).join(' ') : '재난';
 }
 
+// 내 위치에서 이 재난 위험구역 '경계'까지 거리(km). 좌표 없거나 위치 모르면 null(=거리 판단 불가).
+function zoneEdgeKm(zone: any, loc: { lat: number; lon: number } | null): number | null {
+    if (!loc || zone.latitude == null || zone.longitude == null) return null;
+    const centerKm = haversineKm(loc.lat, loc.lon, zone.latitude, zone.longitude);
+    return Math.max(0, centerKm - (zone.radius || 0) / 1000);
+}
+
 // 비상 배너: 활성 재난이 '실제로 내 근처일 때만' 띄운다. 멀리 있는 재난을 '인근'이라 거짓말하지 않는다.
 function updateEvacBanner() {
     const banner = document.getElementById('kb-evac-banner') as HTMLElement | null;
@@ -161,15 +168,11 @@ function updateEvacBanner() {
 
     // 좌표 있는 재난들 중, 내 위치에서 위험구역 '경계'까지 가장 가까운 것
     let nearest: any = null;
-    if (loc) {
-        activeZones.forEach((zone) => {
-            if (zone.latitude == null || zone.longitude == null) return;
-            const centerKm = haversineKm(loc.lat, loc.lon, zone.latitude, zone.longitude);
-            const radiusKm = (zone.radius || 0) / 1000;
-            const edgeKm = Math.max(0, centerKm - radiusKm);   // 위험구역 안이면 0
-            if (!nearest || edgeKm < nearest.edgeKm) nearest = { zone, edgeKm };
-        });
-    }
+    activeZones.forEach((zone) => {
+        const edgeKm = zoneEdgeKm(zone, loc);
+        if (edgeKm == null) return;
+        if (!nearest || edgeKm < nearest.edgeKm) nearest = { zone, edgeKm };
+    });
 
     let text = '';
     if (!loc || !nearest) {
@@ -192,6 +195,10 @@ function updateEvacBanner() {
 function showDisasterAlert(zone) {
     if (!zone || alertedIds.has(zone.id) || isModalShowing) return;
 
+    // 좌표 있는 재난인데 멀면(위치 알 때) 긴급 모달은 안 띄운다 — 배너·피드로 충분. 배너와 같은 기준.
+    const edgeKm = zoneEdgeKm(zone, getUserLocation());
+    if (edgeKm != null && edgeKm > NEAR_KM) { alertedIds.add(zone.id); return; }
+
     isModalShowing = true;
     alertedIds.add(zone.id);
 
@@ -199,8 +206,19 @@ function showDisasterAlert(zone) {
     const msgEl = document.getElementById('disaster-modal-message');
     if (!modal || !msgEl) { isModalShowing = false; return; }
 
-    const typeName = disasterNames[zone.disasterType] || "⚠️ 재난 경보";
-    msgEl.innerHTML = `🚨 긴급: '${zone.areaName || "인근"}' 지역 ${typeName}`;
+    const t = typeLabel(zone.disasterType);
+    let msg: string;
+    if (zone.areaName) {
+        msg = `🚨 긴급: ${zone.areaName} 지역 ${t}`;                 // 지역 재난 — 지역명 그대로(정직)
+    } else if (edgeKm === 0) {
+        msg = `🚨 현재 위치가 ${t} 영향권 — 지금 대피`;
+    } else if (edgeKm != null) {
+        const d = edgeKm < 1 ? Math.round(edgeKm * 1000) + 'm' : edgeKm.toFixed(1) + 'km';
+        msg = `🚨 인근 ${t} 발생 · 약 ${d}`;
+    } else {
+        msg = `🚨 ${t} 발생 — 지도에서 확인하세요`;                  // 위치 모름: '인근'이라 안 함
+    }
+    msgEl.textContent = msg;
     modal.classList.add('show');
 
     modal.onclick = () => {
