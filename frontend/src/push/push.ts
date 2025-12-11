@@ -6,6 +6,8 @@
 
     const defaultLabel = btn.textContent;
     let subscribed = false;
+    // 온보딩(QR) 모드: 이미 구독 중이어도 '이 지역으로' 다시 눌러 지역을 갱신할 수 있게 한다.
+    const onboardMode = btn.dataset.mode === 'onboard';
 
     const supported = ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window);
     if (!supported) {
@@ -112,7 +114,8 @@
     }
 
     function handleClick() {
-        if (subscribed) unsubscribe();
+        // 온보딩은 해지 토글 대신 항상 (재)구독 — 클릭 시 현재 #push-region 지역으로 갱신된다.
+        if (subscribed && !onboardMode) unsubscribe();
         else subscribe();
     }
 
@@ -122,6 +125,7 @@
         if (!registration) return;
         registration.pushManager.getSubscription().then(function (subscription) {
             if (!subscription) return;
+            if (onboardMode) return;   // 온보딩은 '이 지역으로 받기'를 다시 누르게 둔다(지역 갱신 위해)
             markSubscribed();
             fetch('/api/push/subscribe', {
                 method: 'POST',
