@@ -156,6 +156,17 @@ function zoneEdgeKm(zone: any, loc: { lat: number; lon: number } | null): number
     return Math.max(0, centerKm - (zone.radius || 0) / 1000);
 }
 
+// 활성 원형 재난(좌표+반경) 목록 — 경로가 실제로 위험구역을 지나는지 점검하려고 map-route.ts가 쓴다.
+export function getActiveCircleZones(): { lat: number; lng: number; radius: number }[] {
+    const out: { lat: number; lng: number; radius: number }[] = [];
+    activeZones.forEach((z) => {
+        if (z.latitude != null && z.longitude != null && z.radius > 0) {
+            out.push({ lat: z.latitude, lng: z.longitude, radius: z.radius });
+        }
+    });
+    return out;
+}
+
 // 비상 배너: 활성 재난이 '실제로 내 근처일 때만' 띄운다. 멀리 있는 재난을 '인근'이라 거짓말하지 않는다.
 function updateEvacBanner() {
     const banner = document.getElementById('kb-evac-banner') as HTMLElement | null;

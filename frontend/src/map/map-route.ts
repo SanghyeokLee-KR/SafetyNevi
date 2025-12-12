@@ -2,6 +2,7 @@
 import { map } from './map-core.js';
 import { updateSidebar, toggleLoading, showToast } from './map-ui.js';
 import { escapeHtml } from '../common/escape.js';
+import { getActiveCircleZones } from './map-disaster.js';
 
 let currentPolylines = [];
 const geocoder = new kakao.maps.services.Geocoder();
@@ -233,16 +234,23 @@ function drawPathOnMap(data) {
         }
     });
 
+    // 실제 도로 경로가 위험구역(원형 재난)을 통과하는지 — 직선 추정이 아니라 받은 좌표로 점검
+    const zones = getActiveCircleZones();
+    const crossesHazard = zones.length > 0 && linePath.some(pt =>
+        zones.some(z => haversineMeters(pt.getLat(), pt.getLng(), z.lat, z.lng) <= z.radius));
+
     const polyline = new kakao.maps.Polyline({
         path: linePath,
         strokeWeight: 7,
-        strokeColor: currentMode === 'walk' ? '#28a745' : '#337cf4',
-        strokeOpacity: 0.8,
-        strokeStyle: currentMode === 'walk' ? 'shortdash' : 'solid'
+        strokeColor: crossesHazard ? '#e5484d' : (currentMode === 'walk' ? '#28a745' : '#337cf4'),
+        strokeOpacity: 0.85,
+        strokeStyle: (crossesHazard || currentMode === 'walk') ? 'shortdash' : 'solid'
     });
 
     polyline.setMap(map);
     currentPolylines.push(polyline);
+
+    if (crossesHazard) showToast('⚠️ 이 경로가 위험구역을 지납니다 — 주의하세요', true);
 
     const bounds = new kakao.maps.LatLngBounds();
     linePath.forEach(latLng => bounds.extend(latLng));
@@ -351,4 +359,14 @@ function formatTime(minutes) {
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
     return `${h}시간 ${m}분`;
+}
+
+// 두 좌표 사이 직선거리(m) — 경로 좌표가 위험구역(원) 안에 드는지 점검용
+function haversineMeters(lat1, lon1, lat2, lon2) {
+    const R = 6371000;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
