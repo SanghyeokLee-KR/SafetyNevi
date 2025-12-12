@@ -20,9 +20,30 @@ export function loadCurrentLocationAndWeather() {
             maximumAge: 0
         };
         navigator.geolocation.getCurrentPosition(successCallback, errorCallback, options);
+        // 이동하면 재난과의 거리(배너·모달)가 갱신되도록 가볍게 위치 추적 — 100m 이상 움직일 때만 알림
+        navigator.geolocation.watchPosition(onMove, function () {}, { enableHighAccuracy: false, maximumAge: 30000 });
     } else {
         errorCallback(new Error("GPS 미지원"));
     }
+}
+
+// 위치 추적 콜백: userLat/userLon 갱신 + 의미있게 움직였을 때만 location:updated (배너 재계산)
+function onMove(position: any) {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+    const moved = (userLat === null || userLon === null) || distanceMeters(userLat, userLon, lat, lon) >= 100;
+    userLat = lat;
+    userLon = lon;
+    if (moved) document.dispatchEvent(new CustomEvent('location:updated'));
+}
+
+function distanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371000;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 function successCallback(position) {
