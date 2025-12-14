@@ -36,7 +36,7 @@ public class RouteService {
         List<DisasterZoneResponse> hazards = activeCircleHazards();   // 위치·반경 있는 원형 재난만
         boolean hasHazard = !hazards.isEmpty();
 
-        // 위험구역 '안'에 있는 대피소는 후보에서 제외 — 거기로 대피시키면 안 된다. (전부 위험구역이면 어쩔 수 없이 유지)
+        // 위험구역 '안'에 있는 대피소는 후보에서 제외, 거기로 대피시키면 안 된다. (전부 위험구역이면 어쩔 수 없이 유지)
         List<Shelter> usable = nearbyShelters;
         if (hasHazard) {
             List<Shelter> outside = nearbyShelters.stream()
@@ -66,7 +66,7 @@ public class RouteService {
                 })
                 .collect(Collectors.toList());
 
-        // 재난 시: 경로가 위험구역을 안 지나는 후보가 하나라도 있으면 그쪽만 추천 풀로 (없으면 전체 — 포위된 상황)
+        // 재난 시: 경로가 위험구역을 안 지나는 후보가 하나라도 있으면 그쪽만 추천 풀로 (없으면 전체, 포위된 상황)
         List<RouteDto> pool = candidates;
         if (hasHazard) {
             List<RouteDto> safePool = candidates.stream().filter(RouteDto::isSafe).collect(Collectors.toList());
@@ -107,7 +107,7 @@ public class RouteService {
         return results;
     }
 
-    // 반경(원형 재난) 안에 들어오는 대피소 수 — 관리자 영향 미리보기용.
+    // 반경(원형 재난) 안에 들어오는 대피소 수, 관리자 영향 미리보기용.
     public int countSheltersInRadius(double lat, double lon, double radiusMeters) {
         double radiusKm = radiusMeters / 1000.0;
         double latDelta = radiusKm / 111.0;
@@ -126,7 +126,7 @@ public class RouteService {
                             && z.getRadius() != null && z.getRadius() > 0)
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            log.warn("재난 구역 조회 실패 — 재난 미반영으로 길찾기 진행: {}", e.getMessage());
+            log.warn("재난 구역 조회 실패, 재난 미반영으로 길찾기 진행: {}", e.getMessage());
             return List.of();
         }
     }

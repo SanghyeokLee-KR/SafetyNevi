@@ -34,7 +34,7 @@ public class SchedulerLockInitializer implements CommandLineRunner {
             repository.save(new SchedulerLock(name));
             log.info("[lock] 분산 락 행 생성: {}", name);
         } catch (DataIntegrityViolationException e) {
-            // 다른 인스턴스가 먼저 만든 경우 — 정상
+            // 다른 인스턴스가 먼저 만든 경우, 정상
         }
     }
 }

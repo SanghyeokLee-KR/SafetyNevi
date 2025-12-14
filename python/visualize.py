@@ -1,4 +1,4 @@
-"""학습 결과 시각화 — 워드클라우드 + 데이터 분포 + 모델 성능을 PNG로 뽑는다.
+"""학습 결과 시각화, 워드클라우드 + 데이터 분포 + 모델 성능을 PNG로 뽑는다.
 train.py 의 전처리·모델·폰트 설정을 그대로 재사용한다(중복 안 만들게).
 실행: python visualize.py "<csv경로>"   (출력: ../src/main/resources/static/img/ml)
 """
@@ -75,7 +75,7 @@ def risk_distribution_chart(levels):
 
 
 def type_f1_chart(prepared):
-    # 종류 모델 클래스별 F1 — 누수 없는 평가(메시지 단위 그룹 분리)
+    # 종류 모델 클래스별 F1, 누수 없는 평가(메시지 단위 그룹 분리)
     sgkf = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=SEED)
     tr, te = next(sgkf.split(prepared["content"], prepared["disastertype"], groups=prepared["msg_id"]))
     pipe = train.make_type_pipe()
@@ -93,7 +93,7 @@ def type_f1_chart(prepared):
     plt.barh(labels, f1s, color=colors)
     for i, f in enumerate(f1s):
         plt.text(f, i, f" {f:.2f}", va="center", fontsize=9)
-    plt.title(f"재난 유형 분류 — 클래스별 F1  (정확도 {rep['accuracy']:.0%}, 표본 많은 12개)",
+    plt.title(f"재난 유형 분류, 클래스별 F1  (정확도 {rep['accuracy']:.0%}, 표본 많은 12개)",
               fontsize=12, fontweight="bold")
     plt.xlim(0, 1.1)
     plt.xlabel("F1-score")
@@ -101,7 +101,7 @@ def type_f1_chart(prepared):
 
 
 def risk_confusion_chart(prepared):
-    # 위험도 모델 혼동행렬 — 불균형 그대로 홀드아웃(class_weight가 학습에서 처리)
+    # 위험도 모델 혼동행렬, 불균형 그대로 홀드아웃(class_weight가 학습에서 처리)
     risk_df = prepared[prepared["emergency_level"].notna()
                        & (prepared["emergency_level"].astype(str).str.strip() != "")]
     X_tr, X_te, y_tr, y_te = train_test_split(

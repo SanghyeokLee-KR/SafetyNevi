@@ -12,7 +12,7 @@ import java.time.Instant;
 
 /**
  * 분산 환경에서 "한 인스턴스만 작업 수행"을 보장하는 DB 기반 락 행.
- * (ShedLock의 최소 구현 — 운영 규모가 커지면 ShedLock/Redis 분산락으로 교체 가능)
+ * (ShedLock의 최소 구현, 운영 규모가 커지면 ShedLock/Redis 분산락으로 교체 가능)
  */
 @Entity
 @Table(name = "scheduler_lock")

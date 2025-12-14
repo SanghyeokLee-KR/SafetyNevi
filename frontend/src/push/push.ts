@@ -114,7 +114,7 @@
     }
 
     function handleClick() {
-        // 온보딩은 해지 토글 대신 항상 (재)구독 — 클릭 시 현재 #push-region 지역으로 갱신된다.
+        // 온보딩은 해지 토글 대신 항상 (재)구독, 클릭 시 현재 #push-region 지역으로 갱신된다.
         if (subscribed && !onboardMode) unsubscribe();
         else subscribe();
     }

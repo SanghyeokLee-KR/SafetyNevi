@@ -20,7 +20,7 @@ export function loadCurrentLocationAndWeather() {
             maximumAge: 0
         };
         navigator.geolocation.getCurrentPosition(successCallback, errorCallback, options);
-        // 이동하면 재난과의 거리(배너·모달)가 갱신되도록 가볍게 위치 추적 — 100m 이상 움직일 때만 알림
+        // 이동하면 재난과의 거리(배너·모달)가 갱신되도록 가볍게 위치 추적, 100m 이상 움직일 때만 알림
         navigator.geolocation.watchPosition(onMove, function () {}, { enableHighAccuracy: false, maximumAge: 30000 });
     } else {
         errorCallback(new Error("GPS 미지원"));

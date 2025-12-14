@@ -156,7 +156,7 @@ function zoneEdgeKm(zone: any, loc: { lat: number; lon: number } | null): number
     return Math.max(0, centerKm - (zone.radius || 0) / 1000);
 }
 
-// 활성 원형 재난(좌표+반경) 목록 — 경로가 실제로 위험구역을 지나는지 점검하려고 map-route.ts가 쓴다.
+// 활성 원형 재난(좌표+반경) 목록, 경로가 실제로 위험구역을 지나는지 점검하려고 map-route.ts가 쓴다.
 export function getActiveCircleZones(): { lat: number; lng: number; radius: number }[] {
     const out: { lat: number; lng: number; radius: number }[] = [];
     activeZones.forEach((z) => {
@@ -188,12 +188,12 @@ function updateEvacBanner() {
     let text = '';
     if (!loc || !nearest) {
         // 위치를 모르면 '인근'이라 단정할 수 없으니 중립 안내
-        text = '재난이 발생했습니다 — 대피 경로를 확인하세요';
+        text = '재난이 발생했습니다, 대피 경로를 확인하세요';
     } else if (nearest.edgeKm === 0) {
-        text = `현재 위치가 ${typeLabel(nearest.zone.disasterType)} 영향권 — 지금 대피하세요`;
+        text = `현재 위치가 ${typeLabel(nearest.zone.disasterType)} 영향권, 지금 대피하세요`;
     } else if (nearest.edgeKm <= NEAR_KM) {
         const d = nearest.edgeKm < 1 ? Math.round(nearest.edgeKm * 1000) + 'm' : nearest.edgeKm.toFixed(1) + 'km';
-        text = `인근 ${typeLabel(nearest.zone.disasterType)} 발생 · 약 ${d} — 대피 경로 확인`;
+        text = `인근 ${typeLabel(nearest.zone.disasterType)} 발생 · 약 ${d}, 대피 경로 확인`;
     } else {
         banner.hidden = true;   // 멀리 있는 재난은 배너로 안 띄움
         return;
@@ -206,7 +206,7 @@ function updateEvacBanner() {
 function showDisasterAlert(zone) {
     if (!zone || alertedIds.has(zone.id) || isModalShowing) return;
 
-    // 좌표 있는 재난인데 멀면(위치 알 때) 긴급 모달은 안 띄운다 — 배너·피드로 충분. 배너와 같은 기준.
+    // 좌표 있는 재난인데 멀면(위치 알 때) 긴급 모달은 안 띄운다, 배너·피드로 충분. 배너와 같은 기준.
     const edgeKm = zoneEdgeKm(zone, getUserLocation());
     if (edgeKm != null && edgeKm > NEAR_KM) { alertedIds.add(zone.id); return; }
 
@@ -220,14 +220,14 @@ function showDisasterAlert(zone) {
     const t = typeLabel(zone.disasterType);
     let msg: string;
     if (zone.areaName) {
-        msg = `🚨 긴급: ${zone.areaName} 지역 ${t}`;                 // 지역 재난 — 지역명 그대로(정직)
+        msg = `🚨 긴급: ${zone.areaName} 지역 ${t}`;                 // 지역 재난, 지역명 그대로(정직)
     } else if (edgeKm === 0) {
-        msg = `🚨 현재 위치가 ${t} 영향권 — 지금 대피`;
+        msg = `🚨 현재 위치가 ${t} 영향권, 지금 대피`;
     } else if (edgeKm != null) {
         const d = edgeKm < 1 ? Math.round(edgeKm * 1000) + 'm' : edgeKm.toFixed(1) + 'km';
         msg = `🚨 인근 ${t} 발생 · 약 ${d}`;
     } else {
-        msg = `🚨 ${t} 발생 — 지도에서 확인하세요`;                  // 위치 모름: '인근'이라 안 함
+        msg = `🚨 ${t} 발생, 지도에서 확인하세요`;                  // 위치 모름: '인근'이라 안 함
     }
     msgEl.textContent = msg;
     modal.classList.add('show');

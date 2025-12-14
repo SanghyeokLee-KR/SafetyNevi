@@ -33,7 +33,7 @@ function typeClass(type: string): string {
     return 'etc';
 }
 
-// 지역명에서 시/도 추출 — 서버 WebPushService.provinceOf와 같은 규칙(피드 지역 필터용)
+// 지역명에서 시/도 추출, 서버 WebPushService.provinceOf와 같은 규칙(피드 지역 필터용)
 const PROVINCE_RULES: [string, string][] = [
     ['서울', '서울'], ['부산', '부산'], ['대구', '대구'], ['인천', '인천'], ['광주', '광주'],
     ['대전', '대전'], ['울산', '울산'], ['세종', '세종'], ['경기', '경기'], ['강원', '강원'],
@@ -167,7 +167,7 @@ function setupTimeRefresh() {
     }, 60000);
 }
 
-// 피드가 스크롤되는 실제 컨테이너(사이드바)를 런타임에 찾는다 — IntersectionObserver root로 씀.
+// 피드가 스크롤되는 실제 컨테이너(사이드바)를 런타임에 찾는다, IntersectionObserver root로 씀.
 function findScrollParent(el: HTMLElement | null): HTMLElement {
     let node = el ? el.parentElement : null;
     while (node && node !== document.body) {
@@ -285,7 +285,7 @@ export function prependDisasterMessage(msg: any) {
     card.classList.add('kb-feed-new');
     list.prepend(card);
 
-    // (무한 스크롤로 아래에 과거분이 쌓이므로 옛 캡 제거 — 새 글은 위에만 끼운다)
+    // (무한 스크롤로 아래에 과거분이 쌓이므로 옛 캡 제거, 새 글은 위에만 끼운다)
     applyRegionFilter();   // 현재 지역 필터를 새 카드에도 반영
     if (card.style.display !== 'none') announceNew(msg);   // 보이는(관심지역) 새 글만 음성 안내
 }

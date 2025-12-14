@@ -23,7 +23,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
     @Value("${app.trust-proxy:false}")
     private boolean trustProxy;
 
-    // 비로그인 쓰기 엔드포인트(웹푸시 구독/해지)는 일반 조회보다 훨씬 빡빡하게 — 구독 테이블 스팸/남용 방지.
+    // 비로그인 쓰기 엔드포인트(웹푸시 구독/해지)는 일반 조회보다 훨씬 빡빡하게, 구독 테이블 스팸/남용 방지.
     // NAT·공용 IP 환경을 고려해 너무 낮지 않게. 운영에선 ratelimit.write.per-minute 로 조정.
     @Value("${ratelimit.write.per-minute:30}")
     private int writePerMinute;

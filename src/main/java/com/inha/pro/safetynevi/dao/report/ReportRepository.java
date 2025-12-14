@@ -17,7 +17,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     // 특정 유형(게시글/시설 등)의 신고 내역
     List<Report> findAllByTargetType(String targetType);
 
-    // 페이징 전체 조회 (최신순) — 신고자를 fetch join으로 함께 로드해 N+1 방지
+    // 페이징 전체 조회 (최신순), 신고자를 fetch join으로 함께 로드해 N+1 방지
     @Query(value = "SELECT r FROM Report r JOIN FETCH r.reporter ORDER BY r.createdAt DESC",
             countQuery = "SELECT COUNT(r) FROM Report r")
     Page<Report> findAllByOrderByCreatedAtDesc(Pageable pageable);

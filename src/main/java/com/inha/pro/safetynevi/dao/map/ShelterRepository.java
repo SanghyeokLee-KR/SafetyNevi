@@ -36,7 +36,7 @@ public interface ShelterRepository extends JpaRepository<Shelter, Long> {
             Pageable pageable
     );
 
-    // 현재 위치 주변(위경도 박스) 대피소 전체 조회 — 경로 추천 후보용
+    // 현재 위치 주변(위경도 박스) 대피소 전체 조회, 경로 추천 후보용
     @Query("SELECT s FROM Shelter s WHERE " +
             "s.latitude BETWEEN :minLat AND :maxLat AND " +
             "s.longitude BETWEEN :minLng AND :maxLng")

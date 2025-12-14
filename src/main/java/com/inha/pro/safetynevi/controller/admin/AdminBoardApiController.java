@@ -21,7 +21,7 @@ public class AdminBoardApiController {
         return ResponseEntity.ok(dto);
     }
 
-    // 관리자 게시물 삭제 — principal(관리자)로 권한 통과
+    // 관리자 게시물 삭제, principal(관리자)로 권한 통과
     @DeleteMapping("/board/{id}")
     public ResponseEntity<?> deleteBoard(@PathVariable Long id, java.security.Principal principal) {
         boardService.deleteBoard(id, principal != null ? principal.getName() : null);

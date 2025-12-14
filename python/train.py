@@ -7,7 +7,7 @@ import joblib
 from pathlib import Path
 from collections import Counter
 
-# oracledb는 DB로 학습할 때만 필요 — CSV 파일로 학습하면 없어도 됨
+# oracledb는 DB로 학습할 때만 필요, CSV 파일로 학습하면 없어도 됨
 try:
     import oracledb
 except ImportError:
@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 try:
     from wordcloud import WordCloud
 except ImportError:
-    WordCloud = None  # 워드클라우드는 선택 — 미설치면 해당 이미지만 건너뜀(모델엔 영향 없음)
+    WordCloud = None  # 워드클라우드는 선택, 미설치면 해당 이미지만 건너뜀(모델엔 영향 없음)
 
 # 머신러닝 (사이킷런)
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -35,12 +35,12 @@ if hasattr(sys.stdout, "reconfigure"):
 # ==========================================
 # 1. 환경 설정
 # ==========================================
-# DB 접속 정보 — 환경변수에서 받는다 (하드코딩해서 커밋하면 유출되니까). 예) export DB_USER=...
+# DB 접속 정보, 환경변수에서 받는다 (하드코딩해서 커밋하면 유출되니까). 예) export DB_USER=...
 DB_USER = os.environ.get("DB_USER", "")
 DB_PASSWORD = os.environ.get("DB_PASSWORD", "")
 DB_DSN = os.environ.get("DB_DSN", "")
 
-# CSV로도 학습 가능 — `python train.py <csv경로>` 또는 환경변수 DATA_CSV로 지정.
+# CSV로도 학습 가능, `python train.py <csv경로>` 또는 환경변수 DATA_CSV로 지정.
 # 값이 있으면 DB 대신 CSV에서 읽는다 (행안부 긴급재난문자 CSV 같은 오프라인 파일 학습용).
 DATA_CSV = os.environ.get("DATA_CSV", "")
 
@@ -49,7 +49,7 @@ MODEL_DIR = Path(__file__).resolve().parent
 
 # 데이터 편향 방지용 상한 (리포트 보고 튜닝)
 MAX_PER_AREA = 300   # 한 지역이 너무 많으면 줄임 (지리 편향)
-MAX_PER_TYPE = 500   # 한 재난종류가 너무 많으면 줄임 — 코로나 시절 데이터라 감염병 쏠림 방지
+MAX_PER_TYPE = 500   # 한 재난종류가 너무 많으면 줄임, 코로나 시절 데이터라 감염병 쏠림 방지
 SEED = 42
 random.seed(SEED)
 
@@ -64,7 +64,7 @@ plt.rcParams['axes.unicode_minus'] = False
 # ==========================================
 def get_connection():
     if oracledb is None:
-        raise RuntimeError("oracledb 미설치 — DB로 학습하려면 'pip install oracledb' (CSV 학습은 불필요)")
+        raise RuntimeError("oracledb 미설치, DB로 학습하려면 'pip install oracledb' (CSV 학습은 불필요)")
     return oracledb.connect(user=DB_USER, password=DB_PASSWORD, dsn=DB_DSN)
 
 
@@ -138,7 +138,7 @@ def fetch_data_from_csv(path):
     return out
 
 
-# 학습 소스 결정 — CSV 경로(인자 또는 DATA_CSV)가 있으면 CSV, 없으면 DB
+# 학습 소스 결정, CSV 경로(인자 또는 DATA_CSV)가 있으면 CSV, 없으면 DB
 def load_source_dataframe():
     csv_path = sys.argv[1].strip() if (len(sys.argv) > 1 and sys.argv[1].strip()) else DATA_CSV
     if csv_path:
@@ -251,7 +251,7 @@ def prepare_training_dataframe(df, max_per_area=MAX_PER_AREA, max_per_type=MAX_P
     # 데이터 셔플
     df_all = pd.DataFrame(rows).sample(frac=1, random_state=SEED).reset_index(drop=True)
 
-    # 다운샘플링 — 지역/재난종류가 너무 많으면 깎아서 편향을 막는다.
+    # 다운샘플링, 지역/재난종류가 너무 많으면 깎아서 편향을 막는다.
     #  - 지역 캡: 지리 편향
     #  - 종류 캡: 코로나 시절 데이터라 감염병이 압도하는 시기 편향 (이게 핵심)
     final = []
@@ -294,9 +294,9 @@ def visualize_data(df):
     plt.savefig("risk_distribution.png")
     plt.close()
 
-    # 워드클라우드 (자주 나오는 단어 확인) — 라이브러리 있을 때만
+    # 워드클라우드 (자주 나오는 단어 확인), 라이브러리 있을 때만
     if WordCloud is None:
-        print("wordcloud 미설치 — 워드클라우드 이미지는 건너뜀")
+        print("wordcloud 미설치, 워드클라우드 이미지는 건너뜀")
     else:
         text = " ".join(df['content'].tolist())
         try:
@@ -326,7 +326,7 @@ def make_risk_pipe():
 
 
 def evaluate_type(df):
-    # 종류 모델 평가 — 증강본(anon)은 원본과 같은 메시지라 msg_id로 묶어, 한 메시지의 원본·증강이
+    # 종류 모델 평가, 증강본(anon)은 원본과 같은 메시지라 msg_id로 묶어, 한 메시지의 원본·증강이
     # train/test 양쪽에 갈라지지 않게 한다(누수 방지). StratifiedGroupKFold로 클래스 비율도 유지.
     if df['disastertype'].nunique() < 2 or len(df) < 20:
         print("   [재난 종류] 표본 부족 → 평가 생략")
@@ -341,7 +341,7 @@ def evaluate_type(df):
 
 
 def evaluate_risk(df_risk):
-    # 위험도 평가 — 불균형을 그대로 두고 홀드아웃을 뗀다. class_weight 가 학습 때 불균형을
+    # 위험도 평가, 불균형을 그대로 두고 홀드아웃을 뗀다. class_weight 가 학습 때 불균형을
     # 처리하므로 업샘플(복제) 없이 손 안 댄 실제 분포로 측정한다 → 누수 없는 정직한 precision/recall.
     counts = Counter(df_risk['risk_label'])
     if len(counts) < 2 or min(counts.values()) < 2 or len(df_risk) < 20:
@@ -355,7 +355,7 @@ def evaluate_risk(df_risk):
     print("\n[위험도 DANGER/SAFE] 홀드아웃(20%, 실제 분포 유지) 성능:")
     print(classification_report(y_te, pipe.predict(X_te), zero_division=0))
 
-    # 임계값별 DANGER precision/recall — 운영 SAFETY_DANGER_THRESHOLD(main.py) 선택용.
+    # 임계값별 DANGER precision/recall, 운영 SAFETY_DANGER_THRESHOLD(main.py) 선택용.
     # 기본 0.5는 과경보(낮은 precision)가 있으니, 표를 보고 precision을 더 원하면 임계값을 올린다.
     classes = list(pipe.classes_)
     di = classes.index("DANGER")
@@ -375,13 +375,13 @@ def evaluate_risk(df_risk):
 def train_and_save_models(df):
     print("\n모델 학습 시작...")
 
-    # 1. 재난 종류 모델 — 평가(메시지 단위 분리) 먼저 보고, 최종 모델은 전체 데이터로 학습
+    # 1. 재난 종류 모델, 평가(메시지 단위 분리) 먼저 보고, 최종 모델은 전체 데이터로 학습
     evaluate_type(df)
     type_pipe = make_type_pipe()
     type_pipe.fit(df['content'], df['disastertype'])
     joblib.dump(type_pipe, MODEL_DIR / "model_disaster.pkl")
 
-    # 2. 위험도 모델 — 공식 긴급단계가 채워진 행만. class_weight 로 불균형 처리(업샘플 안 함).
+    # 2. 위험도 모델, 공식 긴급단계가 채워진 행만. class_weight 로 불균형 처리(업샘플 안 함).
     risk_df = df[df['emergency_level'].notna() & (df['emergency_level'].astype(str).str.strip() != "")]
     if risk_df.empty:
         print("긴급단계가 채워진 데이터가 없어 위험도 모델은 건너뜀 (새 크롤링으로 단계 채운 뒤 재학습)")

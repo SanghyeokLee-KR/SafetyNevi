@@ -66,7 +66,7 @@ def predict(req: Req):
 
     try:
         disaster = model_disaster.predict([text])[0]
-        # 위험도는 argmax(predict) 대신 DANGER 확률에 임계값을 적용한다 — 임계값을 올리면 과경보↓.
+        # 위험도는 argmax(predict) 대신 DANGER 확률에 임계값을 적용한다, 임계값을 올리면 과경보↓.
         proba = model_safety.predict_proba([text])[0]
         classes = list(model_safety.classes_)
         p_danger = float(proba[classes.index("DANGER")]) if "DANGER" in classes else 0.0

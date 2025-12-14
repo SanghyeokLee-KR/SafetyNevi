@@ -1,4 +1,4 @@
-// HTML 이스케이프 공용 유틸 — innerHTML에 사용자/서버 데이터를 꽂기 전에 거른다
+// HTML 이스케이프 공용 유틸, innerHTML에 사용자/서버 데이터를 꽂기 전에 거른다
 const ENTITIES: Record<string, string> = {
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
 };

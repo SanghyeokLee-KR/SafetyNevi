@@ -76,7 +76,7 @@ public class DisasterMessageController {
         return "disaster/disasterMessage";
     }
 
-    // 지도 사이드바 실시간 피드용 — 최신 재난문자 20건(JSON). id(dmid)는 무한 스크롤 커서용.
+    // 지도 사이드바 실시간 피드용, 최신 재난문자 20건(JSON). id(dmid)는 무한 스크롤 커서용.
     @ResponseBody
     @GetMapping("/api/disaster-messages/recent")
     public List<FeedMessageDto> recentMessages() {
@@ -86,7 +86,7 @@ public class DisasterMessageController {
                 .toList();
     }
 
-    // 사이드바 피드 무한 스크롤 — 커서(beforeDate·beforeId)보다 과거 문자 size건(기본 20, 최대 50)
+    // 사이드바 피드 무한 스크롤, 커서(beforeDate·beforeId)보다 과거 문자 size건(기본 20, 최대 50)
     @ResponseBody
     @GetMapping("/api/disaster-messages/older")
     public List<FeedMessageDto> olderMessages(@RequestParam String beforeDate,

@@ -49,7 +49,7 @@ public class WebPushService {
         // endpoint 는 클라이언트가 보내고, 재난 때 서버가 그 주소로 직접 발송한다.
         // 내부망/로컬로 향하는 SSRF 를 막기 위해 공인 https 주소만 받는다.
         if (!isSafePushEndpoint(endpoint)) {
-            log.warn("웹푸시 구독 거부 — 허용되지 않는 endpoint 형식");
+            log.warn("웹푸시 구독 거부, 허용되지 않는 endpoint 형식");
             return;
         }
         PushSubscription sub = subscriptionRepository.findByEndpoint(endpoint).orElseGet(PushSubscription::new);
@@ -72,7 +72,7 @@ public class WebPushService {
     }
 
     // 새 재난 발생 시, 재난 지역과 같은 시/도를 구독한(또는 전국 구독) 기기로만 푸시.
-    // 외부 푸시 서비스로의 HTTP 호출이라 트랜잭션 밖에서 — DB 커넥션을 쥔 채 네트워크를 기다리지 않도록.
+    // 외부 푸시 서비스로의 HTTP 호출이라 트랜잭션 밖에서, DB 커넥션을 쥔 채 네트워크를 기다리지 않도록.
     public void notifyNewDisaster(DisasterZoneResponse zone) {
         PushService service = push();
         if (service == null) return;   // 미설정 → no-op
@@ -84,7 +84,7 @@ public class WebPushService {
         log.info("웹푸시 재난 발송: 대상 {}건, 성공 {}건", subs.size(), success);
     }
 
-    // 관리자 테스트 발송 — 구독한 모든 기기로 '테스트' 알림을 보내 발송 경로를 점검한다. 성공 건수 반환.
+    // 관리자 테스트 발송, 구독한 모든 기기로 '테스트' 알림을 보내 발송 경로를 점검한다. 성공 건수 반환.
     public int sendTestNotification() {
         PushService service = push();
         if (service == null) return 0;   // 미설정 → no-op
@@ -168,7 +168,7 @@ public class WebPushService {
         return provinceOf(region);
     }
 
-    // 구독 endpoint 안전성 — https + 공인 도메인만 허용. IP 리터럴/로컬호스트는 내부망 SSRF 우려로 거부.
+    // 구독 endpoint 안전성, https + 공인 도메인만 허용. IP 리터럴/로컬호스트는 내부망 SSRF 우려로 거부.
     // (완전한 SSRF 방어는 네트워크 egress 차단이 정석. 앱 단에선 명백한 내부 주소를 막는다.)
     static boolean isSafePushEndpoint(String endpoint) {
         if (endpoint == null) return false;

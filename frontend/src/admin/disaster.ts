@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch(`/api/admin/simulate/impact?lat=${lat}&lon=${lon}&radius=${radius}`);
             if (!res.ok) throw new Error();
             const d = await res.json();
-            if (box) box.innerHTML = `예상 영향 — 반경 ${Number(radius).toLocaleString()}m 안 대피소 <b>${d.shelterCount}곳</b> · 알림 대상 <b>${d.subscriberCount}명</b>`
+            if (box) box.innerHTML = `예상 영향, 반경 ${Number(radius).toLocaleString()}m 안 대피소 <b>${d.shelterCount}곳</b> · 알림 대상 <b>${d.subscriberCount}명</b>`
                 + `<br><span style="font-size:12px; color:#9aa1ac;">※ 원형 재난은 현재 전체 구독자에게 발송됩니다(지역 타깃팅 아님).</span>`;
         } catch {
             if (box) box.textContent = '영향 계산에 실패했습니다. 잠시 후 다시 시도하세요.';

@@ -1,4 +1,4 @@
-/* 외부 SDK·전역 객체 — 점진적 타이핑을 위해 느슨하게 선언.
+/* 외부 SDK·전역 객체, 점진적 타이핑을 위해 느슨하게 선언.
    (Kakao Maps / Daum Postcode / SockJS / Stomp / Chart.js / jQuery) */
 declare const kakao: any;
 declare const daum: any;

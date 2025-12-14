@@ -22,7 +22,7 @@ public class WebPushConfig {
             @Value("${webpush.vapid.subject:mailto:admin@safetynevi.local}") String subject) {
 
         if (publicKey.isBlank() || privateKey.isBlank()) {
-            log.info("VAPID 키 미설정 — 웹푸시 발송 비활성화");
+            log.info("VAPID 키 미설정, 웹푸시 발송 비활성화");
             return null;
         }
 
@@ -33,10 +33,10 @@ public class WebPushConfig {
 
         try {
             PushService service = new PushService(publicKey, privateKey, subject);
-            log.info("웹푸시(VAPID) 초기화 완료 — 재난 푸시 발송 활성화");
+            log.info("웹푸시(VAPID) 초기화 완료, 재난 푸시 발송 활성화");
             return service;
         } catch (Exception e) {
-            log.error("웹푸시 초기화 실패 — 비활성화: {}", e.getMessage());
+            log.error("웹푸시 초기화 실패, 비활성화: {}", e.getMessage());
             return null;
         }
     }
