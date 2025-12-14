@@ -1,6 +1,6 @@
 @import url("/css/base/tokens.css");
 @import url("/css/base/components.css");
-/* 랜딩(홈) — tokens/components 위에서 */
+/* 랜딩(홈), tokens/components 위에서 */
 html, body { margin: 0; }
 
 .home-wrap { min-height: 100vh; display: flex; flex-direction: column; }

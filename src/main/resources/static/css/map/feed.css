@@ -1,6 +1,6 @@
 /* 지도 사이드바 '실시간 재난문자' 피드 */
 
-/* 시각적으로만 숨김(스크린리더는 읽음) — 새 재난문자 음성 안내용 */
+/* 시각적으로만 숨김(스크린리더는 읽음), 새 재난문자 음성 안내용 */
 .sr-only {
     position: absolute;
     width: 1px;
@@ -74,7 +74,7 @@
     padding: 20px 0;
 }
 
-/* 지역 필터 결과 없음 안내 — 빈 상태와 같은 톤 */
+/* 지역 필터 결과 없음 안내, 빈 상태와 같은 톤 */
 .kb-feed-note {
     color: #5c6470;
     font-size: 13px;
@@ -82,7 +82,7 @@
     padding: 16px 0;
 }
 
-/* 무한 스크롤 트리거 — 평소엔 1px 투명, 로딩/끝일 때만 노출 */
+/* 무한 스크롤 트리거, 평소엔 1px 투명, 로딩/끝일 때만 노출 */
 .kb-feed-sentinel { min-height: 1px; }
 .kb-feed-sentinel.is-loading,
 .kb-feed-sentinel.is-end {
@@ -207,7 +207,7 @@ body.dark-mode .kb-feed-sentinel.is-loading::before { border-color: #555; border
     100% { opacity: 1; transform: translateY(0); }
 }
 
-/* 다크모드(야간) — 카드가 하드코딩 흰색이라 야간에 깨지던 것 보정 */
+/* 다크모드(야간), 카드가 하드코딩 흰색이라 야간에 깨지던 것 보정 */
 body.dark-mode .kb-feed-card {
     background: #2a2a2a;
     border-color: #444;

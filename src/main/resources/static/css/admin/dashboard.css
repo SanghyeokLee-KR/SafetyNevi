@@ -1,4 +1,4 @@
-/* /css/admin/dashboard.css — 운영 현황 한눈에 (토큰 기반) */
+/* /css/admin/dashboard.css, 운영 현황 한눈에 (토큰 기반) */
 
 /* 지표 카드 */
 .stat-grid {
@@ -88,7 +88,7 @@
     .stat-grid { grid-template-columns: 1fr; }
 }
 
-/* 다크모드 — 연한 아이콘 배경만 살짝 보정(토큰이 나머지 처리) */
+/* 다크모드, 연한 아이콘 배경만 살짝 보정(토큰이 나머지 처리) */
 body.dark-mode .ic-blue   { background: #1e3a5f; color: #93c5fd; }
 body.dark-mode .ic-green  { background: #14361f; color: #86efac; }
 body.dark-mode .ic-indigo { background: #272a52; color: #a5b4fc; }

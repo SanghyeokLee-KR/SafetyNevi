@@ -1,6 +1,6 @@
 @import url("/css/base/tokens.css");
 @import url("/css/base/components.css");
-/* 로그인 페이지 셸 — 폼/버튼/알림은 components.css가 담당 */
+/* 로그인 페이지 셸, 폼/버튼/알림은 components.css가 담당 */
 html, body { height: 100%; margin: 0; }
 
 .auth-wrap {

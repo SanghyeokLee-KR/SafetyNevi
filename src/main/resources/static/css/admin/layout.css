@@ -1,4 +1,4 @@
-/* /css/admin/layout.css — 디자인 토큰 기반 (로컬 변수는 토큰으로 리매핑) */
+/* /css/admin/layout.css, 디자인 토큰 기반 (로컬 변수는 토큰으로 리매핑) */
 @import url("/css/base/tokens.css");
 
 :root {

@@ -59,7 +59,7 @@ class WebPushServiceTest {
         assertTrue(WebPushService.isSafePushEndpoint("https://fcm.googleapis.com/fcm/send/abc123"));
         assertTrue(WebPushService.isSafePushEndpoint("https://updates.push.services.mozilla.com/wpush/v2/xyz"));
 
-        // SSRF 우려 — http·로컬·내부망·메타데이터
+        // SSRF 우려, http·로컬·내부망·메타데이터
         assertFalse(WebPushService.isSafePushEndpoint("http://fcm.googleapis.com/x"), "http 거부");
         assertFalse(WebPushService.isSafePushEndpoint("https://localhost/x"), "localhost 거부");
         assertFalse(WebPushService.isSafePushEndpoint("https://127.0.0.1/x"), "루프백 IP 거부");

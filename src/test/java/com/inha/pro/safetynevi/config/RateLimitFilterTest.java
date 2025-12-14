@@ -20,7 +20,7 @@ class RateLimitFilterTest {
     }
 
     private RateLimitFilter filterWithLimit(int max) {
-        return filterWith(max, 1000); // 쓰기 한도는 넉넉히 — 이 테스트들은 일반 한도만 검증
+        return filterWith(max, 1000); // 쓰기 한도는 넉넉히, 이 테스트들은 일반 한도만 검증
     }
 
     @Test

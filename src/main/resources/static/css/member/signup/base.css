@@ -1,4 +1,4 @@
-/* 회원가입 base — 기존 로컬 변수를 디자인 토큰으로 remap (components·modal까지 새 브랜드색으로 정렬) */
+/* 회원가입 base, 기존 로컬 변수를 디자인 토큰으로 remap (components·modal까지 새 브랜드색으로 정렬) */
 /* HTML <link> 누락(템플릿 stale)에도 견디도록 토큰을 CSS에서 직접 적재 */
 @import url("/css/base/tokens.css");
 

@@ -1,4 +1,4 @@
-/* components.css — 토큰 위에서 동작 (로컬 별칭만 유지) */
+/* components.css, 토큰 위에서 동작 (로컬 별칭만 유지) */
 :root {
     --primary-hover: var(--primary-strong);
     --text-gray: var(--text-muted);

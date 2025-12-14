@@ -90,7 +90,7 @@ html, body {
     border-bottom: 1px solid var(--border);
 }
 
-/* 뱃지 — 긴급단계/재난종류 색 구분 */
+/* 뱃지, 긴급단계/재난종류 색 구분 */
 .badge {
     color: #fff;
     padding: 3px 9px;

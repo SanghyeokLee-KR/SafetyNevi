@@ -11,7 +11,7 @@
     --primary-softer: #DBE7FF;
     --primary-on: #FFFFFF;
 
-    /* Semantic — 재난/안전 */
+    /* Semantic, 재난/안전 */
     --danger: #E5484D;      --danger-soft: #FEF1F1;
     --warning: #F59E0B;     --warning-soft: #FEF6E7;
     --safe: #16A34A;        --safe-soft: #ECFDF3;
@@ -58,7 +58,7 @@
     --dur-lg: 240ms;
 }
 
-/* 다크모드 — 야간 대피 상황 대비. body.dark-mode 또는 [data-theme=dark] */
+/* 다크모드, 야간 대피 상황 대비. body.dark-mode 또는 [data-theme=dark] */
 [data-theme="dark"], body.dark-mode {
     --bg: #0B1220;
     --surface: #151C2C;

@@ -1,5 +1,5 @@
 @import url("/css/base/tokens.css");
-/* 공지사항 목록 — 디자인 토큰 기반 */
+/* 공지사항 목록, 디자인 토큰 기반 */
 html, body {
     width: 100%;
     min-height: 100vh;

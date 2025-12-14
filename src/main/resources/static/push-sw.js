@@ -1,4 +1,4 @@
-// 안전네비 서비스워커 — 웹푸시 수신 + PWA 오프라인 캐싱(앱 셸·재난 대피요령).
+// 안전네비 서비스워커, 웹푸시 수신 + PWA 오프라인 캐싱(앱 셸·재난 대피요령).
 
 const CACHE = 'safetynevi-v3';
 // 통신이 끊겨도 열려야 하는 것들(대피요령 + 셸). 일부가 없어도 설치가 깨지지 않게 개별 캐시.
@@ -30,8 +30,8 @@ self.addEventListener('activate', function (event) {
 });
 
 // 같은 출처 GET 만 캐시. API(/api)는 항상 네트워크.
-// 페이지 이동(navigate, HTML)은 network-first — 로그인 상태·관심지역 등 매 요청 서버 렌더가 항상 최신이게(오프라인이면 캐시 폴백).
-// JS/CSS는 network-first(+캐시 폴백) — 코드 바꾸면 즉시 최신(옛 화면 stale 방지). 이미지는 cache-first(+백그라운드 갱신) — 잘 안 바뀌고 수가 많아 속도 우선.
+// 페이지 이동(navigate, HTML)은 network-first, 로그인 상태·관심지역 등 매 요청 서버 렌더가 항상 최신이게(오프라인이면 캐시 폴백).
+// JS/CSS는 network-first(+캐시 폴백), 코드 바꾸면 즉시 최신(옛 화면 stale 방지). 이미지는 cache-first(+백그라운드 갱신), 잘 안 바뀌고 수가 많아 속도 우선.
 self.addEventListener('fetch', function (event) {
     const req = event.request;
     if (req.method !== 'GET') return;

@@ -48,13 +48,13 @@ class SecurityRulesTest {
 
     @Test
     void disasterMessagesRecentIsPublic() throws Exception {
-        // 지도 사이드바 실시간 피드용 — 비로그인도 최근 재난문자를 받는다(공개 데이터)
+        // 지도 사이드바 실시간 피드용, 비로그인도 최근 재난문자를 받는다(공개 데이터)
         mvc.perform(get("/api/disaster-messages/recent")).andExpect(status().isOk());
     }
 
     @Test
     void disasterMessagesOlderIsPublic() throws Exception {
-        // 사이드바 피드 무한 스크롤(과거분) — 비로그인도 공개 데이터로 조회 가능
+        // 사이드바 피드 무한 스크롤(과거분), 비로그인도 공개 데이터로 조회 가능
         mvc.perform(get("/api/disaster-messages/older")
                         .param("beforeDate", "2026/01/01 00:00:00").param("beforeId", "999999"))
                 .andExpect(status().isOk());
@@ -62,31 +62,31 @@ class SecurityRulesTest {
 
     @Test
     void pushConfigIsPublic() throws Exception {
-        // 웹푸시 구독에 필요한 VAPID 공개키 조회 — 비로그인도 허용
+        // 웹푸시 구독에 필요한 VAPID 공개키 조회, 비로그인도 허용
         mvc.perform(get("/api/push/config")).andExpect(status().isOk());
     }
 
     @Test
     void adminPushTestRequiresAuth() throws Exception {
-        // 관리자 테스트 발송(/api/admin/**) — 비로그인은 로그인 페이지로 리다이렉트
+        // 관리자 테스트 발송(/api/admin/**), 비로그인은 로그인 페이지로 리다이렉트
         mvc.perform(get("/api/admin/push/test")).andExpect(status().is3xxRedirection());
     }
 
     @Test
     void robotsTxtIsPublic() throws Exception {
-        // 검색엔진 수집용 — 인증 없이 200 (SecurityConfig permitAll + 정적 서빙)
+        // 검색엔진 수집용, 인증 없이 200 (SecurityConfig permitAll + 정적 서빙)
         mvc.perform(get("/robots.txt")).andExpect(status().isOk());
     }
 
     @Test
     void llmsTxtIsPublic() throws Exception {
-        // LLM/에이전트용 사이트 요약 — 인증 없이 200
+        // LLM/에이전트용 사이트 요약, 인증 없이 200
         mvc.perform(get("/llms.txt")).andExpect(status().isOk());
     }
 
     @Test
     void safetyScoreIsPublic() throws Exception {
-        // 대피 접근성 점수 — 비로그인도 지점 기준 조회 가능(공개 데이터)
+        // 대피 접근성 점수, 비로그인도 지점 기준 조회 가능(공개 데이터)
         mvc.perform(get("/api/safety-score").param("lat", "37.5").param("lng", "127.0"))
                 .andExpect(status().isOk());
     }

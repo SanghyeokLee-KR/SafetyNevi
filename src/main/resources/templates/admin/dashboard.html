@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>관리자 · 대시보드 — 안전네비</title>
+    <title>관리자 · 대시보드, 안전네비</title>
     <link rel="stylesheet" href="/css/admin/layout.css">
     <link rel="stylesheet" href="/css/admin/components.css">
     <link rel="stylesheet" href="/css/admin/dashboard.css">
@@ -132,7 +132,7 @@
         })
         .catch(function (e) { console.error('대시보드 차트 로드 실패:', e); });
 
-    // 시스템 상태 — 실제 헬스 체크
+    // 시스템 상태, 실제 헬스 체크
     function setHealth(el, up, label) {
         if (!el) return;
         el.innerHTML = '<span class="dot ' + (up ? 'dot-up' : 'dot-down') + '"></span>' + label;
@@ -161,7 +161,7 @@
                 .then(function (r) {
                     if (res) res.textContent = r.enabled ? (r.sent + '개 기기로 보냈습니다.') : '푸시가 비활성 상태입니다 (VAPID 키 확인).';
                 })
-                .catch(function () { if (res) res.textContent = '발송 실패 — 서버 로그를 확인하세요.'; })
+                .catch(function () { if (res) res.textContent = '발송 실패, 서버 로그를 확인하세요.'; })
                 .finally(function () { btn.disabled = false; });
         });
     }
@@ -170,7 +170,7 @@
         var labels = Object.keys(areaData);
         var values = Object.values(areaData);
         var ctx = document.getElementById('regionChart').getContext('2d');
-        // 브랜드 계열(블루·인디고·시안) 큐레이션 팔레트 — 무지개보다 정돈된 느낌
+        // 브랜드 계열(블루·인디고·시안) 큐레이션 팔레트, 무지개보다 정돈된 느낌
         var palette = ['#2563EB', '#3B82F6', '#60A5FA', '#1D4ED8', '#0EA5E9', '#38BDF8', '#6366F1', '#818CF8', '#0891B2', '#22D3EE', '#475569'];
         var colors = labels.map(function (_, i) { return palette[i % palette.length]; });
         new Chart(ctx, {

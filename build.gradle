@@ -71,7 +71,7 @@ dependencies {
     // API 문서 (Swagger UI / OpenAPI 3)
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
 
-    // 웹푸시 (미접속 사용자에게 재난 알림) — 표준 Web Push(VAPID), Firebase·외부 계정 불필요
+    // 웹푸시 (미접속 사용자에게 재난 알림), 표준 Web Push(VAPID), Firebase·외부 계정 불필요
     implementation 'nl.martijndwars:web-push:5.1.2'
     // web-push 가 optional/runtime 으로만 가져오는 것들을 컴파일에 노출
     //  - BouncyCastle: VAPID 페이로드 암호화 프로바이더(web-push optional 의존)
@@ -81,7 +81,7 @@ dependencies {
     implementation 'org.apache.httpcomponents:httpcore:4.4.16'
     implementation 'org.bitbucket.b_c:jose4j:0.7.9'
 
-    // QR 코드 생성 (관리자 온보딩 QR) — 표준 ZXing, 서버에서 PNG 렌더
+    // QR 코드 생성 (관리자 온보딩 QR), 표준 ZXing, 서버에서 PNG 렌더
     implementation 'com.google.zxing:core:3.5.3'
     implementation 'com.google.zxing:javase:3.5.3'
 }
@@ -103,7 +103,7 @@ tasks.register('buildFrontend', com.github.gradle.node.npm.task.NpmTask) {
     // 이 디렉터리를 stale 출력으로 보고 삭제해버린다. 그래서 inputs/outputs 미선언(매번 tsc 실행).
 }
 
-// 프론트 빌드는 실행(bootRun)·패키징(bootJar)에만 연결 — 단위테스트는 프론트 빌드 없이 돌게
+// 프론트 빌드는 실행(bootRun)·패키징(bootJar)에만 연결, 단위테스트는 프론트 빌드 없이 돌게
 tasks.named('bootJar') { dependsOn 'buildFrontend' }
 tasks.named('processResources') { mustRunAfter 'buildFrontend' }
 
