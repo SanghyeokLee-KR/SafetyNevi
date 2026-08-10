@@ -226,17 +226,20 @@ uvicorn main:app --host 0.0.0.0 --port 8000
 
 ### 2) 메인 서버(Spring Boot), 요구사항: Java 21
 
-실제 키가 든 설정은 git에 넣지 않습니다. 예시를 복사해 채워주세요.
+로컬은 H2 인메모리로 Oracle·Docker 없이 바로 뜹니다. 별도 설정 없이 아래 한 줄이면 됩니다.
+
+```bash
+./gradlew bootRun --args='--spring.profiles.active=h2'
+```
+
+H2 프로파일 설정은 `src/main/resources/application-h2.properties`에 포함돼 있습니다. 비밀값이 없어 저장소에 그대로 두었고, 외부 API 키는 비어 있어 날씨·지도·재난문자 수집만 비활성 상태로 뜹니다.
+
+Oracle로 붙이려면 실제 키가 든 설정을 따로 만듭니다. 이 파일은 git에 넣지 않습니다.
 
 ```bash
 cp src/main/resources/application-example.properties src/main/resources/application.properties
 # Kakao · 기상청 · 재난문자 API 키, DB 접속 정보 입력
-```
-
-로컬은 H2 인메모리로 Oracle·Docker 없이 바로 뜹니다.
-
-```bash
-./gradlew bootRun --args='--spring.profiles.active=h2'
+./gradlew bootRun
 ```
 
 - 접속: `http://localhost:9090`

@@ -2,6 +2,7 @@
 import { map } from './map-core.js';
 import { showToast } from './map-ui.js';
 import { showBoardOverlay } from './map-board.js';
+import { escapeHtml } from '../common/escape.js';
 
 const geocoder = new kakao.maps.services.Geocoder();
 let myPlaces = [];
@@ -116,7 +117,7 @@ function renderMyPlacesAndMarkers() {
                 item.className = 'kb-myplace-item';
                 item.innerHTML = `
                     <div class="kb-place-icon-box favorite">⭐</div>
-                    <div class="kb-place-info"><div class="kb-place-name">${fav.name}</div><div class="kb-place-address">${fav.address}</div></div>
+                    <div class="kb-place-info"><div class="kb-place-name">${escapeHtml(fav.name)}</div><div class="kb-place-address">${escapeHtml(fav.address)}</div></div>
                     <button class="btn-delete-fav" data-id="${fav.id}">🗑️</button>
                 `;
                 item.addEventListener('click', (e) => {
@@ -164,7 +165,7 @@ function renderFamilies(families) {
         item.innerHTML = `
             <div class="kb-place-icon-box" style="background-color:#fff0f6; color:#e91e63; font-size:16px;">❤️</div>
             <div class="kb-place-info">
-                <div class="kb-place-name">${fam.name}</div>
+                <div class="kb-place-name">${escapeHtml(fam.name)}</div>
                 <div class="kb-place-address">${fam.phone}</div>
             </div>
             <div style="display:flex; gap:5px;">
@@ -264,8 +265,8 @@ function renderMyPosts(posts) {
         item.innerHTML = `
             <div class="kb-place-icon-box post">${icon}</div>
             <div class="kb-place-info">
-                <div class="kb-place-name">${post.title}</div>
-                <div class="kb-place-address">${post.content}</div>
+                <div class="kb-place-name">${escapeHtml(post.title)}</div>
+                <div class="kb-place-address">${escapeHtml(post.content)}</div>
                 <div class="kb-place-meta">${post.date} · ❤️${post.likeCount} · 💬${post.comments.length}</div>
             </div>
         `;

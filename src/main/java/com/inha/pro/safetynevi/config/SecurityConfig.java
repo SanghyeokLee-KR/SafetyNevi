@@ -7,6 +7,7 @@ import com.inha.pro.safetynevi.util.CustomAuthSuccessHandler;
 import com.inha.pro.safetynevi.util.CustomLogoutSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -70,7 +71,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/facilities/**", "/api/route/**", "/api/weather/**", "/api/disaster-zones/**").permitAll()
                         .requestMatchers("/api/safety-score").permitAll()
                         .requestMatchers("/api/disaster-messages/**").permitAll()
-                        .requestMatchers("/api/board").permitAll()
+                        // 목록 조회만 공개한다. 작성·삭제·좋아요·댓글은 인증을 요구한다.
+                        // 메서드를 안 나누면 비인증 POST가 401이 아니라 컨트롤러에서 NPE 500이 된다.
+                        .requestMatchers(HttpMethod.GET, "/api/board").permitAll()
 
                         // 재난 웹푸시 구독 (비로그인도 허용) + 백그라운드 수신용 서비스워커
                         .requestMatchers("/api/push/**").permitAll()
