@@ -55,6 +55,26 @@
 
 ---
 
+### 내 기여
+
+이 저장소의 첫 커밋 [`9cc3daf`](https://github.com/SanghyeokLee-KR/SafetyNevi/commit/9cc3daf)는 팀 졸업작품 결과물 241파일 49,226줄을 한 번에 올린 것입니다. 팀 원본과 제 작업의 경계가 그 커밋에 묻혀 있으므로, 그 이후 이력을 기준으로 적습니다.
+
+| 항목 | 값 | 확인 방법 |
+| :--- | :--- | :--- |
+| 최초 커밋 이후 커밋 | 155건 전부 단독 | `git log 9cc3daf..HEAD` |
+| 수정한 파일 | 385개 | `git log 9cc3daf..HEAD --name-only` |
+| 새로 만든 파일 | 184개 | `git log 9cc3daf..HEAD --diff-filter=A --name-only` |
+| 개발 기간 | 2025-09-01 ~ 2025-12-14, 활동 106일 | `git log --date=short --format=%ad` |
+
+담당 경로는 `src/main/java`(백엔드·보안·관리자), `python`(AI 서버와 모델), `frontend/src/map`(지도·경로 탐색), 그리고 배포 구성입니다.
+
+대표 작업 세 건입니다.
+
+- [`234f92f`](https://github.com/SanghyeokLee-KR/SafetyNevi/commit/234f92f) 실시간 재난문자 피드를 Kafka fan-out으로 바꿔 인스턴스가 여러 대여도 알림이 한 번만 나가게 했습니다.
+- [`87bf2a6`](https://github.com/SanghyeokLee-KR/SafetyNevi/commit/87bf2a6) 웹푸시 구독 endpoint를 검증해 내부망 SSRF를 차단하고 지역값을 정규화했습니다.
+- [`d1410eb`](https://github.com/SanghyeokLee-KR/SafetyNevi/commit/d1410eb) 미접속 사용자에게도 재난 알림이 가도록 표준 VAPID 웹푸시를 붙였습니다.
+
+
 ## 3. 배포 인프라 구성
 
 AWS EC2 한 대에 Docker Compose로 배포합니다. GitHub Actions가 이미지를 빌드·테스트해 GHCR에 올리면, 서버가 받아서(`docker compose pull`) 교체합니다.
