@@ -1,0 +1,10 @@
+name: style
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  style:
+    uses: SanghyeokLee-KR/SanghyeokLee-KR/.github/workflows/style-gate.yml@main
