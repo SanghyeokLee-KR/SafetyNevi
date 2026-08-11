@@ -51,27 +51,32 @@ export const options = {
 // 서울 전역 bbox. 실제 지도 화면이 보내는 형태와 같다
 const BBOX = 'swLat=37.4&swLng=126.8&neLat=37.7&neLng=127.2';
 
+// k6 는 Accept-Encoding 을 자동으로 붙이지 않는다. 브라우저는 붙인다.
+// 이걸 빼고 재면 서버 압축이 켜져 있어도 압축된 응답을 한 번도 받지 않아,
+// 실제 사용자가 겪는 전송량과 다른 값을 재게 된다.
+const HEADERS = { 'Accept-Encoding': 'gzip' };
+
 export default function () {
   group('facilities-bbox', () => {
-    const r = http.get(`${BASE}/api/facilities?type=shelter&${BBOX}`, { tags: { ep: 'facilities' } });
+    const r = http.get(`${BASE}/api/facilities?type=shelter&${BBOX}`, { headers: HEADERS, tags: { ep: 'facilities' } });
     tFacilities.add(r.timings.duration);
     check(r, { 'facilities 200': (x) => x.status === 200 });
   });
 
   group('safety-score', () => {
-    const r = http.get(`${BASE}/api/safety-score?lat=37.5665&lng=126.9780`, { tags: { ep: 'safety_score' } });
+    const r = http.get(`${BASE}/api/safety-score?lat=37.5665&lng=126.9780`, { headers: HEADERS, tags: { ep: 'safety_score' } });
     tSafetyScore.add(r.timings.duration);
     check(r, { 'safety-score 200': (x) => x.status === 200 });
   });
 
   group('board-list', () => {
-    const r = http.get(`${BASE}/api/board`, { tags: { ep: 'board' } });
+    const r = http.get(`${BASE}/api/board`, { headers: HEADERS, tags: { ep: 'board' } });
     tBoard.add(r.timings.duration);
     check(r, { 'board 200': (x) => x.status === 200 });
   });
 
   group('map-page', () => {
-    const r = http.get(`${BASE}/map`, { tags: { ep: 'map_page' } });
+    const r = http.get(`${BASE}/map`, { headers: HEADERS, tags: { ep: 'map_page' } });
     tMapPage.add(r.timings.duration);
     check(r, { 'map 200': (x) => x.status === 200 });
   });

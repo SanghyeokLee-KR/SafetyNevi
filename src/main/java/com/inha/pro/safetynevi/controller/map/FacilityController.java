@@ -1,6 +1,7 @@
 package com.inha.pro.safetynevi.controller.map;
 
 import com.inha.pro.safetynevi.dto.map.FacilityDto;
+import com.inha.pro.safetynevi.dto.map.FacilityMarkerDto;
 import com.inha.pro.safetynevi.service.map.FacilityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +17,9 @@ public class FacilityController {
 
     private final FacilityService facilityService;
 
-    // 지도에 보이는 영역 안의 시설만 조회
+    // 지도에 보이는 영역 안의 시설만, 마커에 필요한 필드만 조회
     @GetMapping
-    public ResponseEntity<List<FacilityDto>> getFacilitiesInBounds(
+    public ResponseEntity<List<FacilityMarkerDto>> getFacilitiesInBounds(
             @RequestParam String type,
             @RequestParam double swLat, @RequestParam double swLng,
             @RequestParam double neLat, @RequestParam double neLng

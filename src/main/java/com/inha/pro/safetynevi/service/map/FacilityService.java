@@ -27,7 +27,14 @@ public class FacilityService {
     private static final Pageable BOUNDS_LIMIT = PageRequest.of(0, 1500);
     private static final Pageable SEARCH_LIMIT = PageRequest.of(0, 50);
 
-    public List<FacilityDto> findFacilitiesInBounds(String type, double swLat, double swLng, double neLat, double neLng) {
+    /**
+     * 화면 영역 안의 시설을 마커용 최소 필드로 내려준다.
+     *
+     * <p>주소는 담지 않는다. 마커를 찍는 쪽은 쓰지 않고 상세 조회가 따로 내려주는데,
+     * 한글 주소가 이 응답에서 가장 큰 필드였다. 부하 측정에서 이 경로가 병목으로 잡혀
+     * 목록에서 뺐다. 자세한 근거는 {@link FacilityMarkerDto} 주석에 있다.
+     */
+    public List<FacilityMarkerDto> findFacilitiesInBounds(String type, double swLat, double swLng, double neLat, double neLng) {
         List<Facility> facilities = new ArrayList<>();
 
         switch (type) {
@@ -48,7 +55,7 @@ public class FacilityService {
         }
 
         return facilities.stream()
-                .map(FacilityDto::new)
+                .map(FacilityMarkerDto::new)
                 .collect(Collectors.toList());
     }
 
