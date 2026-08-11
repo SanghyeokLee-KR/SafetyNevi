@@ -10,7 +10,7 @@
         <mxCell id="EuhdZNTQkgh8dqzsU8NC-2" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="" vertex="1">
           <mxGeometry height="80" width="60" x="1042" y="922" as="geometry" />
         </mxCell>
-        <mxCell id="EuhdZNTQkgh8dqzsU8NC-3" parent="1" style="text;html=1;fontSize=24;fontStyle=1;fontColor=#111827;align=left;verticalAlign=middle;" value="SafetyNevi — 배포 · 인프라 구성도" vertex="1">
+        <mxCell id="EuhdZNTQkgh8dqzsU8NC-3" parent="1" style="text;html=1;fontSize=24;fontStyle=1;fontColor=#111827;align=left;verticalAlign=middle;" value="SafetyNevi: 배포 · 인프라 구성도" vertex="1">
           <mxGeometry height="32" width="760" x="390" y="360" as="geometry" />
         </mxCell>
         <mxCell id="EuhdZNTQkgh8dqzsU8NC-4" parent="1" style="text;html=1;fontSize=13;fontStyle=0;fontColor=#6B7280;align=left;verticalAlign=middle;" value="AWS EC2 단일 인스턴스에 Docker Compose로 배포 · GitHub Actions → GHCR 파이프라인 · 자체 호스팅 Redis · Kafka · 외부 연동(AI · DB · 공공 API)" vertex="1">
@@ -31,7 +31,7 @@
         <mxCell id="EuhdZNTQkgh8dqzsU8NC-9" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECFCCB;strokeColor=#84CC16;verticalAlign=top;align=center;spacingTop=12;fontSize=12;fontStyle=1;fontColor=#3F6212;arcSize=3;" value="④ 서버&#xa;docker compose pull" vertex="1">
           <mxGeometry height="55" width="160" x="1040" y="487.5" as="geometry" />
         </mxCell>
-        <mxCell id="EuhdZNTQkgh8dqzsU8NC-10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#ED7100;verticalAlign=top;align=left;spacingLeft=52;spacingTop=12;fontSize=14;fontStyle=1;fontColor=#9A3412;arcSize=3;" value="AWS EC2 인스턴스 — Docker Compose" vertex="1">
+        <mxCell id="EuhdZNTQkgh8dqzsU8NC-10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#ED7100;verticalAlign=top;align=left;spacingLeft=52;spacingTop=12;fontSize=14;fontStyle=1;fontColor=#9A3412;arcSize=3;" value="AWS EC2 인스턴스: Docker Compose" vertex="1">
           <mxGeometry height="380" width="400" x="500" y="677" as="geometry" />
         </mxCell>
         <mxCell id="EuhdZNTQkgh8dqzsU8NC-11" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#ED7100;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.ec2;" value="" vertex="1">

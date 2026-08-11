@@ -1,7 +1,7 @@
 이 폴더의 아이콘 출처 및 라이선스
 
-1) 라인 아이콘 (검색): Lucide — https://lucide.dev — ISC License
-2) cat/·ctrl/ 컬러 아이콘 (카테고리·지도 컨트롤): Microsoft Fluent Emoji — https://github.com/microsoft/fluentui-emoji — MIT License
+1) 라인 아이콘 (검색): Lucide · https://lucide.dev · ISC License
+2) cat/·ctrl/ 컬러 아이콘 (카테고리·지도 컨트롤): Microsoft Fluent Emoji · https://github.com/microsoft/fluentui-emoji · MIT License
 
 
 ================ Lucide (ISC License) ================

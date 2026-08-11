@@ -51,7 +51,7 @@
                 <td style="text-align:right;">
                     <button th:if="${m.userId != 'admin'}" class="btn-danger-soft"
                             th:data-id="${m.userId}" onclick="deleteMember(this.getAttribute('data-id'))">강제 탈퇴</button>
-                    <span th:if="${m.userId == 'admin'}" style="color:var(--text-subtle); font-size:12px;">—</span>
+                    <span th:if="${m.userId == 'admin'}" style="color:var(--text-subtle); font-size:12px;">-</span>
                 </td>
             </tr>
             <tr th:if="${members.totalElements == 0}">
