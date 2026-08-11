@@ -59,12 +59,16 @@
 
 이 저장소의 첫 커밋 [`9cc3daf`](https://github.com/SanghyeokLee-KR/SafetyNevi/commit/9cc3daf)는 팀 졸업작품 결과물 241파일 49,226줄을 한 번에 올린 것입니다. 팀 원본과 제 작업의 경계가 그 커밋에 묻혀 있으므로, 그 이후 이력을 기준으로 적습니다.
 
+개발 기간은 `9cc3daf`(2025-09-01)부터 [`c2ebcbf`](https://github.com/SanghyeokLee-KR/SafetyNevi/commit/c2ebcbf)(2025-12-14)까지입니다. 아래 값은 그 구간을 양끝으로 못 박은 것이라 이후 커밋이 쌓여도 변하지 않습니다.
+
 | 항목 | 값 | 확인 방법 |
 | :--- | :--- | :--- |
-| 최초 커밋 이후 커밋 | 155건 전부 단독 | `git log 9cc3daf..HEAD` |
-| 수정한 파일 | 385개 | `git log 9cc3daf..HEAD --name-only` |
-| 새로 만든 파일 | 184개 | `git log 9cc3daf..HEAD --diff-filter=A --name-only` |
-| 개발 기간 | 2025-09-01 ~ 2025-12-14, 활동 106일 | `git log --date=short --format=%ad` |
+| 커밋 | 153건 전부 단독 | `git log --oneline 9cc3daf..c2ebcbf \| wc -l` |
+| 수정한 파일 | 384개 | `git log 9cc3daf..c2ebcbf --name-only --pretty=format: \| sort -u \| grep -c .` |
+| 새로 만든 파일 | 183개 | `git log 9cc3daf..c2ebcbf --diff-filter=A --name-only --pretty=format: \| sort -u \| grep -c .` |
+| 활동일 | 105일 | `git log 9cc3daf..c2ebcbf --date=short --format=%ad \| sort -u \| wc -l` |
+
+`c2ebcbf` 이후 커밋은 2026년에 붙인 정비분입니다. 인가 누락과 예외 매핑 교정, 부하 시나리오 추가, CI 연결이고 개발 기간 수치에는 넣지 않았습니다.
 
 담당 경로는 `src/main/java`(백엔드·보안·관리자), `python`(AI 서버와 모델), `frontend/src/map`(지도·경로 탐색), 그리고 배포 구성입니다.
 
@@ -150,6 +154,8 @@ AWS EC2 한 대에 Docker Compose로 배포합니다. GitHub Actions가 이미�
 | ![종류 분류 F1](src/main/resources/static/img/ml/type_f1.png) | ![위험도 혼동행렬](src/main/resources/static/img/ml/risk_confusion.png) |
 
 위험도 모델은 실제 긴급·위급을 거의 놓치지 않는 대신(recall 1.00), 과경보(precision 0.57)가 있습니다. 재난 안전에서는 "놓치느니 과경보"가 합리적인 편향이라 보고 recall을 우선했습니다.
+
+혼동행렬의 표본은 1,202건입니다. 전체 18,399건의 20%가 아닙니다. 위험도 모델은 공식 긴급단계가 채워진 메시지만 쓰므로, 그 부분집합 6,010건에서 20%를 뗀 값입니다. 나머지는 긴급단계가 비어 있어 위험도 학습에 쓸 정답이 없습니다. 두 숫자를 나란히 보면 어긋나 보여서 적어 둡니다.
 
 평가는 누수가 없도록 신경 썼습니다. 처음엔 위험도 정확도가 99%로 나왔는데, 소수 클래스를 업샘플한 뒤에 학습/평가를 나눠 같은 데이터가 양쪽에 새던 누수였습니다. 데이터를 먼저 나눈 다음 학습셋만 가중하도록 고쳐 실제 분포로 측정했고, 종류 모델도 증강본을 원본과 같은 그룹으로 묶어 평가했습니다. 위험도 라벨도 원래는 본문 키워드 규칙으로 만들어서 모델이 그 규칙을 그대로 모사하는 순환 구조였는데, 정부 공식 긴급단계를 정답으로 쓰도록 바꿔 비순환으로 만들었습니다.
 

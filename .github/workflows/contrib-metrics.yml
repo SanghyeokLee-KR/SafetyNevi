@@ -1,0 +1,49 @@
+name: contrib-metrics
+
+# README 의 기여 지표는 git 에서 뽑은 값이다. 저장소를 고치다 보면 문서만 옛 값으로 남는다.
+# 실제로 그렇게 어긋난 적이 있어서, 어긋나면 빌드가 떨어지게 해 둔다.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: README 지표와 git 실측 대조
+        shell: bash
+        run: |
+          set -euo pipefail
+          FROM=9cc3daf
+          TO=c2ebcbf
+
+          commits=$(git log --oneline $FROM..$TO | wc -l | tr -d ' ')
+          touched=$(git log $FROM..$TO --name-only --pretty=format: | sort -u | grep -c . || true)
+          added=$(git log $FROM..$TO --diff-filter=A --name-only --pretty=format: | sort -u | grep -c . || true)
+          days=$(git log $FROM..$TO --date=short --format=%ad | sort -u | wc -l | tr -d ' ')
+
+          echo "실측: 커밋 $commits, 수정 $touched, 신규 $added, 활동일 $days"
+
+          fail=0
+          check() {
+            if ! grep -qF "| $2" README.md; then
+              echo "어긋남: $1. README 에 '| $2' 가 없다. 실측은 $3"
+              fail=1
+            fi
+          }
+          check "커밋"      "커밋 | ${commits}건 전부 단독"  "$commits"
+          check "수정 파일"  "수정한 파일 | ${touched}개"     "$touched"
+          check "새 파일"    "새로 만든 파일 | ${added}개"    "$added"
+          check "활동일"    "활동일 | ${days}일"            "$days"
+
+          if [ "$fail" -ne 0 ]; then
+            echo "README 의 기여 지표를 실측값으로 고쳐라."
+            exit 1
+          fi
+          echo "README 지표가 실측과 일치한다."
